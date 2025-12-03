@@ -12,13 +12,15 @@
 
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Google Maps (insert your key) -->
+  <!-- Your app code FIRST -->
+  <script src="app.js" defer></script>
+
+  <!-- Google Maps (insert your key) AFTER app.js -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&callback=initMap"
+    async
     defer
   ></script>
-
-  <script src="app.js" defer></script>
 </head>
 <body>
   <div class="page">
@@ -65,4 +67,3 @@
   </div>
 </body>
 </html>
-
