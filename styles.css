@@ -291,3 +291,39 @@ html, body {
     transform: translate(50%, 100%); /* keep hidden transform consistent */
   }
 }
+
+/* Secondary filters row (e.g. Sit-Down, Quick Bites, Brunch...) */
+.guide-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 2px 6px;
+}
+
+.guide-secondary[hidden] {
+  display: none;
+}
+
+.guide-secondary-pill {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
+}
+
+.guide-secondary-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.guide-secondary-pill.active {
+  background: #e7ecf7;
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
