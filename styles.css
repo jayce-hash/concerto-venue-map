@@ -31,17 +31,18 @@ html, body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;               /* 🔒 stop whole-page scrolling */
+  overflow: hidden;               /* lock entire feature */
 }
 
+/* ===== Layout Shell ===== */
 .page {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;               /* 🔒 keep content pinned */
+  overflow: hidden;
 }
 
-/* ===== Header (matches Events Near Me) ===== */
+/* ===== Header ===== */
 .page-header {
   background: var(--bg);
   box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
@@ -89,7 +90,7 @@ html, body {
   color: #9aa3b5;
 }
 
-/* fake search icon on the right */
+/* fake icon */
 .search-wrapper::after {
   content: "⌕";
   position: absolute;
@@ -100,7 +101,7 @@ html, body {
   color: var(--muted);
 }
 
-/* Search dropdown */
+/* search dropdown */
 .search-results {
   position: absolute;
   left: 0;
@@ -131,11 +132,12 @@ html, body {
   background: #f5f7fb;
 }
 
+/* ===== Map + panel ===== */
 .layout {
   position: relative;
   flex: 1;
   background: #d8dde8;
-  overflow: hidden;               /* 🔒 map & sheet contained */
+  overflow: hidden;
 }
 
 .map {
@@ -143,7 +145,7 @@ html, body {
   height: 100%;
 }
 
-/* ===== Bottom Panel – Apple Maps style sheet ===== */
+/* ===== Bottom sheet ===== */
 .guide-panel {
   position: absolute;
   left: 0;
@@ -154,7 +156,7 @@ html, body {
   border-top: 1px solid var(--line);
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
-  max-height: 55vh;               /* about half the screen */
+  max-height: 56vh;               /* fixed half-sheet feel */
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
@@ -168,7 +170,6 @@ html, body {
   transform: translateY(0%);
 }
 
-/* Title area */
 .guide-header {
   display: flex;
   align-items: flex-start;
@@ -188,12 +189,12 @@ html, body {
   color: var(--muted);
 }
 
-/* Category pills row */
+/* Row 1: main category pills */
 .guide-categories {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 4px 2px 6px;
+  padding: 4px 2px 4px;
 }
 
 .guide-pill {
@@ -221,7 +222,103 @@ html, body {
   box-shadow: var(--shadow-soft);
 }
 
-/* Results list */
+/* Row 2: More Categories / Filters buttons */
+.guide-main-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 2px 6px;
+}
+
+.guide-main-btn {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 6px 16px;
+  font-size: 0.86rem;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--shadow-soft);
+  transition: background 0.15s ease, box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+.guide-main-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-strong);
+}
+
+/* Secondary filters row */
+.guide-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 2px 4px;
+}
+
+.guide-secondary[hidden] {
+  display: none;
+}
+
+.guide-secondary-pill {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
+}
+
+.guide-secondary-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.guide-secondary-pill.active {
+  background: #e7ecf7;
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
+
+/* More Categories dropdown */
+.guide-menu {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 120px; /* tuned to sit just under main buttons inside panel */
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
+  padding: 6px 0;
+  z-index: 30;
+}
+
+.guide-menu[hidden] {
+  display: none;
+}
+
+.guide-menu-item {
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.guide-menu-item:hover {
+  background: #f5f7fb;
+}
+
+/* Results area */
 .guide-results {
   flex: 1;
   margin-top: 4px;
@@ -262,14 +359,14 @@ html, body {
   content: " • ";
 }
 
-/* Loading / empty states */
+/* Hint text */
 .guide-results .hint {
   font-size: 0.86rem;
   color: var(--muted);
   padding: 10px 4px;
 }
 
-/* ===== Desktop tweaks ===== */
+/* Desktop tweak */
 @media (min-width: 768px) {
   .page-header-inner {
     flex-direction: row;
@@ -289,42 +386,6 @@ html, body {
 
   .guide-panel {
     left: 50%;
-    transform: translate(50%, 100%); /* keep hidden transform consistent */
+    transform: translate(50%, 100%);
   }
-}
-
-/* Secondary filters row (e.g. Sit-Down, Quick Bites, Brunch...) */
-.guide-secondary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0 2px 6px;
-}
-
-.guide-secondary[hidden] {
-  display: none;
-}
-
-.guide-secondary-pill {
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 4px 10px;
-  font-size: 0.78rem;
-  color: var(--muted);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s ease, border-color 0.15s ease,
-    box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
-}
-
-.guide-secondary-pill:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.guide-secondary-pill.active {
-  background: #e7ecf7;
-  border-color: var(--accent-2);
-  color: var(--accent-2);
 }
