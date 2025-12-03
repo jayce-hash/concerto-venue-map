@@ -4,7 +4,8 @@ let markers = [];
 let selectedVenue = null;
 
 let categoryButtons = [];
-let guideIframeEl = null;
+let guideResultsEl = null;
+let placesService = null;
 
 // Navy pin icon for Concerto
 const NAVY_PIN_ICON = {
@@ -17,19 +18,19 @@ const NAVY_PIN_ICON = {
   anchor: { x: 12, y: 22 }
 };
 
-// helper: add or replace ?cat= in the guide URL
-function withCategory(url, cat) {
-  if (!url) return "";
-  try {
-    const u = new URL(url);
-    if (cat) u.searchParams.set("cat", cat);
-    return u.toString();
-  } catch (e) {
-    // relative or non-standard URL: simple fallback
-    const sep = url.includes("?") ? "&" : "?";
-    return cat ? `${url}${sep}cat=${encodeURIComponent(cat)}` : url;
-  }
-}
+// Category → Places search config
+const CATEGORY_SEARCH_CONFIG = {
+  restaurants: { type: "restaurant", radius: 3000 },
+  bars:        { type: "bar", radius: 3000 },
+  coffee:      { type: "cafe", radius: 3000 },
+  hotels:      { type: "lodging", radius: 4000 },
+  retail:      { keyword: "shopping", radius: 4000 },
+  attractions: { type: "tourist_attraction", radius: 5000 },
+  transit:     { type: "transit_station", radius: 4000 },
+  pharmacies:  { type: "pharmacy", radius: 3000 },
+  gas:         { type: "gas_station", radius: 4000 },
+  grocery:     { keyword: "grocery store", radius: 4000 }
+};
 
 // Make initMap visible for Google callback
 window.initMap = function () {
@@ -40,7 +41,8 @@ window.initMap = function () {
     zoomControl: true
   });
 
-  guideIframeEl = document.getElementById("guideIframe");
+  placesService = new google.maps.places.PlacesService(map);
+  guideResultsEl = document.getElementById("guideResults");
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
 
   setupCategoryPills();
@@ -87,18 +89,17 @@ function focusVenue(venue) {
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  // reset active pill to Restaurants by default
+  // Reset pills to Restaurants
   if (categoryButtons.length) {
     categoryButtons.forEach(b => b.classList.remove("active"));
-    const defaultBtn = categoryButtons.find(b => b.dataset.category === "restaurants");
+    const defaultBtn = categoryButtons.find(
+      b => b.dataset.category === "restaurants"
+    );
     if (defaultBtn) defaultBtn.classList.add("active");
   }
 
-  if (guideIframeEl) {
-    guideIframeEl.src = withCategory(venue.guideUrl || "", "restaurants");
-  }
-
   guidePanel.classList.remove("guide-panel--hidden");
+  loadPlacesForCategory("restaurants");
 }
 
 function setupSearch() {
@@ -143,7 +144,6 @@ function setupSearch() {
     );
   }
 
-  // Typing shows dropdown suggestions
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
     if (!q) {
@@ -160,7 +160,6 @@ function setupSearch() {
     renderResults(filtered.slice(0, 25));
   });
 
-  // Pressing "Go"/Enter jumps directly to best match
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -172,7 +171,6 @@ function setupSearch() {
     }
   });
 
-  // Hide dropdown if you tap elsewhere
   document.addEventListener("click", (e) => {
     if (!resultsEl.contains(e.target) && e.target !== input) {
       resultsEl.classList.remove("visible");
@@ -181,7 +179,7 @@ function setupSearch() {
 }
 
 function setupCategoryPills() {
-  if (!categoryButtons.length || !guideIframeEl) return;
+  if (!categoryButtons.length) return;
 
   categoryButtons.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -190,8 +188,80 @@ function setupCategoryPills() {
       categoryButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      const cat = btn.dataset.category || "";
-      guideIframeEl.src = withCategory(selectedVenue.guideUrl || "", cat);
+      const cat = btn.dataset.category || "restaurants";
+      loadPlacesForCategory(cat);
     });
+  });
+}
+
+function loadPlacesForCategory(catKey) {
+  if (!placesService || !selectedVenue) return;
+
+  const cfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+
+  const request = {
+    location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
+    radius: cfg.radius || 3000
+  };
+
+  if (cfg.type) request.type = cfg.type;
+  if (cfg.keyword) request.keyword = cfg.keyword;
+
+  if (guideResultsEl) {
+    guideResultsEl.innerHTML = '<div class="hint">Loading nearby places…</div>';
+  }
+
+  placesService.nearbySearch(request, (results, status) => {
+    if (!guideResultsEl) return;
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+      guideResultsEl.innerHTML =
+        '<div class="hint">No places found for this category here yet.</div>';
+      return;
+    }
+
+    renderPlaces(results.slice(0, 20));
+  });
+}
+
+function renderPlaces(places) {
+  guideResultsEl.innerHTML = "";
+
+  if (!places.length) {
+    guideResultsEl.innerHTML =
+      '<div class="hint">No places found for this category here yet.</div>';
+    return;
+  }
+
+  places.forEach(place => {
+    const card = document.createElement("div");
+    card.className = "place-card";
+
+    const name = document.createElement("p");
+    name.className = "place-name";
+    name.textContent = place.name || "Unnamed Place";
+
+    const meta = document.createElement("p");
+    meta.className = "place-meta";
+
+    const metaBits = [];
+    if (place.vicinity) metaBits.push(place.vicinity);
+    if (place.rating) metaBits.push(`${place.rating.toFixed(1)}★`);
+    if (place.user_ratings_total) metaBits.push(`${place.user_ratings_total} reviews`);
+
+    meta.textContent = metaBits.join(" • ");
+
+    card.appendChild(name);
+    card.appendChild(meta);
+
+    // Tap card → center map on that place
+    card.addEventListener("click", () => {
+      if (place.geometry && place.geometry.location) {
+        map.panTo(place.geometry.location);
+        map.setZoom(15);
+      }
+    });
+
+    guideResultsEl.appendChild(card);
   });
 }
