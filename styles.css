@@ -17,28 +17,28 @@ body {
   height: 100vh;
 }
 
-/* HEADER */
+/* HEADER - luxe, compact */
 .page-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(7, 13, 26, 0.95);
-  backdrop-filter: blur(12px);
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.06), rgba(5,8,20,0.96));
+  backdrop-filter: blur(18px);
 }
 
 .page-header-inner {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .logo-text {
-  font-size: 18px;
-  letter-spacing: 0.18em;
+  font-size: 16px;
+  letter-spacing: 0.22em;
   margin: 0;
 }
 
 .tagline {
-  margin: 2px 0 0;
+  margin: 1px 0 0;
   font-size: 11px;
   opacity: 0.7;
 }
@@ -46,35 +46,50 @@ body {
 /* SEARCH */
 .search-wrapper {
   position: relative;
+  margin-top: 4px;
 }
 
 #venueSearch {
   width: 100%;
-  padding: 10px 12px;
+  padding: 10px 40px 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(5, 8, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, rgba(5,8,20,0.95), rgba(9,14,30,0.95));
   color: #f8f9f9;
   font-size: 14px;
   outline: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
 #venueSearch::placeholder {
   color: rgba(248, 249, 249, 0.6);
 }
 
+/* fake search icon on the right */
+.search-wrapper::after {
+  content: "⌕";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* SEARCH RESULTS DROPDOWN */
 .search-results {
   position: absolute;
-  top: 105%;
+  top: 110%;
   left: 0;
   right: 0;
-  background: #050814;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(5, 8, 20, 0.98);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   max-height: 260px;
   overflow-y: auto;
   display: none;
-  z-index: 10;
+  z-index: 20;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.55);
 }
 
 .search-results.visible {
@@ -82,16 +97,16 @@ body {
 }
 
 .search-result-item {
-  padding: 8px 10px;
+  padding: 8px 11px;
   cursor: pointer;
   font-size: 13px;
 }
 
 .search-result-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-/* MAP + PANEL */
+/* MAP + PANEL LAYOUT */
 .layout {
   position: relative;
   flex: 1;
@@ -102,22 +117,34 @@ body {
   height: 100%;
 }
 
-/* BOTTOM PANEL */
+/* BOTTOM PANEL - luxe glass card */
 .guide-panel {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(7, 13, 26, 0.98);
-  backdrop-filter: blur(16px);
-  border-radius: 16px 16px 0 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 12px 0;
+  background: radial-gradient(circle at top, rgba(14,24,50,0.98), rgba(3,5,14,0.98));
+  backdrop-filter: blur(22px);
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 14px 0;
   max-height: 60%;
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease-out;
+  box-shadow: 0 -20px 40px rgba(0,0,0,0.7);
+}
+
+/* little grab handle */
+.guide-panel::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(248, 249, 249, 0.18);
+  margin: 4px auto 6px;
 }
 
 .guide-panel--hidden {
@@ -128,6 +155,13 @@ body {
   transform: translateY(0%);
 }
 
+.guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .guide-header h2 {
   margin: 0;
   font-size: 16px;
@@ -136,15 +170,17 @@ body {
 .venue-location {
   margin: 2px 0 0;
   font-size: 12px;
-  opacity: 0.75;
+  opacity: 0.78;
 }
 
+/* iframe container */
 .guide-iframe-wrap {
   flex: 1;
   margin-top: 6px;
-  border-radius: 12px 12px 0 0;
+  border-radius: 16px 16px 0 0;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.75);
 }
 
 .guide-iframe {
@@ -160,5 +196,8 @@ body {
     justify-content: space-between;
     align-items: center;
   }
-}
 
+  .search-wrapper {
+    max-width: 320px;
+  }
+}
