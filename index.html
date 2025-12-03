@@ -49,19 +49,32 @@
     <main class="layout">
       <div id="map" class="map"></div>
 
-      <!-- Bottom sliding panel -->
-      <section id="guidePanel" class="guide-panel guide-panel--hidden">
-        <header class="guide-header">
-          <div>
-            <h2 id="guideVenueName"></h2>
-            <p id="guideVenueLocation" class="venue-location"></p>
-          </div>
-        </header>
+<section id="guidePanel" class="guide-panel guide-panel--hidden">
+  <header class="guide-header">
+    <div>
+      <h2 id="guideVenueName"></h2>
+      <p id="guideVenueLocation" class="venue-location"></p>
+    </div>
+  </header>
 
-        <div class="guide-iframe-wrap">
-          <iframe id="guideIframe" class="guide-iframe" src="" loading="lazy"></iframe>
-        </div>
-      </section>
+  <!-- Category pills like Apple/Google Maps -->
+  <div class="guide-categories">
+    <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
+    <button type="button" class="guide-pill" data-category="bars">Bars</button>
+    <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
+    <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
+    <button type="button" class="guide-pill" data-category="retail">Retail</button>
+    <button type="button" class="guide-pill" data-category="attractions">Attractions</button>
+    <button type="button" class="guide-pill" data-category="transit">Transit</button>
+    <button type="button" class="guide-pill" data-category="pharmacies">Pharmacies</button>
+    <button type="button" class="guide-pill" data-category="gas">Gas</button>
+    <button type="button" class="guide-pill" data-category="grocery">Grocery</button>
+  </div>
+
+  <div class="guide-iframe-wrap">
+    <iframe id="guideIframe" class="guide-iframe" src="" loading="lazy"></iframe>
+  </div>
+</section>
     </main>
 
   </div>
