@@ -17,6 +17,18 @@ let moreCategoriesMenu = null;
 
 let guidePanelEl = null;
 
+// --- Place details overlay elements ---
+let placeDetailsOverlay = null;
+let detailsNameEl = null;
+let detailsMetaEl = null;
+let detailsAddressEl = null;
+let detailsPhoneEl = null;
+let detailsPhoneRowEl = null;
+let detailsWebsiteEl = null;
+let detailsWebsiteRowEl = null;
+let detailsMapsLinkEl = null;
+let detailsHoursEl = null;
+
 // Navy pin icon for Concerto
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
@@ -92,6 +104,80 @@ function metersToMiles(m) {
   return m / 1609.34;
 }
 
+// -------- Place details overlay helpers --------
+function hidePlaceDetails() {
+  if (placeDetailsOverlay) {
+    placeDetailsOverlay.hidden = true;
+  }
+}
+
+function showPlaceDetails(place) {
+  if (!placeDetailsOverlay) return;
+
+  // Name
+  detailsNameEl.textContent = place.name || "";
+
+  // Meta: rating + review count + a simple type
+  const bits = [];
+  if (place.rating) {
+    const rating = place.rating.toFixed(1);
+    const count = place.user_ratings_total;
+    bits.push(`${rating}★${count ? ` (${count})` : ""}`);
+  }
+  if (place.types && place.types.length) {
+    const prettyType = place.types[0].replace(/_/g, " ");
+    bits.push(prettyType);
+  }
+  detailsMetaEl.textContent = bits.join(" • ");
+
+  // Address
+  detailsAddressEl.textContent =
+    place.formatted_address || place.vicinity || "";
+
+  // Phone
+  if (place.formatted_phone_number) {
+    detailsPhoneRowEl.hidden = false;
+    detailsPhoneEl.textContent = place.formatted_phone_number;
+    detailsPhoneEl.href =
+      "tel:" + place.formatted_phone_number.replace(/\D/g, "");
+  } else {
+    detailsPhoneRowEl.hidden = true;
+  }
+
+  // Website
+  if (place.website) {
+    detailsWebsiteRowEl.hidden = false;
+    detailsWebsiteEl.textContent = place.website.replace(/^https?:\/\//, "");
+    detailsWebsiteEl.href = place.website;
+  } else {
+    detailsWebsiteRowEl.hidden = true;
+  }
+
+  // Maps link
+  let mapsUrl;
+  if (place.url) {
+    mapsUrl = place.url;
+  } else {
+    const base =
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(place.name || "");
+    mapsUrl = place.place_id
+      ? `${base}&query_place_id=${encodeURIComponent(place.place_id)}`
+      : base;
+  }
+  detailsMapsLinkEl.href = mapsUrl;
+
+  // Hours (if available)
+  if (place.opening_hours && place.opening_hours.weekday_text) {
+    detailsHoursEl.hidden = false;
+    detailsHoursEl.textContent = place.opening_hours.weekday_text.join("\n");
+  } else {
+    detailsHoursEl.hidden = true;
+  }
+
+  placeDetailsOverlay.hidden = false;
+}
+
 // Make initMap visible for Google callback
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -110,6 +196,29 @@ window.initMap = function () {
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
   moreCategoriesBtn = document.getElementById("moreCategoriesBtn");
   filtersBtn = document.getElementById("filtersBtn");
+
+  // Details overlay elements
+  placeDetailsOverlay = document.getElementById("placeDetails");
+  detailsNameEl = document.getElementById("detailsName");
+  detailsMetaEl = document.getElementById("detailsMeta");
+  detailsAddressEl = document.getElementById("detailsAddress");
+  detailsPhoneEl = document.getElementById("detailsPhone");
+  detailsPhoneRowEl = document.getElementById("detailsPhoneRow");
+  detailsWebsiteEl = document.getElementById("detailsWebsite");
+  detailsWebsiteRowEl = document.getElementById("detailsWebsiteRow");
+  detailsMapsLinkEl = document.getElementById("detailsMapsLink");
+  detailsHoursEl = document.getElementById("detailsHours");
+
+  const closeBtn = document.getElementById("placeDetailsClose");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", hidePlaceDetails);
+  }
+  // Close when tapping the dimmed background, but not the card itself
+  if (placeDetailsOverlay) {
+    placeDetailsOverlay.addEventListener("click", (e) => {
+      if (e.target === placeDetailsOverlay) hidePlaceDetails();
+    });
+  }
 
   setupCategoryPills();
   setupMainButtons();
@@ -149,33 +258,29 @@ function focusVenue(venue) {
   currentCategory = "restaurants";
   currentSecondaryId = "all";
 
-map.setZoom(13);
-map.panTo({ lat: venue.lat, lng: venue.lng });
+  map.setZoom(13);
+  map.panTo({ lat: venue.lat, lng: venue.lng });
 
-// Center pin within the *visible* map area (header stays fixed, panel covers bottom)
-google.maps.event.addListenerOnce(map, "idle", () => {
-  const mapDiv = document.getElementById("map");
-  const panel = document.getElementById("guidePanel");
+  // Center pin within the *visible* map area (header fixed, bottom panel visible)
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    const mapDiv = document.getElementById("map");
+    const panel = document.getElementById("guidePanel");
 
-  if (mapDiv && panel) {
-    const mapHeight = mapDiv.clientHeight;
-    const panelHeight = panel.clientHeight;
+    if (mapDiv && panel) {
+      const panelHeight = panel.clientHeight;
 
-    // Visible area to the user is from top of map to top of panel
-    const visibleHeight = mapHeight - panelHeight;
+      // The pin starts at the exact vertical center of the map.
+      // Panel covers bottom portion; move map down by a bit more than half
+      // the panel height so the pin sits just above true center visually.
+      const offset = panelHeight / 2 + 16; // small extra nudge upward
 
-    // Currently the pin is at map center (mapHeight / 2).
-    // We want it at the center of the *visible* area: visibleHeight / 2.
-    // So we need to move it up by panelHeight / 2.
-    const offset = panelHeight / 2;
-
-    // positive y = move map down, pin appears higher on screen
-    map.panBy(0, offset);
-  } else if (mapDiv) {
-    // safety fallback
-    map.panBy(0, mapDiv.clientHeight * 0.28);
-  }
-});
+      // positive y moves the map down (pin appears higher on screen)
+      map.panBy(0, offset);
+    } else if (mapDiv) {
+      // safety fallback
+      map.panBy(0, mapDiv.clientHeight * 0.28);
+    }
+  });
 
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
@@ -185,7 +290,9 @@ google.maps.event.addListenerOnce(map, "idle", () => {
   // reset main pills
   if (categoryButtons.length) {
     categoryButtons.forEach(b => b.classList.remove("active"));
-    const restaurantsBtn = categoryButtons.find(b => b.dataset.category === "restaurants");
+    const restaurantsBtn = categoryButtons.find(
+      b => b.dataset.category === "restaurants"
+    );
     if (restaurantsBtn) restaurantsBtn.classList.add("active");
   }
 
@@ -314,7 +421,9 @@ function setupMainButtons() {
   }
 
   if (moreCategoriesMenu) {
-    const items = Array.from(moreCategoriesMenu.querySelectorAll(".guide-menu-item"));
+    const items = Array.from(
+      moreCategoriesMenu.querySelectorAll(".guide-menu-item")
+    );
     items.forEach(item => {
       item.addEventListener("click", () => {
         const cat = item.dataset.category;
@@ -340,7 +449,8 @@ function setupOutsideMenuClick() {
   document.addEventListener("click", e => {
     if (!moreCategoriesMenu || moreCategoriesMenu.hidden) return;
     const withinMenu = moreCategoriesMenu.contains(e.target);
-    const withinButton = moreCategoriesBtn && moreCategoriesBtn.contains(e.target);
+    const withinButton =
+      moreCategoriesBtn && moreCategoriesBtn.contains(e.target);
     if (!withinMenu && !withinButton) {
       hideMoreCategoriesMenu();
     }
@@ -404,13 +514,17 @@ function loadPlacesForCategory(catKey, subFilterId) {
   if (keyword) request.keyword = keyword;
 
   if (guideResultsEl) {
-    guideResultsEl.innerHTML = '<div class="hint">Loading nearby places…</div>';
+    guideResultsEl.innerHTML =
+      '<div class="hint">Loading nearby places…</div>';
   }
 
   placesService.nearbySearch(request, (results, status) => {
     if (!guideResultsEl) return;
 
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+    if (
+      status !== google.maps.places.PlacesServiceStatus.OK ||
+      !results
+    ) {
       guideResultsEl.innerHTML =
         '<div class="hint">No places found for this category here yet.</div>';
       return;
@@ -464,25 +578,39 @@ function renderPlaces(places) {
     card.appendChild(name);
     card.appendChild(meta);
 
+    // Click → in-app details sheet using Places Details API
     card.addEventListener("click", () => {
-      let url;
-      if (place.place_id) {
-        url =
-          "https://www.google.com/maps/search/?api=1&query=" +
-          encodeURIComponent(place.name) +
-          "&query_place_id=" +
-          encodeURIComponent(place.place_id);
-      } else if (place.name || place.vicinity) {
-        url =
-          "https://www.google.com/maps/search/?api=1&query=" +
-          encodeURIComponent(
-            (place.name || "") + " " + (place.vicinity || "")
-          );
-      } else {
+      if (!placesService || !place.place_id) {
+        // fallback: show what we already have
+        showPlaceDetails(place);
         return;
       }
-      // In WebView this should open the Google Maps profile
-      window.location.href = url;
+
+      const request = {
+        placeId: place.place_id,
+        fields: [
+          "name",
+          "rating",
+          "user_ratings_total",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "url",
+          "opening_hours",
+          "types"
+        ]
+      };
+
+      placesService.getDetails(request, (details, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          details
+        ) {
+          showPlaceDetails(details);
+        } else {
+          showPlaceDetails(place);
+        }
+      });
     });
 
     guideResultsEl.appendChild(card);
