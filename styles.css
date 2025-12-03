@@ -31,6 +31,7 @@ html, body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;               /* 🔒 stop whole-page scrolling */
 }
 
 /* ===== Layout Shell ===== */
