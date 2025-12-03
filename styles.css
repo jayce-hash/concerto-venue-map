@@ -40,11 +40,11 @@ html, body {
   flex-direction: column;
 }
 
-/* ===== Header (light, logo + search) ===== */
+/* ===== Header (same white as Events Near Me) ===== */
 .page-header {
-  background: var(--card);
-  box-shadow: 0 2px 8px rgba(18, 30, 54, 0.06);
-  padding: 10px 0 8px;
+  background: var(--bg);
+  box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
+  padding: 10px 0 10px;
   z-index: 10;
 }
 
@@ -60,8 +60,8 @@ html, body {
 }
 
 .brand-logo {
-  max-width: 220px;
-  width: 65%;
+  max-width: 260px;
+  width: 72%;
   display: block;
   margin: 0 auto;
 }
@@ -142,26 +142,24 @@ html, body {
   height: 100%;
 }
 
-/* ===== Bottom Panel (Apple Maps style sheet) ===== */
+/* ===== Bottom Panel – Apple Maps style sheet ===== */
 .guide-panel {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  /* white sheet sitting above map */
-  background: var(--card);
+  background: var(--bg);          /* match app background */
   border-radius: 24px 24px 0 0;
   border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 28px rgba(18, 30, 54, 0.28);
-  padding: 10px 14px 0;
-  max-height: 70vh;      /* sits higher so content is visible */
+  box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.25);
+  padding: 10px 14px 10px;
+  max-height: 85vh;               /* sits high so content is visible */
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.24s ease-out;
 }
 
-/* Hidden vs visible */
 .guide-panel--hidden {
   transform: translateY(100%);
 }
@@ -169,12 +167,12 @@ html, body {
   transform: translateY(0%);
 }
 
-/* Header inside sheet */
+/* Title area */
 .guide-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 2px 2px 6px;
+  padding: 0 2px 6px;
 }
 
 .guide-header h2 {
@@ -189,15 +187,49 @@ html, body {
   color: var(--muted);
 }
 
+/* Category pills row (like Maps) */
+.guide-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 2px 8px;
+}
+
+.guide-pill {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 6px 12px;
+  font-size: 0.86rem;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.guide-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.guide-pill.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
 /* iframe container */
 .guide-iframe-wrap {
   flex: 1;
   margin-top: 4px;
-  border-radius: 16px 16px 0 0;
+  border-radius: 18px 18px 0 0;
   overflow: hidden;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-soft);
   position: relative;
+  min-height: 55vh;      /* forces panel high like Google/Apple Maps */
 }
 
 /* subtle top fade to hint scrollability inside iframe */
