@@ -3,7 +3,7 @@ let venues = [];
 let markers = [];
 let selectedVenue = null;
 
-// Navy pin icon for Concerto (no google.maps usage here)
+// Navy pin icon for Concerto
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
   fillColor: "#121E36",
@@ -11,11 +11,11 @@ const NAVY_PIN_ICON = {
   strokeColor: "#F8F9F9",
   strokeWeight: 1,
   scale: 1.4,
-  // use numeric anchor, avoids needing google.maps.Point at load time
+  // plain object anchor works fine; avoids needing google.maps.Point at load time
   anchor: { x: 12, y: 22 }
 };
 
-// Make initMap globally visible *before* Google calls it
+// Make initMap visible for Google callback
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 39.5, lng: -98.35 }, // rough US center
@@ -52,6 +52,8 @@ function createMarkers() {
 }
 
 function focusVenue(venue) {
+  if (!venue || !venue.lat || !venue.lng) return;
+
   selectedVenue = venue;
 
   map.panTo({ lat: venue.lat, lng: venue.lng });
@@ -95,6 +97,26 @@ function setupSearch() {
     resultsEl.classList.add("visible");
   }
 
+  function findBestMatch(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return null;
+
+    // exact name match first
+    let match =
+      venues.find(v => v.name.toLowerCase() === q) ||
+      // contains name
+      venues.find(v => v.name.toLowerCase().includes(q)) ||
+      // city/state based
+      venues.find(
+        v =>
+          v.city.toLowerCase().includes(q) ||
+          v.state.toLowerCase().includes(q)
+      );
+
+    return match || null;
+  }
+
+  // Typing shows dropdown suggestions
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
     if (!q) {
@@ -111,6 +133,19 @@ function setupSearch() {
     renderResults(filtered.slice(0, 25));
   });
 
+  // Pressing "Go"/Enter jumps directly to best match
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const match = findBestMatch(input.value);
+      if (match) {
+        renderResults([]);
+        focusVenue(match);
+      }
+    }
+  });
+
+  // Hide dropdown if you tap elsewhere
   document.addEventListener("click", (e) => {
     if (!resultsEl.contains(e.target) && e.target !== input) {
       resultsEl.classList.remove("visible");
