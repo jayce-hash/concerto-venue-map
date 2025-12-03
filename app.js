@@ -36,7 +36,7 @@ const CATEGORY_SEARCH_CONFIG = {
   grocery:     { keyword: "grocery store", radius: 4000 }
 };
 
-// Secondary filters per category (keywords layered on top)
+// Secondary filters per category
 const SECONDARY_FILTERS = {
   restaurants: [
     { id: "all",     label: "All",           keyword: null },
@@ -59,12 +59,32 @@ const SECONDARY_FILTERS = {
     { id: "rooftop",  label: "Rooftop",    keyword: "rooftop bar" }
   ],
   coffee: [
-    { id: "all",     label: "All",       keyword: null },
-    { id: "study",   label: "Study Spots", keyword: "coffee shop with wifi" },
-    { id: "bakery",  label: "Bakery",    keyword: "bakery" },
-    { id: "thirdwave", label: "Specialty", keyword: "specialty coffee" }
+    { id: "all",       label: "All",        keyword: null },
+    { id: "study",     label: "Study Spots", keyword: "coffee shop with wifi" },
+    { id: "bakery",    label: "Bakery",     keyword: "bakery" },
+    { id: "thirdwave", label: "Specialty",  keyword: "specialty coffee" }
   ]
 };
+
+// ----- Distance helpers -----
+function distanceMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000; // meters
+  const toRad = x => (x * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function metersToMiles(m) {
+  return m / 1609.34;
+}
 
 // Make initMap visible for Google callback
 window.initMap = function () {
@@ -120,10 +140,12 @@ function focusVenue(venue) {
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-  // After map settles, pan up slightly so pin is visually centered
+  // After map settles, pan up slightly so pin appears in middle
   google.maps.event.addListenerOnce(map, "idle", () => {
-    // panBy(x, y): positive y = down, so negative moves map content down (pin up)
-    map.panBy(0, 80); // tweak this if sheet height changes
+    const mapDiv = document.getElementById("map");
+    const offset = mapDiv ? mapDiv.clientHeight * 0.22 : 140; // ~22% of map height
+    // positive y moves the *map* down so the pin moves up visually
+    map.panBy(0, offset);
   });
 
   const guidePanel = document.getElementById("guidePanel");
@@ -337,16 +359,33 @@ function renderPlaces(places) {
     meta.className = "place-meta";
 
     const bits = [];
+
+    // address
     if (place.vicinity) bits.push(place.vicinity);
+
+    // distance from venue
+    if (selectedVenue && place.geometry && place.geometry.location) {
+      const lat2 = place.geometry.location.lat();
+      const lng2 = place.geometry.location.lng();
+      const meters = distanceMeters(
+        selectedVenue.lat,
+        selectedVenue.lng,
+        lat2,
+        lng2
+      );
+      const miles = metersToMiles(meters);
+      bits.push(`${miles.toFixed(1)} mi`);
+    }
+
+    // rating (no "X reviews" anymore)
     if (place.rating) bits.push(`${place.rating.toFixed(1)}★`);
-    if (place.user_ratings_total) bits.push(`${place.user_ratings_total} reviews`);
 
     meta.textContent = bits.join(" • ");
 
     card.appendChild(name);
     card.appendChild(meta);
 
-    // Click card → open Google Maps profile in new tab
+    // Click card → open Google Maps profile (works better in WebView)
     card.addEventListener("click", () => {
       let url;
       if (place.place_id) {
@@ -364,7 +403,8 @@ function renderPlaces(places) {
       } else {
         return;
       }
-      window.open(url, "_blank");
+      // In BuildFire WebView, this will take over the popup and show Google Maps
+      window.location.href = url;
     });
 
     guideResultsEl.appendChild(card);
