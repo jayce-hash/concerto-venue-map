@@ -3,7 +3,7 @@ let venues = [];
 let markers = [];
 let selectedVenue = null;
 
-// Navy pin icon for Concerto
+// Navy pin icon for Concerto (no google.maps usage here)
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
   fillColor: "#121E36",
@@ -11,12 +11,14 @@ const NAVY_PIN_ICON = {
   strokeColor: "#F8F9F9",
   strokeWeight: 1,
   scale: 1.4,
-  anchor: new google.maps.Point(12, 22)
+  // use numeric anchor, avoids needing google.maps.Point at load time
+  anchor: { x: 12, y: 22 }
 };
 
-function initMap() {
+// Make initMap globally visible *before* Google calls it
+window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 39.5, lng: -98.35 }, // US center
+    center: { lat: 39.5, lng: -98.35 }, // rough US center
     zoom: 4,
     disableDefaultUI: true,
     zoomControl: true
@@ -30,7 +32,7 @@ function initMap() {
       setupSearch();
     })
     .catch(err => console.error("Error loading venues.json:", err));
-}
+};
 
 function createMarkers() {
   markers = venues.map(venue => {
@@ -115,6 +117,3 @@ function setupSearch() {
     }
   });
 }
-
-window.initMap = initMap;
-
