@@ -1,0 +1,1622 @@
+[
+  {
+    "id": "acrisure-arena",
+    "name": "Acrisure Arena",
+    "city": "Thousand Palms",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.7797203,
+    "lng": -116.3399249,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.7797203&lng=-116.3399249&venue=Acrisure%20Arena"
+  },
+  {
+    "id": "acrisure-stadium",
+    "name": "Acrisure Stadium",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "country": "USA",
+    "lat": 40.4467648,
+    "lng": -80.0157603,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.4467648&lng=-80.0157603&venue=Acrisure%20Stadium"
+  },
+  {
+    "id": "alamodome",
+    "name": "Alamodome",
+    "city": "San Antonio",
+    "state": "TX",
+    "country": "USA",
+    "lat": 29.4169834,
+    "lng": -98.4788143,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.4169834&lng=-98.4788143&venue=Alamodome"
+  },
+  {
+    "id": "albertsons-stadium",
+    "name": "Albertsons Stadium",
+    "city": "Boise",
+    "state": "ID",
+    "country": "USA",
+    "lat": 43.6028581,
+    "lng": -116.1958537,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.6028581&lng=-116.1958537&venue=Albertsons%20Stadium"
+  },
+  {
+    "id": "allegiant-stadium",
+    "name": "Allegiant Stadium",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "USA",
+    "lat": 36.0908665,
+    "lng": -115.1833222,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.0908665&lng=-115.1833222&venue=Allegiant%20Stadium"
+  },
+  {
+    "id": "amalie-arena",
+    "name": "Amalie Arena",
+    "city": "Tampa",
+    "state": "FL",
+    "country": "USA",
+    "lat": 27.9427373,
+    "lng": -82.4517771,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=27.9427373&lng=-82.4517771&venue=Amalie%20Arena"
+  },
+  {
+    "id": "amerant-bank-arena",
+    "name": "Amerant Bank Arena",
+    "city": "Sunrise",
+    "state": "FL",
+    "country": "USA",
+    "lat": 26.1584958,
+    "lng": -80.3255204,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=26.1584958&lng=-80.3255204&venue=Amerant%20Bank%20Arena"
+  },
+  {
+    "id": "american-airlines-center",
+    "name": "American Airlines Center",
+    "city": "Dallas",
+    "state": "TX",
+    "country": "USA",
+    "lat": 32.7903908,
+    "lng": -96.8102547,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7903908&lng=-96.8102547&venue=American%20Airlines%20Center"
+  },
+  {
+    "id": "american-family-field",
+    "name": "American Family Field",
+    "city": "Milwaukee",
+    "state": "WI",
+    "country": "USA",
+    "lat": 43.0282068,
+    "lng": -87.97126759999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.0282068&lng=-87.97126759999999&venue=American%20Family%20Field"
+  },
+  {
+    "id": "angel-stadium",
+    "name": "Angel Stadium",
+    "city": "Anaheim",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.7998135,
+    "lng": -117.8824162,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.7998135&lng=-117.8824162&venue=Angel%20Stadium"
+  },
+  {
+    "id": "atandt-stadium",
+    "name": "AT&T Stadium",
+    "city": "Arlington",
+    "state": "TX",
+    "country": "USA",
+    "lat": 32.7479966,
+    "lng": -97.09341649999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7479966&lng=-97.09341649999999&venue=AT%26T%20Stadium"
+  },
+  {
+    "id": "bok-center",
+    "name": "BOK Center",
+    "city": "Tulsa",
+    "state": "OK",
+    "country": "USA",
+    "lat": 36.1527447,
+    "lng": -95.9963597,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.1527447&lng=-95.9963597&venue=BOK%20Center"
+  },
+  {
+    "id": "ball-arena",
+    "name": "Ball Arena",
+    "city": "Denver",
+    "state": "CO",
+    "country": "USA",
+    "lat": 39.7486519,
+    "lng": -105.0075988,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.7486519&lng=-105.0075988&venue=Ball%20Arena"
+  },
+  {
+    "id": "bank-of-america-stadium",
+    "name": "Bank of America Stadium",
+    "city": "Charlotte",
+    "state": "NC",
+    "country": "USA",
+    "lat": 35.2258289,
+    "lng": -80.8528415,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.2258289&lng=-80.8528415&venue=Bank%20of%20America%20Stadium"
+  },
+  {
+    "id": "barclays-center",
+    "name": "Barclays Center",
+    "city": "Brooklyn",
+    "state": "NY",
+    "country": "USA",
+    "lat": 40.6826465,
+    "lng": -73.97541559999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.6826465&lng=-73.97541559999999&venue=Barclays%20Center"
+  },
+  {
+    "id": "bethel-woods-center-for-the-arts",
+    "name": "Bethel Woods Center for the Arts",
+    "city": "Bethel",
+    "state": "NY",
+    "country": "USA",
+    "lat": 41.6971535,
+    "lng": -74.8776143,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.6971535&lng=-74.8776143&venue=Bethel%20Woods%20Center%20for%20the%20Arts"
+  },
+  {
+    "id": "broadview-stage-at-spac",
+    "name": "Broadview Stage at SPAC",
+    "city": "Saratoga Springs",
+    "state": "NY",
+    "country": "USA",
+    "lat": 43.055249,
+    "lng": -73.80575,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.055249&lng=-73.80575&venue=Broadview%20Stage%20at%20SPAC"
+  },
+  {
+    "id": "bridgestone-arena",
+    "name": "Bridgestone Arena",
+    "city": "Nashville",
+    "state": "TN",
+    "country": "USA",
+    "lat": 36.1591736,
+    "lng": -86.7784959,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.1591736&lng=-86.7784959&venue=Bridgestone%20Arena"
+  },
+  {
+    "id": "busch-stadium",
+    "name": "Busch Stadium",
+    "city": "St. Louis",
+    "state": "MO",
+    "country": "USA",
+    "lat": 38.6226188,
+    "lng": -90.1928209,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.6226188&lng=-90.1928209&venue=Busch%20Stadium"
+  },
+  {
+    "id": "cfg-bank-arena",
+    "name": "CFG Bank Arena",
+    "city": "Baltimore",
+    "state": "MD",
+    "country": "USA",
+    "lat": 39.2885729,
+    "lng": -76.6187071,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.2885729&lng=-76.6187071&venue=CFG%20Bank%20Arena"
+  },
+  {
+    "id": "chi-health-center",
+    "name": "CHI Health Center",
+    "city": "Omaha",
+    "state": "NE",
+    "country": "USA",
+    "lat": 41.2627223,
+    "lng": -95.9281651,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.2627223&lng=-95.9281651&venue=CHI%20Health%20Center"
+  },
+  {
+    "id": "caesars-superdome",
+    "name": "Caesars Superdome",
+    "city": "New Orleans",
+    "state": "LA",
+    "country": "USA",
+    "lat": 29.951061,
+    "lng": -90.0812442,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.951061&lng=-90.0812442&venue=Caesars%20Superdome"
+  },
+  {
+    "id": "camp-randall-stadium",
+    "name": "Camp Randall Stadium",
+    "city": "Madison",
+    "state": "WI",
+    "country": "USA",
+    "lat": 43.0699446,
+    "lng": -89.4126871,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.0699446&lng=-89.4126871&venue=Camp%20Randall%20Stadium"
+  },
+  {
+    "id": "camping-world-stadium",
+    "name": "Camping World Stadium",
+    "city": "Orlando",
+    "state": "FL",
+    "country": "USA",
+    "lat": 28.5390192,
+    "lng": -81.40275249999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=28.5390192&lng=-81.40275249999999&venue=Camping%20World%20Stadium"
+  },
+  {
+    "id": "capital-one-arena",
+    "name": "Capital One Arena",
+    "city": "Washington",
+    "state": "DC",
+    "country": "USA",
+    "lat": 38.8981675,
+    "lng": -77.02085679999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.8981675&lng=-77.02085679999999&venue=Capital%20One%20Arena"
+  },
+  {
+    "id": "chaifetz-arena",
+    "name": "Chaifetz Arena",
+    "city": "St. Louis",
+    "state": "MO",
+    "country": "USA",
+    "lat": 38.6325363,
+    "lng": -90.2278912,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.6325363&lng=-90.2278912&venue=Chaifetz%20Arena"
+  },
+  {
+    "id": "chase-center",
+    "name": "Chase Center",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.7680183,
+    "lng": -122.3878772,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.7680183&lng=-122.3878772&venue=Chase%20Center"
+  },
+  {
+    "id": "chase-field",
+    "name": "Chase Field",
+    "city": "Phoenix",
+    "state": "AZ",
+    "country": "USA",
+    "lat": 33.4453344,
+    "lng": -112.0667091,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.4453344&lng=-112.0667091&venue=Chase%20Field"
+  },
+  {
+    "id": "citi-field",
+    "name": "Citi Field",
+    "city": "Queens",
+    "state": "NY",
+    "country": "USA",
+    "lat": 40.7570024,
+    "lng": -73.84590840000001,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.7570024&lng=-73.84590840000001&venue=Citi%20Field"
+  },
+  {
+    "id": "citizens-bank-park",
+    "name": "Citizens Bank Park",
+    "city": "Philadelphia",
+    "state": "PA",
+    "country": "USA",
+    "lat": 39.9060572,
+    "lng": -75.1664952,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9060572&lng=-75.1664952&venue=Citizens%20Bank%20Park"
+  },
+  {
+    "id": "climate-pledge-arena",
+    "name": "Climate Pledge Arena",
+    "city": "Seattle",
+    "state": "WA",
+    "country": "USA",
+    "lat": 47.62207129999999,
+    "lng": -122.3540714,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=47.62207129999999&lng=-122.3540714&venue=Climate%20Pledge%20Arena"
+  },
+  {
+    "id": "colonial-life-arena",
+    "name": "Colonial Life Arena",
+    "city": "Columbia",
+    "state": "SC",
+    "country": "USA",
+    "lat": 33.9948495,
+    "lng": -81.0371971,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.9948495&lng=-81.0371971&venue=Colonial%20Life%20Arena"
+  },
+  {
+    "id": "comerica-park",
+    "name": "Comerica Park",
+    "city": "Detroit",
+    "state": "MI",
+    "country": "USA",
+    "lat": 42.3389763,
+    "lng": -83.048597,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.3389763&lng=-83.048597&venue=Comerica%20Park"
+  },
+  {
+    "id": "commonwealth-stadium",
+    "name": "Commonwealth Stadium",
+    "city": "Edmonton",
+    "state": "AB",
+    "country": "Canada",
+    "lat": 53.5597151,
+    "lng": -113.4761643,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=53.5597151&lng=-113.4761643&venue=Commonwealth%20Stadium"
+  },
+  {
+    "id": "coors-field",
+    "name": "Coors Field",
+    "city": "Denver",
+    "state": "CO",
+    "country": "USA",
+    "lat": 39.7561077,
+    "lng": -104.9941676,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.7561077&lng=-104.9941676&venue=Coors%20Field"
+  },
+  {
+    "id": "credit-union-1-amphitheatre",
+    "name": "Credit Union 1 Amphitheatre",
+    "city": "Tinley Park",
+    "state": "IL",
+    "country": "USA",
+    "lat": 41.5441029,
+    "lng": -87.7755978,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.5441029&lng=-87.7755978&venue=Credit%20Union%201%20Amphitheatre"
+  },
+  {
+    "id": "crypto-com-arena",
+    "name": "Crypto.com Arena",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "USA",
+    "lat": 34.0430175,
+    "lng": -118.2672541,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.0430175&lng=-118.2672541&venue=Crypto.com%20Arena"
+  },
+  {
+    "id": "daikin-park",
+    "name": "Daikin Park",
+    "city": "Houston",
+    "state": "TX",
+    "country": "USA",
+    "lat": 29.7572014,
+    "lng": -95.35525,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.7572014&lng=-95.35525&venue=Daikin%20Park"
+  },
+  {
+    "id": "delta-center",
+    "name": "Delta Center",
+    "city": "Salt Lake City",
+    "state": "UT",
+    "country": "USA",
+    "lat": 40.7682681,
+    "lng": -111.9010874,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.7682681&lng=-111.9010874&venue=Delta%20Center"
+  },
+  {
+    "id": "desert-diamond-arena",
+    "name": "Desert Diamond Arena",
+    "city": "Glendale",
+    "state": "AZ",
+    "country": "USA",
+    "lat": 33.532074,
+    "lng": -112.2612163,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.532074&lng=-112.2612163&venue=Desert%20Diamond%20Arena"
+  },
+  {
+    "id": "dickies-arena",
+    "name": "Dickies Arena",
+    "city": "Fort Worth",
+    "state": "TX",
+    "country": "USA",
+    "lat": 32.7410208,
+    "lng": -97.36895659999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7410208&lng=-97.36895659999999&venue=Dickies%20Arena"
+  },
+  {
+    "id": "dodger-stadium",
+    "name": "Dodger Stadium",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "USA",
+    "lat": 34.073851,
+    "lng": -118.2399583,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.073851&lng=-118.2399583&venue=Dodger%20Stadium"
+  },
+  {
+    "id": "dolby-live",
+    "name": "Dolby Live",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "USA",
+    "lat": 36.1039821,
+    "lng": -115.1750206,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.1039821&lng=-115.1750206&venue=Dolby%20Live"
+  },
+  {
+    "id": "dos-equis-pavilion",
+    "name": "Dos Equis Pavilion",
+    "city": "Dallas",
+    "state": "TX",
+    "country": "USA",
+    "lat": 32.7750304,
+    "lng": -96.7565534,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7750304&lng=-96.7565534&venue=Dos%20Equis%20Pavilion"
+  },
+  {
+    "id": "empower-federal-credit-union-amphitheater",
+    "name": "Empower Federal Credit Union Amphitheater",
+    "city": "Syracuse",
+    "state": "NY",
+    "country": "USA",
+    "lat": 43.0881925,
+    "lng": -76.2228415,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.0881925&lng=-76.2228415&venue=Empower%20Federal%20Credit%20Union%20Amphitheater"
+  },
+  {
+    "id": "empower-field",
+    "name": "Empower Field",
+    "city": "Denver",
+    "state": "CO",
+    "country": "USA",
+    "lat": 39.7439007,
+    "lng": -105.0201406,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.7439007&lng=-105.0201406&venue=Empower%20Field"
+  },
+  {
+    "id": "enterprise-center",
+    "name": "Enterprise Center",
+    "city": "St. Louis",
+    "state": "MO",
+    "country": "USA",
+    "lat": 38.6268402,
+    "lng": -90.20267830000002,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.6268402&lng=-90.20267830000002&venue=Enterprise%20Center"
+  },
+  {
+    "id": "everbank-stadium",
+    "name": "Everbank Stadium",
+    "city": "Jacksonville",
+    "state": "FL",
+    "country": "USA",
+    "lat": 30.3239099,
+    "lng": -81.6373497,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=30.3239099&lng=-81.6373497&venue=Everbank%20Stadium"
+  },
+  {
+    "id": "fedex-forum",
+    "name": "FedEx Forum",
+    "city": "Memphis",
+    "state": "TN",
+    "country": "USA",
+    "lat": 35.1381418,
+    "lng": -90.0505864,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.1381418&lng=-90.0505864&venue=FedEx%20Forum"
+  },
+  {
+    "id": "fenway-park",
+    "name": "Fenway Park",
+    "city": "Boston",
+    "state": "MA",
+    "country": "USA",
+    "lat": 42.3466764,
+    "lng": -71.0972178,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.3466764&lng=-71.0972178&venue=Fenway%20Park"
+  },
+  {
+    "id": "fiserv-forum",
+    "name": "Fiserv Forum",
+    "city": "Milwaukee",
+    "state": "WI",
+    "country": "USA",
+    "lat": 43.0450802,
+    "lng": -87.9173862,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.0450802&lng=-87.9173862&venue=Fiserv%20Forum"
+  },
+  {
+    "id": "food-city-center",
+    "name": "Food City Center",
+    "city": "Knoxville",
+    "state": "TN",
+    "country": "USA",
+    "lat": 35.9511794,
+    "lng": -83.9250359,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.9511794&lng=-83.9250359&venue=Food%20City%20Center"
+  },
+  {
+    "id": "ford-field",
+    "name": "Ford Field",
+    "city": "Detroit",
+    "state": "MI",
+    "country": "USA",
+    "lat": 42.3400064,
+    "lng": -83.045603,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.3400064&lng=-83.045603&venue=Ford%20Field"
+  },
+  {
+    "id": "freedom-mortgage-pavilion",
+    "name": "Freedom Mortgage Pavilion",
+    "city": "Camden",
+    "state": "NJ",
+    "country": "USA",
+    "lat": 39.9404754,
+    "lng": -75.13001249999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9404754&lng=-75.13001249999999&venue=Freedom%20Mortgage%20Pavilion"
+  },
+  {
+    "id": "frost-bank-center",
+    "name": "Frost Bank Center",
+    "city": "San Antonio",
+    "state": "TX",
+    "country": "USA",
+    "lat": 29.4270201,
+    "lng": -98.43746519999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.4270201&lng=-98.43746519999999&venue=Frost%20Bank%20Center"
+  },
+  {
+    "id": "geha-field-at-arrowhead-stadium",
+    "name": "GEHA Field at Arrowhead Stadium",
+    "city": "Kansas City",
+    "state": "MO",
+    "country": "USA",
+    "lat": 39.0489647,
+    "lng": -94.4840141,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0489647&lng=-94.4840141&venue=GEHA%20Field%20at%20Arrowhead%20Stadium"
+  },
+  {
+    "id": "gainbridge-fieldhouse",
+    "name": "Gainbridge Fieldhouse",
+    "city": "Indianapolis",
+    "state": "IN",
+    "country": "USA",
+    "lat": 39.7640434,
+    "lng": -86.1555367,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.7640434&lng=-86.1555367&venue=Gainbridge%20Fieldhouse"
+  },
+  {
+    "id": "gas-south-arena",
+    "name": "Gas South Arena",
+    "city": "Duluth",
+    "state": "GA",
+    "country": "USA",
+    "lat": 33.9916564,
+    "lng": -84.0939102,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.9916564&lng=-84.0939102&venue=Gas%20South%20Arena"
+  },
+  {
+    "id": "gillette-stadium",
+    "name": "Gillette Stadium",
+    "city": "Foxborough",
+    "state": "MA",
+    "country": "USA",
+    "lat": 42.0908391,
+    "lng": -71.26427129999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.0908391&lng=-71.26427129999999&venue=Gillette%20Stadium"
+  },
+  {
+    "id": "globe-life-field",
+    "name": "Globe Life Field",
+    "city": "Arlington",
+    "state": "TX",
+    "country": "USA",
+    "lat": 32.7466803,
+    "lng": -97.0828087,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7466803&lng=-97.0828087&venue=Globe%20Life%20Field"
+  },
+  {
+    "id": "golden-1-center",
+    "name": "Golden 1 Center",
+    "city": "Sacramento",
+    "state": "CA",
+    "country": "USA",
+    "lat": 38.5802045,
+    "lng": -121.4996602,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.5802045&lng=-121.4996602&venue=Golden%201%20Center"
+  },
+  {
+    "id": "great-american-ball-park",
+    "name": "Great American Ball Park",
+    "city": "Cincinnati",
+    "state": "OH",
+    "country": "USA",
+    "lat": 39.0973808,
+    "lng": -84.5070671,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0973808&lng=-84.5070671&venue=Great%20American%20Ball%20Park"
+  },
+  {
+    "id": "hard-rock-stadium",
+    "name": "Hard Rock Stadium",
+    "city": "Miami Gardens",
+    "state": "FL",
+    "country": "USA",
+    "lat": 25.957863,
+    "lng": -80.2389542,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=25.957863&lng=-80.2389542&venue=Hard%20Rock%20Stadium"
+  },
+  {
+    "id": "heritage-bank-center",
+    "name": "Heritage Bank Center",
+    "city": "Cincinnati",
+    "state": "OH",
+    "country": "USA",
+    "lat": 39.0979906,
+    "lng": -84.50447869999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0979906&lng=-84.50447869999999&venue=Heritage%20Bank%20Center"
+  },
+  {
+    "id": "hersheypark-stadium",
+    "name": "Hersheypark Stadium",
+    "city": "Hershey",
+    "state": "PA",
+    "country": "USA",
+    "lat": 40.2899769,
+    "lng": -76.6587942,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.2899769&lng=-76.6587942&venue=Hersheypark%20Stadium"
+  },
+  {
+    "id": "highmark-stadium",
+    "name": "Highmark Stadium",
+    "city": "Orchard Park",
+    "state": "NY",
+    "country": "USA",
+    "lat": 42.7737546,
+    "lng": -78.7869723,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.7737546&lng=-78.7869723&venue=Highmark%20Stadium"
+  },
+  {
+    "id": "hollywood-bowl",
+    "name": "Hollywood Bowl",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "USA",
+    "lat": 34.112224,
+    "lng": -118.3391279,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.112224&lng=-118.3391279&venue=Hollywood%20Bowl"
+  },
+  {
+    "id": "honda-center",
+    "name": "Honda Center",
+    "city": "Anaheim",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.8078476,
+    "lng": -117.8764687,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.8078476&lng=-117.8764687&venue=Honda%20Center"
+  },
+  {
+    "id": "huntington-bank-field",
+    "name": "Huntington Bank Field",
+    "city": "Columbus",
+    "state": "OH",
+    "country": "USA",
+    "lat": 39.9625112,
+    "lng": -83.0032218,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9625112&lng=-83.0032218&venue=Huntington%20Bank%20Field"
+  },
+  {
+    "id": "intuit-dome",
+    "name": "Intuit Dome",
+    "city": "Inglewood",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.9437983,
+    "lng": -118.3421771,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.9437983&lng=-118.3421771&venue=Intuit%20Dome"
+  },
+  {
+    "id": "isleta-amphitheater",
+    "name": "Isleta Amphitheater",
+    "city": "Albuquerque",
+    "state": "NM",
+    "country": "USA",
+    "lat": 34.9986685,
+    "lng": -106.6306205,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.9986685&lng=-106.6306205&venue=Isleta%20Amphitheater"
+  },
+  {
+    "id": "jiffy-lube-live",
+    "name": "Jiffy Lube Live",
+    "city": "Bristow",
+    "state": "VA",
+    "country": "USA",
+    "lat": 38.7851679,
+    "lng": -77.5866573,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.7851679&lng=-77.5866573&venue=Jiffy%20Lube%20Live"
+  },
+  {
+    "id": "john-paul-jones-arena",
+    "name": "John Paul Jones Arena",
+    "city": "Charlottesville",
+    "state": "VA",
+    "country": "USA",
+    "lat": 38.04595279999999,
+    "lng": -78.5067583,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.04595279999999&lng=-78.5067583&venue=John%20Paul%20Jones%20Arena"
+  },
+  {
+    "id": "kaseya-center",
+    "name": "Kaseya Center",
+    "city": "Miami",
+    "state": "FL",
+    "country": "USA",
+    "lat": 25.7814014,
+    "lng": -80.18696899999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=25.7814014&lng=-80.18696899999999&venue=Kaseya%20Center"
+  },
+  {
+    "id": "kauffman-stadium",
+    "name": "Kauffman Stadium",
+    "city": "Kansas City",
+    "state": "MO",
+    "country": "USA",
+    "lat": 39.0514836,
+    "lng": -94.480493,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0514836&lng=-94.480493&venue=Kauffman%20Stadium"
+  },
+  {
+    "id": "keybank-center",
+    "name": "KeyBank Center",
+    "city": "Buffalo",
+    "state": "NY",
+    "country": "USA",
+    "lat": 42.8750811,
+    "lng": -78.8765439,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.8750811&lng=-78.8765439&venue=KeyBank%20Center"
+  },
+  {
+    "id": "kia-center",
+    "name": "Kia Center",
+    "city": "Orlando",
+    "state": "FL",
+    "country": "USA",
+    "lat": 28.5392214,
+    "lng": -81.3838535,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=28.5392214&lng=-81.3838535&venue=Kia%20Center"
+  },
+  {
+    "id": "kia-forum",
+    "name": "Kia Forum",
+    "city": "Inglewood",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.9580853,
+    "lng": -118.3420621,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.9580853&lng=-118.3420621&venue=Kia%20Forum"
+  },
+  {
+    "id": "lambeau-field",
+    "name": "Lambeau Field",
+    "city": "Green Bay",
+    "state": "WI",
+    "country": "USA",
+    "lat": 44.5013406,
+    "lng": -88.06220830000001,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.5013406&lng=-88.06220830000001&venue=Lambeau%20Field"
+  },
+  {
+    "id": "lenovo-center",
+    "name": "Lenovo Center",
+    "city": "Morrisville",
+    "state": "NC",
+    "country": "USA",
+    "lat": 35.803291,
+    "lng": -78.72169920000002,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.803291&lng=-78.72169920000002&venue=Lenovo%20Center"
+  },
+  {
+    "id": "levis-stadium",
+    "name": "Levi\u2019s Stadium",
+    "city": "Santa Clara",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.4033165,
+    "lng": -121.9693774,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.4033165&lng=-121.9693774&venue=Levi%E2%80%99s%20Stadium"
+  },
+  {
+    "id": "lincoln-financial-field",
+    "name": "Lincoln Financial Field",
+    "city": "Philadelphia",
+    "state": "PA",
+    "country": "USA",
+    "lat": 39.9014189,
+    "lng": -75.1675992,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9014189&lng=-75.1675992&venue=Lincoln%20Financial%20Field"
+  },
+  {
+    "id": "little-caesars-arena",
+    "name": "Little Caesars Arena",
+    "city": "Detroit",
+    "state": "MI",
+    "country": "USA",
+    "lat": 42.341796,
+    "lng": -83.05466109999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.341796&lng=-83.05466109999999&venue=Little%20Caesars%20Arena"
+  },
+  {
+    "id": "loandepot-park",
+    "name": "LoanDepot Park",
+    "city": "Miami",
+    "state": "FL",
+    "country": "USA",
+    "lat": 25.7781487,
+    "lng": -80.2195998,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=25.7781487&lng=-80.2195998&venue=LoanDepot%20Park"
+  },
+  {
+    "id": "lucas-oil-stadium",
+    "name": "Lucas Oil Stadium",
+    "city": "Indianapolis",
+    "state": "IN",
+    "country": "USA",
+    "lat": 39.7601007,
+    "lng": -86.16388769999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.7601007&lng=-86.16388769999999&venue=Lucas%20Oil%20Stadium"
+  },
+  {
+    "id": "lumen-field",
+    "name": "Lumen Field",
+    "city": "Seattle",
+    "state": "WA",
+    "country": "USA",
+    "lat": 47.5951518,
+    "lng": -122.3316394,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=47.5951518&lng=-122.3316394&venue=Lumen%20Field"
+  },
+  {
+    "id": "mandt-bank-stadium",
+    "name": "M&T Bank Stadium",
+    "city": "Baltimore",
+    "state": "MD",
+    "country": "USA",
+    "lat": 39.2778666,
+    "lng": -76.6229437,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.2778666&lng=-76.6229437&venue=M%26T%20Bank%20Stadium"
+  },
+  {
+    "id": "madison-square-garden",
+    "name": "Madison Square Garden",
+    "city": "New York",
+    "state": "NY",
+    "country": "USA",
+    "lat": 40.7505045,
+    "lng": -73.9934387,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.7505045&lng=-73.9934387&venue=Madison%20Square%20Garden"
+  },
+  {
+    "id": "mercedes-benz-stadium",
+    "name": "Mercedes-Benz Stadium",
+    "city": "Atlanta",
+    "state": "GA",
+    "country": "USA",
+    "lat": 33.7553232,
+    "lng": -84.40059049999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.7553232&lng=-84.40059049999999&venue=Mercedes-Benz%20Stadium"
+  },
+  {
+    "id": "metlife-stadium",
+    "name": "MetLife Stadium",
+    "city": "East Rutherford",
+    "state": "NJ",
+    "country": "USA",
+    "lat": 40.8135064,
+    "lng": -74.074457,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.8135064&lng=-74.074457&venue=MetLife%20Stadium"
+  },
+  {
+    "id": "mgm-grand-garden-arena",
+    "name": "MGM Grand Garden Arena",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "USA",
+    "lat": 36.1047672,
+    "lng": -115.1686005,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.1047672&lng=-115.1686005&venue=MGM%20Grand%20Garden%20Arena"
+  },
+  {
+    "id": "moda-center",
+    "name": "Moda Center",
+    "city": "Portland",
+    "state": "OR",
+    "country": "USA",
+    "lat": 45.53156509999999,
+    "lng": -122.6668423,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=45.53156509999999&lng=-122.6668423&venue=Moda%20Center"
+  },
+  {
+    "id": "mohegan-sun-arena",
+    "name": "Mohegan Sun Arena",
+    "city": "Uncasville",
+    "state": "CT",
+    "country": "USA",
+    "lat": 41.4911388,
+    "lng": -72.08968709999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.4911388&lng=-72.08968709999999&venue=Mohegan%20Sun%20Arena"
+  },
+  {
+    "id": "moody-center",
+    "name": "Moody Center",
+    "city": "Austin",
+    "state": "TX",
+    "country": "USA",
+    "lat": 30.2809699,
+    "lng": -97.7306618,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=30.2809699&lng=-97.7306618&venue=Moody%20Center"
+  },
+  {
+    "id": "nrg-stadium",
+    "name": "NRG Stadium",
+    "city": "Houston",
+    "state": "TX",
+    "country": "USA",
+    "lat": 29.6847219,
+    "lng": -95.41070739999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.6847219&lng=-95.41070739999999&venue=NRG%20Stadium"
+  },
+  {
+    "id": "nationals-park",
+    "name": "Nationals Park",
+    "city": "Washington",
+    "state": "DC",
+    "country": "USA",
+    "lat": 38.8730102,
+    "lng": -77.0074329,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.8730102&lng=-77.0074329&venue=Nationals%20Park"
+  },
+  {
+    "id": "nationwide-arena",
+    "name": "Nationwide Arena",
+    "city": "Columbus",
+    "state": "OH",
+    "country": "USA",
+    "lat": 39.9692072,
+    "lng": -83.0060483,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9692072&lng=-83.0060483&venue=Nationwide%20Arena"
+  },
+  {
+    "id": "nissan-stadium",
+    "name": "Nissan Stadium",
+    "city": "Nashville",
+    "state": "TN",
+    "country": "USA",
+    "lat": 36.16646900000001,
+    "lng": -86.7712995,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.16646900000001&lng=-86.7712995&venue=Nissan%20Stadium"
+  },
+  {
+    "id": "northwest-stadium",
+    "name": "Northwest Stadium",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "lat": 42.0584293,
+    "lng": -87.67077979999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.0584293&lng=-87.67077979999999&venue=Northwest%20Stadium"
+  },
+  {
+    "id": "north-island-credit-union-amphitheatre",
+    "name": "North Island Credit Union Amphitheatre",
+    "city": "Chula Vista",
+    "state": "CA",
+    "country": "USA",
+    "lat": 32.5877434,
+    "lng": -117.0063651,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.5877434&lng=-117.0063651&venue=North%20Island%20Credit%20Union%20Amphitheatre"
+  },
+  {
+    "id": "oakland-arena",
+    "name": "Oakland Arena",
+    "city": "Oakland",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.750338,
+    "lng": -122.203049,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.750338&lng=-122.203049&venue=Oakland%20Arena"
+  },
+  {
+    "id": "oracle-park",
+    "name": "Oracle Park",
+    "city": "San Francisco",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.7783654,
+    "lng": -122.3899162,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.7783654&lng=-122.3899162&venue=Oracle%20Park"
+  },
+  {
+    "id": "oriole-park-at-camden-yards",
+    "name": "Oriole Park at Camden Yards",
+    "city": "Baltimore",
+    "state": "MD",
+    "country": "USA",
+    "lat": 39.28381940000001,
+    "lng": -76.62167819999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.28381940000001&lng=-76.62167819999999&venue=Oriole%20Park%20at%20Camden%20Yards"
+  },
+  {
+    "id": "phx-arena",
+    "name": "PHX Arena",
+    "city": "Phoenix",
+    "state": "AZ",
+    "country": "USA",
+    "lat": 33.445737,
+    "lng": -112.0712003,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.445737&lng=-112.0712003&venue=PHX%20Arena"
+  },
+  {
+    "id": "pnc-park",
+    "name": "PNC Park",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "country": "USA",
+    "lat": 40.4474692,
+    "lng": -80.0071603,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.4474692&lng=-80.0071603&venue=PNC%20Park"
+  },
+  {
+    "id": "ppg-paints-arena",
+    "name": "PPG Paints Arena",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "country": "USA",
+    "lat": 40.4393097,
+    "lng": -79.98955289999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.4393097&lng=-79.98955289999999&venue=PPG%20Paints%20Arena"
+  },
+  {
+    "id": "paycom-center",
+    "name": "Paycom Center",
+    "city": "Oklahoma City",
+    "state": "OK",
+    "country": "USA",
+    "lat": 35.4634247,
+    "lng": -97.5151138,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.4634247&lng=-97.5151138&venue=Paycom%20Center"
+  },
+  {
+    "id": "paycor-stadium",
+    "name": "Paycor Stadium",
+    "city": "Cincinnati",
+    "state": "OH",
+    "country": "USA",
+    "lat": 39.0954576,
+    "lng": -84.51605769999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0954576&lng=-84.51605769999999&venue=Paycor%20Stadium"
+  },
+  {
+    "id": "pechanga-arena",
+    "name": "Pechanga Arena",
+    "city": "San Diego",
+    "state": "CA",
+    "country": "USA",
+    "lat": 32.7553268,
+    "lng": -117.2122261,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7553268&lng=-117.2122261&venue=Pechanga%20Arena"
+  },
+  {
+    "id": "petco-park",
+    "name": "Petco Park",
+    "city": "San Diego",
+    "state": "CA",
+    "country": "USA",
+    "lat": 32.7076173,
+    "lng": -117.1570405,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.7076173&lng=-117.1570405&venue=Petco%20Park"
+  },
+  {
+    "id": "petersen-events-center",
+    "name": "Petersen Events Center",
+    "city": "Pittsburgh",
+    "state": "PA",
+    "country": "USA",
+    "lat": 40.4439212,
+    "lng": -79.96229439999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.4439212&lng=-79.96229439999999&venue=Petersen%20Events%20Center"
+  },
+  {
+    "id": "pinnacle-bank-arena",
+    "name": "Pinnacle Bank Arena",
+    "city": "Lincoln",
+    "state": "NE",
+    "country": "USA",
+    "lat": 40.817931,
+    "lng": -96.7126194,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.817931&lng=-96.7126194&venue=Pinnacle%20Bank%20Arena"
+  },
+  {
+    "id": "progressive-field",
+    "name": "Progressive Field",
+    "city": "Cleveland",
+    "state": "OH",
+    "country": "USA",
+    "lat": 41.4958921,
+    "lng": -81.6852949,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.4958921&lng=-81.6852949&venue=Progressive%20Field"
+  },
+  {
+    "id": "providence-park",
+    "name": "Providence Park",
+    "city": "Portland",
+    "state": "OR",
+    "country": "USA",
+    "lat": 45.521532,
+    "lng": -122.6917971,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=45.521532&lng=-122.6917971&venue=Providence%20Park"
+  },
+  {
+    "id": "prudential-center",
+    "name": "Prudential Center",
+    "city": "Newark",
+    "state": "NJ",
+    "country": "USA",
+    "lat": 40.733537,
+    "lng": -74.1710659,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.733537&lng=-74.1710659&venue=Prudential%20Center"
+  },
+  {
+    "id": "rate-field",
+    "name": "Rate Field",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "lat": 41.8298849,
+    "lng": -87.63366769999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.8298849&lng=-87.63366769999999&venue=Rate%20Field"
+  },
+  {
+    "id": "raymond-james-stadium",
+    "name": "Raymond James Stadium",
+    "city": "Tampa",
+    "state": "FL",
+    "country": "USA",
+    "lat": 27.9758691,
+    "lng": -82.5033344,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=27.9758691&lng=-82.5033344&venue=Raymond%20James%20Stadium"
+  },
+  {
+    "id": "red-rocks-amphitheatre",
+    "name": "Red Rocks Amphitheatre",
+    "city": "Morrison",
+    "state": "CO",
+    "country": "USA",
+    "lat": 39.6655381,
+    "lng": -105.2052116,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.6655381&lng=-105.2052116&venue=Red%20Rocks%20Amphitheatre"
+  },
+  {
+    "id": "rocket-arena",
+    "name": "Rocket Arena",
+    "city": "Huntington",
+    "state": "WV",
+    "country": "USA",
+    "lat": 38.4191481,
+    "lng": -82.4451746,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.4191481&lng=-82.4451746&venue=Rocket%20Arena"
+  },
+  {
+    "id": "rogers-arena",
+    "name": "Rogers Arena",
+    "city": "Vancouver",
+    "state": "Canada",
+    "country": "Canada",
+    "lat": 49.2778358,
+    "lng": -123.1088227,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=49.2778358&lng=-123.1088227&venue=Rogers%20Arena"
+  },
+  {
+    "id": "rogers-centre",
+    "name": "Rogers Centre",
+    "city": "Toronto",
+    "state": "Canada",
+    "country": "Canada",
+    "lat": 43.6422705,
+    "lng": -79.3901667,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.6422705&lng=-79.3901667&venue=Rogers%20Centre"
+  },
+  {
+    "id": "rupp-arena",
+    "name": "Rupp Arena",
+    "city": "Lexington",
+    "state": "KY",
+    "country": "USA",
+    "lat": 38.0492752,
+    "lng": -84.50252259999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.0492752&lng=-84.50252259999999&venue=Rupp%20Arena"
+  },
+  {
+    "id": "sap-center",
+    "name": "SAP Center",
+    "city": "San Jose",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.3327655,
+    "lng": -121.9011143,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.3327655&lng=-121.9011143&venue=SAP%20Center"
+  },
+  {
+    "id": "schottenstein-center",
+    "name": "Schottenstein Center",
+    "city": "Columbus",
+    "state": "OH",
+    "country": "USA",
+    "lat": 40.0075992,
+    "lng": -83.0248064,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.0075992&lng=-83.0248064&venue=Schottenstein%20Center"
+  },
+  {
+    "id": "scotiabank-arena",
+    "name": "Scotiabank Arena",
+    "city": "Toronto",
+    "state": "ON",
+    "country": "Canada",
+    "lat": 43.6434661,
+    "lng": -79.3790989,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.6434661&lng=-79.3790989&venue=Scotiabank%20Arena"
+  },
+  {
+    "id": "simmons-bank-arena",
+    "name": "Simmons Bank Arena",
+    "city": "North Little Rock",
+    "state": "AR",
+    "country": "USA",
+    "lat": 34.7550895,
+    "lng": -92.26432349999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.7550895&lng=-92.26432349999999&venue=Simmons%20Bank%20Arena"
+  },
+  {
+    "id": "smoothie-king-center",
+    "name": "Smoothie King Center",
+    "city": "New Orleans",
+    "state": "LA",
+    "country": "USA",
+    "lat": 29.9490351,
+    "lng": -90.08205679999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.9490351&lng=-90.08205679999999&venue=Smoothie%20King%20Center"
+  },
+  {
+    "id": "sofi-stadium",
+    "name": "SoFi Stadium",
+    "city": "Inglewood",
+    "state": "CA",
+    "country": "USA",
+    "lat": 33.9534765,
+    "lng": -118.3390235,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.9534765&lng=-118.3390235&venue=SoFi%20Stadium"
+  },
+  {
+    "id": "soldier-field",
+    "name": "Soldier Field",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "lat": 41.8623132,
+    "lng": -87.6166884,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.8623132&lng=-87.6166884&venue=Soldier%20Field"
+  },
+  {
+    "id": "spectrum-center",
+    "name": "Spectrum Center",
+    "city": "Charlotte",
+    "state": "NC",
+    "country": "USA",
+    "lat": 35.2251952,
+    "lng": -80.8393468,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=35.2251952&lng=-80.8393468&venue=Spectrum%20Center"
+  },
+  {
+    "id": "state-farm-arena",
+    "name": "State Farm Arena",
+    "city": "Atlanta",
+    "state": "GA",
+    "country": "USA",
+    "lat": 33.7574062,
+    "lng": -84.396233,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.7574062&lng=-84.396233&venue=State%20Farm%20Arena"
+  },
+  {
+    "id": "state-farm-stadium",
+    "name": "State Farm Stadium",
+    "city": "Glendale",
+    "state": "AZ",
+    "country": "USA",
+    "lat": 33.5276247,
+    "lng": -112.2625593,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.5276247&lng=-112.2625593&venue=State%20Farm%20Stadium"
+  },
+  {
+    "id": "sun-bowl-stadium",
+    "name": "Sun Bowl Stadium",
+    "city": "El Paso",
+    "state": "TX",
+    "country": "USA",
+    "lat": 31.7733442,
+    "lng": -106.5079256,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=31.7733442&lng=-106.5079256&venue=Sun%20Bowl%20Stadium"
+  },
+  {
+    "id": "t-mobile-arena",
+    "name": "T-Mobile Arena",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "USA",
+    "lat": 36.102812,
+    "lng": -115.178195,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.102812&lng=-115.178195&venue=T-Mobile%20Arena"
+  },
+  {
+    "id": "t-mobile-park",
+    "name": "T-Mobile Park",
+    "city": "Seattle",
+    "state": "WA",
+    "country": "USA",
+    "lat": 47.591472,
+    "lng": -122.3325832,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=47.591472&lng=-122.3325832&venue=T-Mobile%20Park"
+  },
+  {
+    "id": "t-mobile-center",
+    "name": "T-Mobile Center",
+    "city": "Kansas City",
+    "state": "MO",
+    "country": "USA",
+    "lat": 39.0974667,
+    "lng": -94.5801529,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.0974667&lng=-94.5801529&venue=T-Mobile%20Center"
+  },
+  {
+    "id": "td-garden",
+    "name": "TD Garden",
+    "city": "Boston",
+    "state": "MA",
+    "country": "USA",
+    "lat": 42.366198,
+    "lng": -71.062146,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.366198&lng=-71.062146&venue=TD%20Garden"
+  },
+  {
+    "id": "target-center",
+    "name": "Target Center",
+    "city": "Minneapolis",
+    "state": "MN",
+    "country": "USA",
+    "lat": 44.9794633,
+    "lng": -93.2760947,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.9794633&lng=-93.2760947&venue=Target%20Center"
+  },
+  {
+    "id": "target-field",
+    "name": "Target Field",
+    "city": "Minneapolis",
+    "state": "MN",
+    "country": "USA",
+    "lat": 44.98174299999999,
+    "lng": -93.27762919999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.98174299999999&lng=-93.27762919999999&venue=Target%20Field"
+  },
+  {
+    "id": "the-anthem",
+    "name": "The Anthem",
+    "city": "Washington",
+    "state": "DC",
+    "country": "USA",
+    "lat": 38.8800674,
+    "lng": -77.0260611,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.8800674&lng=-77.0260611&venue=The%20Anthem"
+  },
+  {
+    "id": "the-armory",
+    "name": "The Armory",
+    "city": "Minneapolis",
+    "state": "MN",
+    "country": "USA",
+    "lat": 44.9752026,
+    "lng": -93.2635268,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.9752026&lng=-93.2635268&venue=The%20Armory"
+  },
+  {
+    "id": "the-dome-at-americas-center",
+    "name": "The Dome at America\u2019s Center",
+    "city": "St. Louis",
+    "state": "MO",
+    "country": "USA",
+    "lat": 38.6328232,
+    "lng": -90.1885068,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.6328232&lng=-90.1885068&venue=The%20Dome%20at%20America%E2%80%99s%20Center"
+  },
+  {
+    "id": "the-pinnacle",
+    "name": "The Pinnacle",
+    "city": "Nashville",
+    "state": "TN",
+    "country": "USA",
+    "lat": 36.1600382,
+    "lng": -86.7743902,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.1600382&lng=-86.7743902&venue=The%20Pinnacle"
+  },
+  {
+    "id": "the-sphere",
+    "name": "The Sphere",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "USA",
+    "lat": 36.121217,
+    "lng": -115.1620404,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.121217&lng=-115.1620404&venue=The%20Sphere"
+  },
+  {
+    "id": "thunder-ridge-nature-arena",
+    "name": "Thunder Ridge Nature Arena",
+    "city": "Ridgedale",
+    "state": "MO",
+    "country": "USA",
+    "lat": 36.5122112,
+    "lng": -93.276699,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.5122112&lng=-93.276699&venue=Thunder%20Ridge%20Nature%20Arena"
+  },
+  {
+    "id": "toyota-center",
+    "name": "Toyota Center",
+    "city": "Houston",
+    "state": "TX",
+    "country": "USA",
+    "lat": 29.7509213,
+    "lng": -95.3622173,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=29.7509213&lng=-95.3622173&venue=Toyota%20Center"
+  },
+  {
+    "id": "truist-park",
+    "name": "Truist Park",
+    "city": "Atlanta",
+    "state": "GA",
+    "country": "USA",
+    "lat": 33.8909516,
+    "lng": -84.4682886,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.8909516&lng=-84.4682886&venue=Truist%20Park"
+  },
+  {
+    "id": "u-s-bank-stadium",
+    "name": "U.S. Bank Stadium",
+    "city": "Minneapolis",
+    "state": "MN",
+    "country": "USA",
+    "lat": 44.9736461,
+    "lng": -93.25749449999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.9736461&lng=-93.25749449999999&venue=U.S.%20Bank%20Stadium"
+  },
+  {
+    "id": "ubs-arena",
+    "name": "UBS Arena",
+    "city": "Elmont",
+    "state": "NY",
+    "country": "USA",
+    "lat": 40.71179009999999,
+    "lng": -73.7260398,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.71179009999999&lng=-73.7260398&venue=UBS%20Arena"
+  },
+  {
+    "id": "uc-berkeley-greek-theatre",
+    "name": "UC Berkeley Greek Theatre",
+    "city": "Berkeley",
+    "state": "CA",
+    "country": "USA",
+    "lat": 37.8735759,
+    "lng": -122.2544715,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.8735759&lng=-122.2544715&venue=UC%20Berkeley%20Greek%20Theatre"
+  },
+  {
+    "id": "united-center",
+    "name": "United Center",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "lat": 41.8806908,
+    "lng": -87.6741759,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.8806908&lng=-87.6741759&venue=United%20Center"
+  },
+  {
+    "id": "utah-first-credit-union-amphitheatre",
+    "name": "Utah First Credit Union Amphitheatre",
+    "city": "West Valley City",
+    "state": "UT",
+    "country": "USA",
+    "lat": 40.65778110000001,
+    "lng": -112.0355356,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.65778110000001&lng=-112.0355356&venue=Utah%20First%20Credit%20Union%20Amphitheatre"
+  },
+  {
+    "id": "uw-panther-arena",
+    "name": "UW - Panther Arena",
+    "city": "Milwaukee",
+    "state": "WI",
+    "country": "USA",
+    "lat": 43.0422275,
+    "lng": -87.9168359,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.0422275&lng=-87.9168359&venue=UW%20-%20Panther%20Arena"
+  },
+  {
+    "id": "van-andel-arena",
+    "name": "Van Andel Arena",
+    "city": "Grand Rapids",
+    "state": "MI",
+    "country": "USA",
+    "lat": 42.962375,
+    "lng": -85.6715833,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.962375&lng=-85.6715833&venue=Van%20Andel%20Arena"
+  },
+  {
+    "id": "veterans-united-home-loans-amphitheater",
+    "name": "Veterans United Home Loans Amphitheater",
+    "city": "Virginia Beach",
+    "state": "VA",
+    "country": "USA",
+    "lat": 36.7691923,
+    "lng": -76.1039771,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.7691923&lng=-76.1039771&venue=Veterans%20United%20Home%20Loans%20Amphitheater"
+  },
+  {
+    "id": "walmart-amp",
+    "name": "Walmart AMP",
+    "city": "Rogers",
+    "state": "AR",
+    "country": "USA",
+    "lat": 36.302676,
+    "lng": -94.183726,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.302676&lng=-94.183726&venue=Walmart%20AMP"
+  },
+  {
+    "id": "wells-fargo-arena",
+    "name": "Wells Fargo Arena",
+    "city": "Des Moines",
+    "state": "IA",
+    "country": "USA",
+    "lat": 41.5926474,
+    "lng": -93.62112429999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.5926474&lng=-93.62112429999999&venue=Wells%20Fargo%20Arena"
+  },
+  {
+    "id": "wells-fargo-center",
+    "name": "Wells Fargo Center",
+    "city": "Philadelphia",
+    "state": "PA",
+    "country": "USA",
+    "lat": 39.9012015,
+    "lng": -75.17197949999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9012015&lng=-75.17197949999999&venue=Wells%20Fargo%20Center"
+  },
+  {
+    "id": "wrigley-field",
+    "name": "Wrigley Field",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "USA",
+    "lat": 41.9484384,
+    "lng": -87.6553327,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.9484384&lng=-87.6553327&venue=Wrigley%20Field"
+  },
+  {
+    "id": "xl-center",
+    "name": "XL Center",
+    "city": "Hartford",
+    "state": "CT",
+    "country": "USA",
+    "lat": 41.7684829,
+    "lng": -72.6769118,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.7684829&lng=-72.6769118&venue=XL%20Center"
+  },
+  {
+    "id": "xcel-energy-center",
+    "name": "Xcel Energy Center",
+    "city": "St. Paul",
+    "state": "MN",
+    "country": "USA",
+    "lat": 44.9448133,
+    "lng": -93.10111739999999,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.9448133&lng=-93.10111739999999&venue=Xcel%20Energy%20Center"
+  },
+  {
+    "id": "yankee-stadium",
+    "name": "Yankee Stadium",
+    "city": "Bronx",
+    "state": "NY",
+    "country": "USA",
+    "lat": 40.8296426,
+    "lng": -73.9261745,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.8296426&lng=-73.9261745&venue=Yankee%20Stadium"
+  }
+]
