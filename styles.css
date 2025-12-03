@@ -34,11 +34,11 @@ html, body {
   overflow: hidden;               /* 🔒 stop whole-page scrolling */
 }
 
-/* ===== Layout Shell ===== */
 .page {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;               /* 🔒 keep content pinned */
 }
 
 /* ===== Header (matches Events Near Me) ===== */
@@ -131,11 +131,11 @@ html, body {
   background: #f5f7fb;
 }
 
-/* ===== Map + Bottom Panel Layout ===== */
 .layout {
   position: relative;
   flex: 1;
-  background: #d8dde8; /* fallback behind map */
+  background: #d8dde8;
+  overflow: hidden;               /* 🔒 map & sheet contained */
 }
 
 .map {
