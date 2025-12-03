@@ -5,7 +5,11 @@ let selectedVenue = null;
 
 let categoryButtons = [];
 let guideResultsEl = null;
+let secondaryFiltersEl = null;
 let placesService = null;
+
+let currentCategory = "restaurants";
+let currentSecondaryId = "all";
 
 // Navy pin icon for Concerto
 const NAVY_PIN_ICON = {
@@ -18,7 +22,7 @@ const NAVY_PIN_ICON = {
   anchor: { x: 12, y: 22 }
 };
 
-// Category → Places search config
+// Base category → Places search config
 const CATEGORY_SEARCH_CONFIG = {
   restaurants: { type: "restaurant", radius: 3000 },
   bars:        { type: "bar", radius: 3000 },
@@ -32,6 +36,36 @@ const CATEGORY_SEARCH_CONFIG = {
   grocery:     { keyword: "grocery store", radius: 4000 }
 };
 
+// Secondary filters per category (keywords layered on top)
+const SECONDARY_FILTERS = {
+  restaurants: [
+    { id: "all",     label: "All",           keyword: null },
+    { id: "sitdown", label: "Sit-Down",      keyword: "sit down restaurant" },
+    { id: "quick",   label: "Quick Bites",   keyword: "fast food" },
+    { id: "brunch",  label: "Brunch",        keyword: "brunch" },
+    { id: "pizza",   label: "Pizza",         keyword: "pizza" },
+    { id: "vegan",   label: "Vegan-Friendly", keyword: "vegan restaurant" }
+  ],
+  hotels: [
+    { id: "all",      label: "All",      keyword: null },
+    { id: "boutique", label: "Boutique", keyword: "boutique hotel" },
+    { id: "luxury",   label: "Luxury",   keyword: "luxury hotel" },
+    { id: "budget",   label: "Budget",   keyword: "budget hotel" }
+  ],
+  bars: [
+    { id: "all",      label: "All",        keyword: null },
+    { id: "cocktail", label: "Cocktail",   keyword: "cocktail bar" },
+    { id: "sports",   label: "Sports Bars", keyword: "sports bar" },
+    { id: "rooftop",  label: "Rooftop",    keyword: "rooftop bar" }
+  ],
+  coffee: [
+    { id: "all",     label: "All",       keyword: null },
+    { id: "study",   label: "Study Spots", keyword: "coffee shop with wifi" },
+    { id: "bakery",  label: "Bakery",    keyword: "bakery" },
+    { id: "thirdwave", label: "Specialty", keyword: "specialty coffee" }
+  ]
+};
+
 // Make initMap visible for Google callback
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -43,6 +77,7 @@ window.initMap = function () {
 
   placesService = new google.maps.places.PlacesService(map);
   guideResultsEl = document.getElementById("guideResults");
+  secondaryFiltersEl = document.getElementById("guideSecondaryFilters");
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
 
   setupCategoryPills();
@@ -78,9 +113,18 @@ function focusVenue(venue) {
   if (!venue || !venue.lat || !venue.lng) return;
 
   selectedVenue = venue;
+  currentCategory = "restaurants";
+  currentSecondaryId = "all";
 
-  map.panTo({ lat: venue.lat, lng: venue.lng });
+  // Zoom and center on venue
   map.setZoom(13);
+  map.panTo({ lat: venue.lat, lng: venue.lng });
+
+  // After map settles, pan up slightly so pin is visually centered
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    // panBy(x, y): positive y = down, so negative moves map content down (pin up)
+    map.panBy(0, 80); // tweak this if sheet height changes
+  });
 
   const guidePanel = document.getElementById("guidePanel");
   const nameEl = document.getElementById("guideVenueName");
@@ -98,8 +142,10 @@ function focusVenue(venue) {
     if (defaultBtn) defaultBtn.classList.add("active");
   }
 
+  renderSecondaryFilters(currentCategory);
+
   guidePanel.classList.remove("guide-panel--hidden");
-  loadPlacesForCategory("restaurants");
+  loadPlacesForCategory(currentCategory, currentSecondaryId);
 }
 
 function setupSearch() {
@@ -188,24 +234,70 @@ function setupCategoryPills() {
       categoryButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      const cat = btn.dataset.category || "restaurants";
-      loadPlacesForCategory(cat);
+      currentCategory = btn.dataset.category || "restaurants";
+      currentSecondaryId = "all";
+
+      renderSecondaryFilters(currentCategory);
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
   });
 }
 
-function loadPlacesForCategory(catKey) {
+function renderSecondaryFilters(catKey) {
+  if (!secondaryFiltersEl) return;
+
+  const defs = SECONDARY_FILTERS[catKey];
+  secondaryFiltersEl.innerHTML = "";
+
+  if (!defs || !defs.length) {
+    secondaryFiltersEl.hidden = true;
+    return;
+  }
+
+  secondaryFiltersEl.hidden = false;
+
+  defs.forEach(def => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "guide-secondary-pill" + (def.id === "all" ? " active" : "");
+    b.textContent = def.label;
+
+    b.addEventListener("click", () => {
+      currentSecondaryId = def.id;
+      Array.from(
+        secondaryFiltersEl.querySelectorAll(".guide-secondary-pill")
+      ).forEach(el => el.classList.remove("active"));
+      b.classList.add("active");
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
+    });
+
+    secondaryFiltersEl.appendChild(b);
+  });
+}
+
+function loadPlacesForCategory(catKey, subFilterId) {
   if (!placesService || !selectedVenue) return;
 
-  const cfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+  const baseCfg =
+    CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
 
   const request = {
     location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
-    radius: cfg.radius || 3000
+    radius: baseCfg.radius || 3000
   };
 
-  if (cfg.type) request.type = cfg.type;
-  if (cfg.keyword) request.keyword = cfg.keyword;
+  if (baseCfg.type) request.type = baseCfg.type;
+  let keyword = baseCfg.keyword || null;
+
+  // Apply secondary filter keyword if present
+  const defs = SECONDARY_FILTERS[catKey];
+  if (defs && subFilterId) {
+    const match = defs.find(d => d.id === subFilterId);
+    if (match && match.keyword) {
+      keyword = match.keyword;
+    }
+  }
+  if (keyword) request.keyword = keyword;
 
   if (guideResultsEl) {
     guideResultsEl.innerHTML = '<div class="hint">Loading nearby places…</div>';
@@ -244,22 +336,35 @@ function renderPlaces(places) {
     const meta = document.createElement("p");
     meta.className = "place-meta";
 
-    const metaBits = [];
-    if (place.vicinity) metaBits.push(place.vicinity);
-    if (place.rating) metaBits.push(`${place.rating.toFixed(1)}★`);
-    if (place.user_ratings_total) metaBits.push(`${place.user_ratings_total} reviews`);
+    const bits = [];
+    if (place.vicinity) bits.push(place.vicinity);
+    if (place.rating) bits.push(`${place.rating.toFixed(1)}★`);
+    if (place.user_ratings_total) bits.push(`${place.user_ratings_total} reviews`);
 
-    meta.textContent = metaBits.join(" • ");
+    meta.textContent = bits.join(" • ");
 
     card.appendChild(name);
     card.appendChild(meta);
 
-    // Tap card → center map on that place
+    // Click card → open Google Maps profile in new tab
     card.addEventListener("click", () => {
-      if (place.geometry && place.geometry.location) {
-        map.panTo(place.geometry.location);
-        map.setZoom(15);
+      let url;
+      if (place.place_id) {
+        url =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(place.name) +
+          "&query_place_id=" +
+          encodeURIComponent(place.place_id);
+      } else if (place.name || place.vicinity) {
+        url =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(
+            (place.name || "") + " " + (place.vicinity || "")
+          );
+      } else {
+        return;
       }
+      window.open(url, "_blank");
     });
 
     guideResultsEl.appendChild(card);
