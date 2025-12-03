@@ -11,6 +11,12 @@ let placesService = null;
 let currentCategory = "restaurants";
 let currentSecondaryId = "all";
 
+let moreCategoriesBtn = null;
+let filtersBtn = null;
+let moreCategoriesMenu = null;
+
+let guidePanelEl = null;
+
 // Navy pin icon for Concerto
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
@@ -68,7 +74,7 @@ const SECONDARY_FILTERS = {
 
 // ----- Distance helpers -----
 function distanceMeters(lat1, lng1, lat2, lng2) {
-  const R = 6371000; // meters
+  const R = 6371000;
   const toRad = x => (x * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
@@ -89,18 +95,25 @@ function metersToMiles(m) {
 // Make initMap visible for Google callback
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 39.5, lng: -98.35 }, // rough US center
+    center: { lat: 39.5, lng: -98.35 },
     zoom: 4,
     disableDefaultUI: true,
     zoomControl: true
   });
 
   placesService = new google.maps.places.PlacesService(map);
+  guidePanelEl = document.getElementById("guidePanel");
   guideResultsEl = document.getElementById("guideResults");
   secondaryFiltersEl = document.getElementById("guideSecondaryFilters");
+  moreCategoriesMenu = document.getElementById("moreCategoriesMenu");
+
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
+  moreCategoriesBtn = document.getElementById("moreCategoriesBtn");
+  filtersBtn = document.getElementById("filtersBtn");
 
   setupCategoryPills();
+  setupMainButtons();
+  setupOutsideMenuClick();
 
   fetch("data/venues.json")
     .then(res => res.json())
@@ -136,37 +149,32 @@ function focusVenue(venue) {
   currentCategory = "restaurants";
   currentSecondaryId = "all";
 
-  // Zoom and center on venue
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-  // After map settles, pan up slightly so pin appears in middle
+  // center pin vertically within visible map region
   google.maps.event.addListenerOnce(map, "idle", () => {
     const mapDiv = document.getElementById("map");
-    const offset = mapDiv ? mapDiv.clientHeight * 0.22 : 140; // ~22% of map height
-    // positive y moves the *map* down so the pin moves up visually
-    map.panBy(0, offset);
+    const offset = mapDiv ? mapDiv.clientHeight * 0.24 : 150; // tweak if needed
+    map.panBy(0, offset); // positive y moves map down, pin up
   });
 
-  const guidePanel = document.getElementById("guidePanel");
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
-
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  // Reset pills to Restaurants
+  // reset main pills
   if (categoryButtons.length) {
     categoryButtons.forEach(b => b.classList.remove("active"));
-    const defaultBtn = categoryButtons.find(
-      b => b.dataset.category === "restaurants"
-    );
-    if (defaultBtn) defaultBtn.classList.add("active");
+    const restaurantsBtn = categoryButtons.find(b => b.dataset.category === "restaurants");
+    if (restaurantsBtn) restaurantsBtn.classList.add("active");
   }
 
-  renderSecondaryFilters(currentCategory);
+  renderSecondaryFilters(currentCategory, false);
+  hideMoreCategoriesMenu();
 
-  guidePanel.classList.remove("guide-panel--hidden");
+  guidePanelEl.classList.remove("guide-panel--hidden");
   loadPlacesForCategory(currentCategory, currentSecondaryId);
 }
 
@@ -180,7 +188,6 @@ function setupSearch() {
       resultsEl.classList.remove("visible");
       return;
     }
-
     list.forEach(v => {
       const item = document.createElement("div");
       item.className = "search-result-item";
@@ -192,14 +199,12 @@ function setupSearch() {
       });
       resultsEl.appendChild(item);
     });
-
     resultsEl.classList.add("visible");
   }
 
   function findBestMatch(query) {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-
     return (
       venues.find(v => v.name.toLowerCase() === q) ||
       venues.find(v => v.name.toLowerCase().includes(q)) ||
@@ -218,17 +223,15 @@ function setupSearch() {
       renderResults([]);
       return;
     }
-
     const filtered = venues.filter(v =>
       v.name.toLowerCase().includes(q) ||
       v.city.toLowerCase().includes(q) ||
       v.state.toLowerCase().includes(q)
     );
-
     renderResults(filtered.slice(0, 25));
   });
 
-  input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
       const match = findBestMatch(input.value);
@@ -239,7 +242,7 @@ function setupSearch() {
     }
   });
 
-  document.addEventListener("click", (e) => {
+  document.addEventListener("click", e => {
     if (!resultsEl.contains(e.target) && e.target !== input) {
       resultsEl.classList.remove("visible");
     }
@@ -248,26 +251,86 @@ function setupSearch() {
 
 function setupCategoryPills() {
   if (!categoryButtons.length) return;
-
   categoryButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       if (!selectedVenue) return;
-
       categoryButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
       currentCategory = btn.dataset.category || "restaurants";
       currentSecondaryId = "all";
-
-      renderSecondaryFilters(currentCategory);
+      renderSecondaryFilters(currentCategory, false); // hide filters initially
+      hideMoreCategoriesMenu();
       loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
   });
 }
 
-function renderSecondaryFilters(catKey) {
-  if (!secondaryFiltersEl) return;
+function setupMainButtons() {
+  if (moreCategoriesBtn) {
+    moreCategoriesBtn.addEventListener("click", () => {
+      if (!selectedVenue) return;
+      const isHidden = moreCategoriesMenu.hidden;
+      if (isHidden) {
+        moreCategoriesMenu.hidden = false;
+      } else {
+        hideMoreCategoriesMenu();
+      }
+    });
+  }
+  if (filtersBtn) {
+    filtersBtn.addEventListener("click", () => {
+      if (!selectedVenue) return;
+      const defs = SECONDARY_FILTERS[currentCategory];
+      if (!defs || !defs.length) {
+        // no filters for this category
+        secondaryFiltersEl.hidden = true;
+        secondaryFiltersEl.innerHTML = "";
+        return;
+      }
+      // toggle visibility
+      secondaryFiltersEl.hidden = !secondaryFiltersEl.hidden;
+      if (!secondaryFiltersEl.hidden && !secondaryFiltersEl.hasChildNodes()) {
+        renderSecondaryFilters(currentCategory, true);
+      }
+    });
+  }
 
+  if (moreCategoriesMenu) {
+    const items = Array.from(moreCategoriesMenu.querySelectorAll(".guide-menu-item"));
+    items.forEach(item => {
+      item.addEventListener("click", () => {
+        const cat = item.dataset.category;
+        if (!cat) return;
+        currentCategory = cat;
+        currentSecondaryId = "all";
+
+        // visually unselect main pills (they represent the "core 4")
+        categoryButtons.forEach(b => b.classList.remove("active"));
+        hideMoreCategoriesMenu();
+        renderSecondaryFilters(currentCategory, false);
+        loadPlacesForCategory(currentCategory, currentSecondaryId);
+      });
+    });
+  }
+}
+
+function hideMoreCategoriesMenu() {
+  if (moreCategoriesMenu) moreCategoriesMenu.hidden = true;
+}
+
+function setupOutsideMenuClick() {
+  document.addEventListener("click", e => {
+    if (!moreCategoriesMenu || moreCategoriesMenu.hidden) return;
+    const withinMenu = moreCategoriesMenu.contains(e.target);
+    const withinButton = moreCategoriesBtn && moreCategoriesBtn.contains(e.target);
+    if (!withinMenu && !withinButton) {
+      hideMoreCategoriesMenu();
+    }
+  });
+}
+
+function renderSecondaryFilters(catKey, keepVisible) {
+  if (!secondaryFiltersEl) return;
   const defs = SECONDARY_FILTERS[catKey];
   secondaryFiltersEl.innerHTML = "";
 
@@ -276,7 +339,9 @@ function renderSecondaryFilters(catKey) {
     return;
   }
 
-  secondaryFiltersEl.hidden = false;
+  if (!keepVisible) {
+    secondaryFiltersEl.hidden = true; // only show when Filters is tapped
+  }
 
   defs.forEach(def => {
     const b = document.createElement("button");
@@ -311,7 +376,6 @@ function loadPlacesForCategory(catKey, subFilterId) {
   if (baseCfg.type) request.type = baseCfg.type;
   let keyword = baseCfg.keyword || null;
 
-  // Apply secondary filter keyword if present
   const defs = SECONDARY_FILTERS[catKey];
   if (defs && subFilterId) {
     const match = defs.find(d => d.id === subFilterId);
@@ -360,10 +424,8 @@ function renderPlaces(places) {
 
     const bits = [];
 
-    // address
     if (place.vicinity) bits.push(place.vicinity);
 
-    // distance from venue
     if (selectedVenue && place.geometry && place.geometry.location) {
       const lat2 = place.geometry.location.lat();
       const lng2 = place.geometry.location.lng();
@@ -377,7 +439,6 @@ function renderPlaces(places) {
       bits.push(`${miles.toFixed(1)} mi`);
     }
 
-    // rating (no "X reviews" anymore)
     if (place.rating) bits.push(`${place.rating.toFixed(1)}★`);
 
     meta.textContent = bits.join(" • ");
@@ -385,7 +446,6 @@ function renderPlaces(places) {
     card.appendChild(name);
     card.appendChild(meta);
 
-    // Click card → open Google Maps profile (works better in WebView)
     card.addEventListener("click", () => {
       let url;
       if (place.place_id) {
@@ -403,7 +463,7 @@ function renderPlaces(places) {
       } else {
         return;
       }
-      // In BuildFire WebView, this will take over the popup and show Google Maps
+      // In WebView this should open the Google Maps profile
       window.location.href = url;
     });
 
