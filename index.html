@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concerto Venue Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google Maps (insert your key) -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_KEY_HERE&callback=initMap"
+    defer
+  ></script>
+
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="page">
+
+    <header class="page-header">
+      <div class="page-header-inner">
+
+        <div class="branding">
+          <h1 class="logo-text">CONCERTO</h1>
+          <p class="tagline">From the concert, to the city.</p>
+        </div>
+
+        <div class="search-wrapper">
+          <input
+            id="venueSearch"
+            type="text"
+            placeholder="Search a venue..."
+            autocomplete="off"
+          />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="layout">
+      <div id="map" class="map"></div>
+
+      <!-- Bottom sliding panel -->
+      <section id="guidePanel" class="guide-panel guide-panel--hidden">
+        <header class="guide-header">
+          <div>
+            <h2 id="guideVenueName"></h2>
+            <p id="guideVenueLocation" class="venue-location"></p>
+          </div>
+        </header>
+
+        <div class="guide-iframe-wrap">
+          <iframe id="guideIframe" class="guide-iframe" src="" loading="lazy"></iframe>
+        </div>
+      </section>
+    </main>
+
+  </div>
+</body>
+</html>
 
