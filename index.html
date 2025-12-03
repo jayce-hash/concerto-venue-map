@@ -2,86 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Concerto Venue Explorer</title>
+  <title>Concerto Venue Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Your app code FIRST -->
-  <script src="app.js" defer></script>
-
-  <!-- Google Maps (insert your key) AFTER app.js -->
- <script
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap"
-  async
-  defer
-></script>
 </head>
 <body>
   <div class="page">
-
+    <!-- Top header -->
     <header class="page-header">
-  <div class="page-header-inner">
-    <!-- Centered Concerto logo – update src to your actual logo file in this repo -->
-    <img
-      src="IMG_3180.jpeg"
-      alt="Concerto - From the Concert to the City"
-      class="brand-logo"
-    />
+      <div class="page-header-inner">
+        <img
+          src="IMG_3180.jpeg"
+          alt="Concerto - From the concert, to the city"
+          class="brand-logo"
+        />
+        <div class="search-wrapper">
+          <input
+            id="venueSearch"
+            type="text"
+            placeholder="Search a venue..."
+            autocomplete="off"
+          />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </div>
+    </header>
 
-    <div class="search-wrapper">
-      <input
-        id="venueSearch"
-        type="text"
-        placeholder="Search a venue..."
-        autocomplete="off"
-      />
-      <div id="searchResults" class="search-results"></div>
-    </div>
-  </div>
-</header>
-
+    <!-- Map + bottom sheet -->
     <main class="layout">
       <div id="map" class="map"></div>
 
-<section id="guidePanel" class="guide-panel guide-panel--hidden">
-  <header class="guide-header">
-    <div>
-      <h2 id="guideVenueName"></h2>
-      <p id="guideVenueLocation" class="venue-location"></p>
-    </div>
-  </header>
+      <!-- Bottom guide panel -->
+      <section id="guidePanel" class="guide-panel guide-panel--hidden">
+        <header class="guide-header">
+          <div>
+            <h2 id="guideVenueName"></h2>
+            <p id="guideVenueLocation" class="venue-location"></p>
+          </div>
+        </header>
 
-  <!-- Category pills like Apple/Google Maps -->
-  <div class="guide-categories">
-    <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
-    <button type="button" class="guide-pill" data-category="bars">Bars</button>
-    <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
-    <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
-    <button type="button" class="guide-pill" data-category="retail">Retail</button>
-    <button type="button" class="guide-pill" data-category="attractions">Attractions</button>
-    <button type="button" class="guide-pill" data-category="transit">Transit</button>
-    <button type="button" class="guide-pill" data-category="pharmacies">Pharmacies</button>
-    <button type="button" class="guide-pill" data-category="gas">Gas</button>
-    <button type="button" class="guide-pill" data-category="grocery">Grocery</button>
-  </div>
+        <!-- Row 1: main category pills -->
+        <div class="guide-categories">
+          <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
+          <button type="button" class="guide-pill" data-category="bars">Bars</button>
+          <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
+          <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
+        </div>
 
-  <!-- ⬇️ ADD THIS RIGHT HERE ⬇️ -->
-  <div id="guideSecondaryFilters" class="guide-secondary" hidden></div>
-  <!-- ⬆️ secondary filters row (Restaurants etc.) -->
+        <!-- Row 2: centered More / Filters -->
+        <div class="guide-main-actions">
+          <button type="button" id="moreCategoriesBtn" class="guide-main-btn">
+            More Categories
+          </button>
+          <button type="button" id="filtersBtn" class="guide-main-btn">
+            Filters
+          </button>
+        </div>
 
-  <!-- Clean results list -->
-  <div id="guideResults" class="guide-results">
-    <!-- Place cards will be injected here -->
-  </div>
-</section>
+        <!-- Optional secondary filters (per category) -->
+        <div id="guideSecondaryFilters" class="guide-secondary" hidden></div>
+
+        <!-- Dropdown menu for extra categories -->
+        <div id="moreCategoriesMenu" class="guide-menu" hidden>
+          <button class="guide-menu-item" data-category="retail">Retail</button>
+          <button class="guide-menu-item" data-category="attractions">Attractions</button>
+          <button class="guide-menu-item" data-category="transit">Transit</button>
+          <button class="guide-menu-item" data-category="pharmacies">Pharmacies</button>
+          <button class="guide-menu-item" data-category="gas">Gas</button>
+          <button class="guide-menu-item" data-category="grocery">Grocery</button>
+        </div>
+
+        <!-- Results list -->
+        <div id="guideResults" class="guide-results">
+          <!-- Place cards injected here -->
+        </div>
+      </section>
     </main>
-
   </div>
+
+  <script src="app.js"></script>
+
+  <!-- Keep your own key here -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap"
+    async
+    defer
+  ></script>
 </body>
 </html>
