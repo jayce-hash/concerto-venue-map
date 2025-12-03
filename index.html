@@ -83,6 +83,49 @@
           <!-- Place cards injected here -->
         </div>
       </section>
+
+      <!-- Place details overlay (in-app Google Maps profile) -->
+      <div id="placeDetails" class="place-details-overlay" hidden>
+        <div class="place-details-card">
+          <button id="placeDetailsClose" class="place-details-close" type="button">
+            ✕
+          </button>
+
+          <h3 id="detailsName" class="details-name"></h3>
+          <p id="detailsMeta" class="details-meta"></p>
+          <p id="detailsAddress" class="details-address"></p>
+
+          <div class="details-row" id="detailsPhoneRow" hidden>
+            <span class="details-label">Phone</span>
+            <a id="detailsPhone" class="details-link" href="#"></a>
+          </div>
+
+          <div class="details-row" id="detailsWebsiteRow" hidden>
+            <span class="details-label">Website</span>
+            <a
+              id="detailsWebsite"
+              class="details-link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            ></a>
+          </div>
+
+          <div class="details-actions">
+            <a
+              id="detailsMapsLink"
+              class="details-primary-btn"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Google Maps
+            </a>
+          </div>
+
+          <div id="detailsHours" class="details-hours" hidden></div>
+        </div>
+      </div>
     </main>
   </div>
 
