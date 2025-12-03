@@ -40,7 +40,7 @@ html, body {
   flex-direction: column;
 }
 
-/* ===== Header (same white as Events Near Me) ===== */
+/* ===== Header (matches Events Near Me) ===== */
 .page-header {
   background: var(--bg);
   box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
@@ -148,12 +148,12 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--bg);          /* match app background */
+  background: var(--bg);
   border-radius: 24px 24px 0 0;
   border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.25);
+  box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
-  max-height: 85vh;               /* sits high so content is visible */
+  max-height: 55vh;               /* about half the screen */
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
@@ -187,12 +187,12 @@ html, body {
   color: var(--muted);
 }
 
-/* Category pills row (like Maps) */
+/* Category pills row */
 .guide-categories {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 4px 2px 8px;
+  padding: 4px 2px 6px;
 }
 
 .guide-pill {
@@ -220,39 +220,52 @@ html, body {
   box-shadow: var(--shadow-soft);
 }
 
-/* iframe container */
-.guide-iframe-wrap {
+/* Results list */
+.guide-results {
   flex: 1;
   margin-top: 4px;
-  border-radius: 18px 18px 0 0;
-  overflow: hidden;
+  padding: 4px 2px 4px;
+  overflow-y: auto;
+}
+
+/* Place cards */
+.place-card {
+  background: #fff;
+  border-radius: 14px;
   border: 1px solid var(--line);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(18, 30, 54, 0.06);
+  cursor: pointer;
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+
+.place-card:hover {
+  transform: translateY(-1px);
   box-shadow: var(--shadow-soft);
-  position: relative;
-  min-height: 55vh;      /* forces panel high like Google/Apple Maps */
 }
 
-/* subtle top fade to hint scrollability inside iframe */
-.guide-iframe-wrap::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 18px;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(248, 249, 249, 0.9),
-    rgba(248, 249, 249, 0)
-  );
-  z-index: 1;
+.place-name {
+  margin: 0 0 2px;
+  font-size: 0.94rem;
+  font-weight: 500;
 }
 
-.guide-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
+.place-meta {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+}
+
+.place-meta span + span::before {
+  content: " • ";
+}
+
+/* Loading / empty states */
+.guide-results .hint {
+  font-size: 0.86rem;
+  color: var(--muted);
+  padding: 10px 4px;
 }
 
 /* ===== Desktop tweaks ===== */
@@ -271,5 +284,10 @@ html, body {
 
   .search-wrapper {
     max-width: 320px;
+  }
+
+  .guide-panel {
+    left: 50%;
+    transform: translate(50%, 100%); /* keep hidden transform consistent */
   }
 }
