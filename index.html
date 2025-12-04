@@ -49,11 +49,22 @@
 
         <!-- Row 1: main category pills -->
         <div class="guide-categories">
-          <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
-          <button type="button" class="guide-pill" data-category="bars">Bars</button>
-          <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
-          <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
-        </div>
+  <!-- Top Picks pill (hidden by default; JS will show it when relevant) -->
+  <button
+    type="button"
+    id="topPicksPill"
+    class="guide-pill"
+    data-category="toppicks"
+    style="display:none;"
+  >
+    Top Picks
+  </button>
+
+  <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
+  <button type="button" class="guide-pill" data-category="bars">Bars</button>
+  <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
+  <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
+</div>
 
         <!-- Row 2: centered More / Filters -->
         <div class="guide-main-actions">
