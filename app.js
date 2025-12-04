@@ -14,8 +14,11 @@ let currentSecondaryId = "all";
 let moreCategoriesBtn = null;
 let filtersBtn = null;
 let moreCategoriesMenu = null;
-
 let guidePanelEl = null;
+
+// Top Picks data
+let topPicksByKey = {};
+let topPicksPill = null;
 
 // --- Place details overlay elements ---
 let placeDetailsOverlay = null;
@@ -57,11 +60,11 @@ const CATEGORY_SEARCH_CONFIG = {
 // Secondary filters per category
 const SECONDARY_FILTERS = {
   restaurants: [
-    { id: "all",     label: "All",           keyword: null },
-    { id: "sitdown", label: "Sit-Down",      keyword: "sit down restaurant" },
-    { id: "quick",   label: "Quick Bites",   keyword: "fast food" },
-    { id: "brunch",  label: "Brunch",        keyword: "brunch" },
-    { id: "pizza",   label: "Pizza",         keyword: "pizza" },
+    { id: "all",     label: "All",            keyword: null },
+    { id: "sitdown", label: "Sit-Down",       keyword: "sit down restaurant" },
+    { id: "quick",   label: "Quick Bites",    keyword: "fast food" },
+    { id: "brunch",  label: "Brunch",         keyword: "brunch" },
+    { id: "pizza",   label: "Pizza",          keyword: "pizza" },
     { id: "vegan",   label: "Vegan-Friendly", keyword: "vegan restaurant" }
   ],
   hotels: [
@@ -71,18 +74,23 @@ const SECONDARY_FILTERS = {
     { id: "budget",   label: "Budget",   keyword: "budget hotel" }
   ],
   bars: [
-    { id: "all",      label: "All",        keyword: null },
-    { id: "cocktail", label: "Cocktail",   keyword: "cocktail bar" },
+    { id: "all",      label: "All",         keyword: null },
+    { id: "cocktail", label: "Cocktail",    keyword: "cocktail bar" },
     { id: "sports",   label: "Sports Bars", keyword: "sports bar" },
-    { id: "rooftop",  label: "Rooftop",    keyword: "rooftop bar" }
+    { id: "rooftop",  label: "Rooftop",     keyword: "rooftop bar" }
   ],
   coffee: [
-    { id: "all",       label: "All",        keyword: null },
+    { id: "all",       label: "All",         keyword: null },
     { id: "study",     label: "Study Spots", keyword: "coffee shop with wifi" },
-    { id: "bakery",    label: "Bakery",     keyword: "bakery" },
-    { id: "thirdwave", label: "Specialty",  keyword: "specialty coffee" }
+    { id: "bakery",    label: "Bakery",      keyword: "bakery" },
+    { id: "thirdwave", label: "Specialty",   keyword: "specialty coffee" }
   ]
 };
+
+// ----- Key helpers for venues / Top Picks -----
+function makeVenueKey(name, city, state) {
+  return (name + "|" + city + "|" + state).toLowerCase();
+}
 
 // ----- Distance helpers -----
 function distanceMeters(lat1, lng1, lat2, lng2) {
@@ -196,6 +204,7 @@ window.initMap = function () {
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
   moreCategoriesBtn = document.getElementById("moreCategoriesBtn");
   filtersBtn = document.getElementById("filtersBtn");
+  topPicksPill = document.getElementById("topPicksPill");
 
   // Details overlay elements
   placeDetailsOverlay = document.getElementById("placeDetails");
@@ -224,14 +233,35 @@ window.initMap = function () {
   setupMainButtons();
   setupOutsideMenuClick();
 
+  // Load venues, then Top Picks
   fetch("data/venues.json")
     .then(res => res.json())
     .then(data => {
       venues = data;
+
+      // Attach a stable key for each venue (name+city+state)
+      venues.forEach(v => {
+        v.key = makeVenueKey(v.name, v.city, v.state);
+      });
+
       createMarkers();
       setupSearch();
+
+      // Load curated Top Picks (optional file)
+      return fetch("data/top_picks.json");
     })
-    .catch(err => console.error("Error loading venues.json:", err));
+    .then(res => (res && res.ok ? res.json() : []))
+    .then(tpData => {
+      if (!Array.isArray(tpData)) return;
+      tpData.forEach(entry => {
+        if (!entry.venueName || !entry.city || !entry.state) return;
+        const key = makeVenueKey(entry.venueName, entry.city, entry.state);
+        if (entry.items && Array.isArray(entry.items)) {
+          topPicksByKey[key] = entry.items;
+        }
+      });
+    })
+    .catch(err => console.error("Error loading data:", err));
 };
 
 function createMarkers() {
@@ -261,29 +291,44 @@ function focusVenue(venue) {
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-google.maps.event.addListenerOnce(map, "idle", () => {
-  const mapDiv = document.getElementById("map");
-  const panel = document.getElementById("guidePanel");
+  // Center the venue pin nicely between header and panel
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    const mapDiv = document.getElementById("map");
+    const panel = document.getElementById("guidePanel");
 
-  if (mapDiv && panel) {
-    const panelHeight = panel.clientHeight;
+    if (mapDiv && panel) {
+      const panelHeight = panel.clientHeight;
 
-    // Move the map down by ~70% of the panel height so the pin
-    // sits nicely above the panel and below the header.
-    const offset = panelHeight * 0.7;
+      // Move the map down by ~70% of the panel height
+      const offset = panelHeight * 0.7;
 
-    // Positive y moves the map down → pin appears higher on screen
-    map.panBy(0, offset);
-  } else if (mapDiv) {
-    // fallback if panel can't be read for some reason
-    map.panBy(0, mapDiv.clientHeight * 0.3);
-  }
-});
+      // Positive y moves the map down → pin appears higher on screen
+      map.panBy(0, offset);
+    } else if (mapDiv) {
+      // fallback if panel can't be read for some reason
+      map.panBy(0, mapDiv.clientHeight * 0.3);
+    }
+  });
 
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
+
+  // Show/hide Top Picks pill based on curated data
+  const key = venue.key || makeVenueKey(venue.name, venue.city, venue.state);
+  const hasTopPicks = !!(topPicksByKey[key] && topPicksByKey[key].length);
+
+  if (topPicksPill) {
+    if (hasTopPicks) {
+      topPicksPill.style.display = "inline-flex";
+    } else {
+      topPicksPill.style.display = "none";
+      if (currentCategory === "toppicks") {
+        currentCategory = "restaurants";
+      }
+    }
+  }
 
   // reset main pills
   if (categoryButtons.length) {
@@ -488,8 +533,93 @@ function renderSecondaryFilters(catKey, keepVisible) {
   });
 }
 
+// ----- Top Picks loader (curated) -----
+function loadTopPicksForVenue(venue) {
+  if (!guideResultsEl || !venue) return;
+
+  const key = venue.key || makeVenueKey(venue.name, venue.city, venue.state);
+  const picks = topPicksByKey[key] || [];
+
+  if (!picks.length) {
+    guideResultsEl.innerHTML =
+      '<div class="hint">No Top Picks added for this venue yet.</div>';
+    return;
+  }
+
+  guideResultsEl.innerHTML = "";
+
+  picks.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "place-card";
+
+    const nameEl = document.createElement("p");
+    nameEl.className = "place-name";
+    nameEl.textContent = item.name || "Top Pick";
+
+    const metaEl = document.createElement("p");
+    metaEl.className = "place-meta";
+
+    const bits = [];
+    if (item.address) bits.push(item.address);
+    if (item.notes) bits.push(item.notes);
+
+    metaEl.textContent = bits.join(" • ");
+
+    card.appendChild(nameEl);
+    card.appendChild(metaEl);
+
+    card.addEventListener("click", () => {
+      // Build a pseudo-place object for the overlay
+      const pseudoPlace = {
+        name: item.name,
+        formatted_address: item.address,
+        rating: item.rating || null,
+        user_ratings_total: item.user_ratings_total || null,
+        formatted_phone_number: item.phone || null,
+        website: item.website || null,
+        opening_hours: null,
+        types: item.types || []
+      };
+
+      // Build Google Maps URL
+      let mapsUrl;
+      if (item.mapsUrl) {
+        mapsUrl = item.mapsUrl;
+      } else if (item.placeId) {
+        const base =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(item.name || "");
+        mapsUrl =
+          base + "&query_place_id=" + encodeURIComponent(item.placeId);
+      } else if (item.name || item.address) {
+        mapsUrl =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(
+            (item.name || "") + " " + (item.address || "")
+          );
+      }
+
+      if (mapsUrl) {
+        pseudoPlace.url = mapsUrl;
+      }
+
+      showPlaceDetails(pseudoPlace);
+    });
+
+    guideResultsEl.appendChild(card);
+  });
+}
+
 function loadPlacesForCategory(catKey, subFilterId) {
-  if (!placesService || !selectedVenue) return;
+  if (!selectedVenue) return;
+
+  // Curated Top Picks: don't hit Places API
+  if (catKey === "toppicks") {
+    loadTopPicksForVenue(selectedVenue);
+    return;
+  }
+
+  if (!placesService) return;
 
   const baseCfg =
     CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
