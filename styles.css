@@ -31,7 +31,7 @@ html, body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;               /* lock entire feature */
+  overflow: hidden;
 }
 
 /* ===== Layout Shell ===== */
@@ -83,14 +83,12 @@ html, body {
   color: var(--ink);
   outline: none;
   box-shadow: var(--shadow-soft);
-  -webkit-tap-highlight-color: transparent;
 }
 
 #venueSearch::placeholder {
   color: #9aa3b5;
 }
 
-/* fake icon */
 .search-wrapper::after {
   content: "⌕";
   position: absolute;
@@ -156,7 +154,10 @@ html, body {
   border-top: 1px solid var(--line);
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
-  max-height: 56vh;               /* fixed half-sheet feel */
+
+  /* ⭐ Lowered panel (was 56vh) */
+  max-height: 52vh;
+
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
@@ -170,6 +171,7 @@ html, body {
   transform: translateY(0%);
 }
 
+/* ===== Venue Header ===== */
 .guide-header {
   display: flex;
   align-items: flex-start;
@@ -189,7 +191,7 @@ html, body {
   color: var(--muted);
 }
 
-/* Row 1: main category pills */
+/* ===== Category Pills ===== */
 .guide-categories {
   display: flex;
   flex-wrap: wrap;
@@ -205,7 +207,6 @@ html, body {
   font-size: 0.86rem;
   color: var(--ink);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, border-color 0.15s ease,
     box-shadow 0.15s ease, transform 0.12s ease;
 }
@@ -219,10 +220,9 @@ html, body {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border-color: transparent;
   color: #fff;
-  box-shadow: var(--shadow-soft);
 }
 
-/* Row 2: More Categories / Filters buttons */
+/* ===== More Categories / Filters ===== */
 .guide-main-actions {
   display: flex;
   justify-content: center;
@@ -238,7 +238,6 @@ html, body {
   font-size: 0.86rem;
   color: var(--ink);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   box-shadow: var(--shadow-soft);
   transition: background 0.15s ease, box-shadow 0.15s ease,
     transform 0.12s ease;
@@ -249,7 +248,7 @@ html, body {
   box-shadow: var(--shadow-strong);
 }
 
-/* Secondary filters row */
+/* ===== Secondary Filters ===== */
 .guide-secondary {
   display: flex;
   flex-wrap: wrap;
@@ -269,7 +268,6 @@ html, body {
   font-size: 0.78rem;
   color: var(--muted);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   transition: background 0.15s ease, border-color 0.15s ease,
     box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
 }
@@ -285,12 +283,12 @@ html, body {
   color: var(--accent-2);
 }
 
-/* More Categories dropdown */
+/* ===== More Categories Menu ===== */
 .guide-menu {
   position: absolute;
   left: 16px;
   right: 16px;
-  top: 120px; /* tuned to sit just under main buttons inside panel */
+  top: 120px;
   background: #fff;
   border-radius: 16px;
   border: 1px solid var(--line);
@@ -306,8 +304,8 @@ html, body {
 .guide-menu-item {
   width: 100%;
   padding: 10px 14px;
-  background: transparent;
   border: none;
+  background: transparent;
   text-align: left;
   font-size: 0.9rem;
   cursor: pointer;
@@ -318,7 +316,7 @@ html, body {
   background: #f5f7fb;
 }
 
-/* Results area */
+/* ===== Results ===== */
 .guide-results {
   flex: 1;
   margin-top: 4px;
@@ -326,7 +324,6 @@ html, body {
   overflow-y: auto;
 }
 
-/* Place cards */
 .place-card {
   background: #fff;
   border-radius: 14px;
@@ -359,14 +356,13 @@ html, body {
   content: " • ";
 }
 
-/* Hint text */
 .guide-results .hint {
   font-size: 0.86rem;
   color: var(--muted);
   padding: 10px 4px;
 }
 
-/* Desktop tweak */
+/* ===== Tablet/Desktop Tweaks ===== */
 @media (min-width: 768px) {
   .page-header-inner {
     flex-direction: row;
@@ -390,7 +386,7 @@ html, body {
   }
 }
 
-/* ===== Place details overlay ===== */
+/* ===== Place Details Overlay ===== */
 .place-details-overlay {
   position: absolute;
   inset: 0;
@@ -483,8 +479,6 @@ html, body {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
   font-size: 0.9rem;
-  text-decoration: none;
-  box-shadow: 0 10px 24px rgba(18, 30, 54, 0.26);
 }
 
 .details-hours {
