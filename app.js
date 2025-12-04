@@ -261,26 +261,24 @@ function focusVenue(venue) {
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-  // Center pin within the *visible* map area (header fixed, bottom panel visible)
-  google.maps.event.addListenerOnce(map, "idle", () => {
-    const mapDiv = document.getElementById("map");
-    const panel = document.getElementById("guidePanel");
+google.maps.event.addListenerOnce(map, "idle", () => {
+  const mapDiv = document.getElementById("map");
+  const panel = document.getElementById("guidePanel");
 
-    if (mapDiv && panel) {
-      const panelHeight = panel.clientHeight;
+  if (mapDiv && panel) {
+    const panelHeight = panel.clientHeight;
 
-      // The pin starts at the exact vertical center of the map.
-      // Panel covers bottom portion; move map down by a bit more than half
-      // the panel height so the pin sits just above true center visually.
-      const offset = panelHeight / 2 + 16; // small extra nudge upward
+    // Move the map down by ~70% of the panel height so the pin
+    // sits nicely above the panel and below the header.
+    const offset = panelHeight * 0.7;
 
-      // positive y moves the map down (pin appears higher on screen)
-      map.panBy(0, offset);
-    } else if (mapDiv) {
-      // safety fallback
-      map.panBy(0, mapDiv.clientHeight * 0.28);
-    }
-  });
+    // Positive y moves the map down → pin appears higher on screen
+    map.panBy(0, offset);
+  } else if (mapDiv) {
+    // fallback if panel can't be read for some reason
+    map.panBy(0, mapDiv.clientHeight * 0.3);
+  }
+});
 
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
