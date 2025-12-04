@@ -1,0 +1,34 @@
+[
+  {
+    "venueName": "AT&T Stadium",
+    "city": "Arlington",
+    "state": "TX",
+    "items": [
+      {
+        "name": "Hurtado Barbecue",
+        "address": "205 E Front St, Arlington, TX 76011",
+        "placeId": "ChIJEXAMPLEHurtado123", 
+        "notes": "Texas BBQ favorite before Cowboys games"
+      },
+      {
+        "name": "Tex Mex Partner",
+        "address": "123 Example Rd, Arlington, TX 76010",
+        "placeId": null,
+        "notes": "Concerto partner — great margaritas"
+      }
+    ]
+  },
+  {
+    "venueName": "Madison Square Garden",
+    "city": "New York",
+    "state": "NY",
+    "items": [
+      {
+        "name": "Partner Pizza Place",
+        "address": "456 8th Ave, New York, NY 10001",
+        "placeId": null,
+        "notes": "Exclusive Concerto partner near MSG"
+      }
+    ]
+  }
+]
