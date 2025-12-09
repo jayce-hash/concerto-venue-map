@@ -682,12 +682,12 @@
   {
     "id": "huntington-bank-field",
     "name": "Huntington Bank Field",
-    "city": "Columbus",
+    "city": "Cleveland",
     "state": "OH",
     "country": "USA",
-    "lat": 39.9625112,
-    "lng": -83.0032218,
-    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.9625112&lng=-83.0032218&venue=Huntington%20Bank%20Field"
+    "lat": 41.506054,
+    "lng": -81.699562,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.506054&lng=-81.699562&venue=Huntington%20Bank%20Field"
   },
   {
     "id": "intuit-dome",
@@ -1182,12 +1182,12 @@
   {
     "id": "rocket-arena",
     "name": "Rocket Arena",
-    "city": "Huntington",
-    "state": "WV",
+    "city": "Cleveland",
+    "state": "OH",
     "country": "USA",
-    "lat": 38.4191481,
-    "lng": -82.4451746,
-    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.4191481&lng=-82.4451746&venue=Rocket%20Arena"
+    "lat": 41.496556,
+    "lng": -81.688290,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.496556&lng=-81.688290&venue=Rocket%20Arena"
   },
   {
     "id": "rogers-arena",
