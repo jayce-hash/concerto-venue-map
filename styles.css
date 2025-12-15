@@ -198,32 +198,32 @@ html, body {
    ============================================================ */
 .guide-categories {
   display: flex;
-  flex-wrap: nowrap;                 /* key: stops wrapping */
+  flex-wrap: nowrap;
   gap: 8px;
-  padding: 6px 2px 6px;
-  overflow-x: auto;                  /* allow horizontal scroll */
-  -webkit-overflow-scrolling: touch; /* iOS smooth */
-  scrollbar-width: none;             /* Firefox hide */
+  padding: 6px 10px 6px;   /* 👈 adds breathing room so first pill is visible */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
 .guide-categories::-webkit-scrollbar {
-  display: none;                     /* Safari/Chrome hide */
+  display: none;
 }
 
-/* subtle edge fade so it feels “native” */
+/* Softer, safer edge fade */
 .guide-categories {
   mask-image: linear-gradient(
     to right,
-    transparent 0,
-    #000 18px,
-    #000 calc(100% - 18px),
+    #000 0,
+    #000 14px,
+    #000 calc(100% - 14px),
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     to right,
-    transparent 0,
-    #000 18px,
-    #000 calc(100% - 18px),
+    #000 0,
+    #000 14px,
+    #000 calc(100% - 14px),
     transparent 100%
   );
 }
