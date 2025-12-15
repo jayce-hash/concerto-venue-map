@@ -155,7 +155,7 @@ html, body {
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
 
-  /* lowered panel height */
+  /* ⭐ Lowered panel (was 56vh) */
   max-height: 52vh;
 
   display: flex;
@@ -191,50 +191,19 @@ html, body {
   color: var(--muted);
 }
 
-/* ============================================================
-   ✅ Category Pills (fix Top Picks layout + keep Apple vibe)
-   - prevents reflow/wrapping when Top Picks exists
-   - gives a clean single-row scroll like Apple Maps
-   ============================================================ */
+/* ===== Category Pills ===== */
 .guide-categories {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 8px;
-  padding: 6px 10px 6px;   /* 👈 adds breathing room so first pill is visible */
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.guide-categories::-webkit-scrollbar {
-  display: none;
-}
-
-/* Softer, safer edge fade */
-.guide-categories {
-  mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 14px,
-    #000 calc(100% - 14px),
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0,
-    #000 14px,
-    #000 calc(100% - 14px),
-    transparent 100%
-  );
+  padding: 4px 2px 4px;
 }
 
 .guide-pill {
-  flex: 0 0 auto;                    /* don’t shrink */
-  white-space: nowrap;               /* keeps pill text 1 line */
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 8px 14px;                 /* slightly taller for “Apple” feel */
+  padding: 6px 12px;
   font-size: 0.86rem;
   color: var(--ink);
   cursor: pointer;
@@ -282,16 +251,9 @@ html, body {
 /* ===== Secondary Filters ===== */
 .guide-secondary {
   display: flex;
-  flex-wrap: nowrap;                 /* keep stable height */
+  flex-wrap: wrap;
   gap: 6px;
   padding: 0 2px 4px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.guide-secondary::-webkit-scrollbar {
-  display: none;
 }
 
 .guide-secondary[hidden] {
@@ -299,8 +261,6 @@ html, body {
 }
 
 .guide-secondary-pill {
-  flex: 0 0 auto;
-  white-space: nowrap;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
@@ -420,23 +380,9 @@ html, body {
     max-width: 320px;
   }
 
-  /* Keep panel centered on desktop */
   .guide-panel {
     left: 50%;
-    right: auto;
-    width: min(520px, 96vw);
-    transform: translate(-50%, 100%);
-  }
-  .guide-panel:not(.guide-panel--hidden) {
-    transform: translate(-50%, 0%);
-  }
-
-  /* Menu aligns with centered panel */
-  .guide-menu {
-    left: 50%;
-    right: auto;
-    width: min(520px, 96vw);
-    transform: translateX(-50%);
+    transform: translate(50%, 100%);
   }
 }
 
