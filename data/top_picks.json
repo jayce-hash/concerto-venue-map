@@ -1,20 +1,112 @@
 [
   {
-    "venueName": "AT&T Stadium",
-    "city": "Arlington",
+    "venueName": "Moody Center",
+    "city": "Austin",
     "state": "TX",
     "items": [
       {
-        "name": "Hurtado Barbecue",
-        "address": "205 E Front St, Arlington, TX 76011",
-        "placeId": "ChIJEXAMPLEHurtado123", 
-        "notes": "Texas BBQ favorite before Cowboys games"
+        "name": "Scholz Garten",
+        "address": "1607 San Jacinto Blvd, Austin, TX 78701",
+        "placeId": null,
+        "notes": "Historic Austin beer garden and restaurant known for German fare, local beers, and a lively pre-event atmosphere near the University of Texas campus."
       },
       {
-        "name": "Tex Mex Partner",
-        "address": "123 Example Rd, Arlington, TX 76010",
+        "name": "Cuantos Tacos",
+        "address": "1108 E 12th St, Austin, TX 78702",
         "placeId": null,
-        "notes": "Concerto partner — great margaritas"
+        "notes": "Austin favorite serving authentic Mexico City–style street tacos with handmade tortillas and bold flavors."
+      },
+      {
+        "name": "Salty Sow",
+        "address": "1917 Manor Rd, Austin, TX 78722",
+        "placeId": null,
+        "notes": "Popular gastropub offering elevated comfort food, craft cocktails, and a strong whiskey selection."
+      },
+      {
+        "name": "Sour Duck Market",
+        "address": "1814 E Martin Luther King Jr Blvd, Austin, TX 78702",
+        "placeId": null,
+        "notes": "Neighborhood bakery, café, and beer garden serving house-made pastries, sandwiches, and locally sourced dishes."
+      },
+      {
+        "name": "Swim Club",
+        "address": "2823 E 7th St, Austin, TX 78702",
+        "placeId": null,
+        "notes": "Trendy outdoor bar and grill known for frozen cocktails, burgers, and a laid-back Austin vibe."
+      }
+    ]
+  },
+  {
+    "venueName": "Dickies Arena",
+    "city": "Fort Worth",
+    "state": "TX",
+    "items": [
+      {
+        "name": "The Social House",
+        "address": "840 Currie St, Fort Worth, TX 76107",
+        "placeId": null,
+        "notes": "Upscale American restaurant and bar offering shareable plates, cocktails, and a lively social atmosphere near the arena."
+      },
+      {
+        "name": "Rodeo Goat",
+        "address": "2836 Bledsoe St, Fort Worth, TX 76107",
+        "placeId": null,
+        "notes": "Award-winning burger joint known for creative burgers, craft beer, and a fun, casual vibe."
+      },
+      {
+        "name": "Blue Sushi Sake Grill",
+        "address": "513 W 7th St, Fort Worth, TX 76102",
+        "placeId": null,
+        "notes": "Modern sushi restaurant offering creative rolls, sashimi, and an extensive sake and cocktail menu."
+      },
+      {
+        "name": "Heim Barbecue",
+        "address": "1109 W Magnolia Ave, Fort Worth, TX 76104",
+        "placeId": null,
+        "notes": "Fort Worth barbecue staple famous for bacon burnt ends, smoked meats, and classic Texas BBQ sides."
+      },
+      {
+        "name": "Joe T. Garcia’s",
+        "address": "2201 N Commerce St, Fort Worth, TX 76164",
+        "placeId": null,
+        "notes": "Iconic Fort Worth Tex-Mex institution with a sprawling patio, classic margaritas, and traditional Mexican dishes."
+      }
+    ]
+  },
+  {
+    "venueName": "TD Garden",
+    "city": "Boston",
+    "state": "MA",
+    "items": [
+      {
+        "name": "Hub Hall",
+        "address": "80 Causeway St, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Food hall directly connected to TD Garden featuring a curated mix of popular local Boston eateries."
+      },
+      {
+        "name": "Ducali Pizzeria",
+        "address": "50 Causeway St, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Casual Italian spot known for Roman-style pizza and its unbeatable location across from TD Garden."
+      },
+      {
+        "name": "Alcove",
+        "address": "50 Lovejoy Wharf, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Waterfront restaurant offering seasonal New American dishes, cocktails, and scenic harbor views."
+      },
+      {
+        "name": "Chilacates",
+        "address": "80 Causeway St, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Fast-casual Mexican eatery serving fresh tacos, burritos, bowls, and house-made salsas."
+      },
+      {
+        "name": "A&B Kitchen and Bar",
+        "address": "15 Canal St, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Contemporary American restaurant offering elevated comfort food and cocktails in a stylish setting."
       }
     ]
   },
@@ -24,10 +116,108 @@
     "state": "NY",
     "items": [
       {
-        "name": "Partner Pizza Place",
-        "address": "456 8th Ave, New York, NY 10001",
+        "name": "Bar Primi",
+        "address": "325 W 51st St, New York, NY 10019",
         "placeId": null,
-        "notes": "Exclusive Concerto partner near MSG"
+        "notes": "Stylish Italian pasta bar known for fresh handmade pastas and classic cocktails."
+      },
+      {
+        "name": "Roberta's",
+        "address": "1 Penn Plaza, New York, NY 10119",
+        "placeId": null,
+        "notes": "Cult-favorite pizzeria serving wood-fired pizzas with inventive toppings near MSG."
+      },
+      {
+        "name": "Los Tacos No.1",
+        "address": "75 9th Ave, New York, NY 10011",
+        "placeId": null,
+        "notes": "Highly regarded taqueria offering authentic Mexican tacos with fresh tortillas and grilled meats."
+      },
+      {
+        "name": "Sea",
+        "address": "141 W 46th St, New York, NY 10036",
+        "placeId": null,
+        "notes": "Popular Thai restaurant featuring classic dishes in a lively Times Square setting."
+      },
+      {
+        "name": "The Dynamo Room",
+        "address": "350 W 40th St, New York, NY 10018",
+        "placeId": null,
+        "notes": "Upscale American restaurant and bar offering refined dining and craft cocktails."
+      }
+    ]
+  },
+  {
+    "venueName": "Sphere",
+    "city": "Las Vegas",
+    "state": "NV",
+    "items": [
+      {
+        "name": "Via Via Food Hall",
+        "address": "3708 Las Vegas Blvd S, Las Vegas, NV 89109",
+        "placeId": null,
+        "notes": "European-inspired food hall with multiple chef-driven concepts near Sphere."
+      },
+      {
+        "name": "Estiatorio Milos",
+        "address": "3355 Las Vegas Blvd S, Las Vegas, NV 89109",
+        "placeId": null,
+        "notes": "Upscale Greek seafood restaurant known for pristine fish and elegant dining."
+      },
+      {
+        "name": "Yardbird Southern Table & Bar",
+        "address": "3355 Las Vegas Blvd S, Las Vegas, NV 89109",
+        "placeId": null,
+        "notes": "Award-winning Southern restaurant famous for fried chicken and comfort food classics."
+      },
+      {
+        "name": "SUSHISAMBA",
+        "address": "3355 Las Vegas Blvd S, Las Vegas, NV 89109",
+        "placeId": null,
+        "notes": "High-energy restaurant blending Japanese, Brazilian, and Peruvian cuisine with Strip views."
+      },
+      {
+        "name": "CHICA",
+        "address": "3355 Las Vegas Blvd S, Las Vegas, NV 89109",
+        "placeId": null,
+        "notes": "Vibrant Latin restaurant serving bold flavors in a lively, upscale atmosphere."
+      }
+    ]
+  },
+  {
+    "venueName": "Kia Forum",
+    "city": "Inglewood",
+    "state": "CA",
+    "items": [
+      {
+        "name": "Cork & Batter",
+        "address": "3900 W Manchester Blvd, Inglewood, CA 90305",
+        "placeId": null,
+        "notes": "Modern American restaurant and bar popular for pre-event dining and cocktails."
+      },
+      {
+        "name": "Coni'Seafood",
+        "address": "3544 W Imperial Hwy, Inglewood, CA 90303",
+        "placeId": null,
+        "notes": "Renowned Mexican seafood spot specializing in Nayarit-style dishes."
+      },
+      {
+        "name": "Dulan's Soul Food Kitchen",
+        "address": "202 E Manchester Blvd, Inglewood, CA 90301",
+        "placeId": null,
+        "notes": "Legendary soul food restaurant serving classic comfort dishes."
+      },
+      {
+        "name": "Sunday Gravy",
+        "address": "1120 Centinela Ave, Inglewood, CA 90302",
+        "placeId": null,
+        "notes": "Italian-American restaurant focused on house-made pasta and rich sauces."
+      },
+      {
+        "name": "Stuff I Eat",
+        "address": "114 N Market St, Inglewood, CA 90301",
+        "placeId": null,
+        "notes": "Plant-based comfort food favorite offering vegan burgers, tacos, and soul food classics."
       }
     ]
   }
