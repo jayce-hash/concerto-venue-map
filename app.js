@@ -707,49 +707,39 @@ function renderPlaces(places) {
     card.appendChild(meta);
 
     // Click → in-app details sheet using Places Details API
-card.addEventListener("click", () => {
-  if (!placesService) return;
-
-  // If we have a real Google placeId, pull full details (Franklin-style sheet)
-  if (item.placeId) {
-    const request = {
-      placeId: item.placeId,
-      fields: [
-        "name",
-        "rating",
-        "user_ratings_total",
-        "formatted_address",
-        "formatted_phone_number",
-        "website",
-        "url",
-        "opening_hours",
-        "types"
-      ]
-    };
-
-    placesService.getDetails(request, (details, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK && details) {
-        showPlaceDetails(details); // ✅ this will look like Franklin
-      } else {
-        // fallback to minimal overlay if details fail
-        showPlaceDetails({
-          name: item.name,
-          formatted_address: item.address,
-          types: ["establishment"]
-        });
+    card.addEventListener("click", () => {
+      if (!placesService || !place.place_id) {
+        // fallback: show what we already have
+        showPlaceDetails(place);
+        return;
       }
+
+      const request = {
+        placeId: place.place_id,
+        fields: [
+          "name",
+          "rating",
+          "user_ratings_total",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "url",
+          "opening_hours",
+          "types"
+        ]
+      };
+
+      placesService.getDetails(request, (details, status) => {
+        if (
+          status === google.maps.places.PlacesServiceStatus.OK &&
+          details
+        ) {
+          showPlaceDetails(details);
+        } else {
+          showPlaceDetails(place);
+        }
+      });
     });
-
-    return;
-  }
-
-  // No placeId = no real details available (fallback)
-  showPlaceDetails({
-    name: item.name,
-    formatted_address: item.address,
-    types: ["establishment"]
-  });
-});
 
     guideResultsEl.appendChild(card);
   });
