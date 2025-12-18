@@ -3,7 +3,6 @@ let venues = [];
 let markers = [];
 let selectedVenue = null;
 
-let categoryButtons = [];
 let guideResultsEl = null;
 let secondaryFiltersEl = null;
 let placesService = null;
@@ -13,6 +12,11 @@ let currentSecondaryId = "all";
 
 let filtersBtn = null;
 let guidePanelEl = null;
+
+// ✅ New: single category selector pill + dropdown menu
+let categorySelectBtn = null;
+let categorySelectLabelEl = null;
+let categoryMenuEl = null;
 
 // Top Picks data
 let topPicksByKey = {};
@@ -65,7 +69,7 @@ const CATEGORY_SEARCH_CONFIG = {
   grocery:     { keyword: "grocery store", radius: 4000 }
 };
 
-// Secondary filters per category
+// Secondary filters per category (only some categories have filters)
 const SECONDARY_FILTERS = {
   restaurants: [
     { id: "all",     label: "All",            keyword: null },
@@ -95,6 +99,21 @@ const SECONDARY_FILTERS = {
   ]
 };
 
+// ----- Category labels for the single selector pill -----
+const CATEGORY_LABELS = {
+  toppicks: "Top Picks",
+  restaurants: "Restaurants",
+  hotels: "Hotels",
+  bars: "Bars",
+  coffee: "Coffee",
+  transit: "Public Transit",
+  attractions: "Attractions",
+  retail: "Retail Stores",
+  pharmacies: "Pharmacies",
+  gas: "Gas Stations",
+  grocery: "Grocery Stores"
+};
+
 // ----- Key helpers for venues / Top Picks -----
 function makeVenueKey(name, city, state) {
   return (name + "|" + city + "|" + state).toLowerCase();
@@ -122,9 +141,7 @@ function metersToMiles(m) {
 
 // -------- Place details overlay helpers --------
 function hidePlaceDetails() {
-  if (placeDetailsOverlay) {
-    placeDetailsOverlay.hidden = true;
-  }
+  if (placeDetailsOverlay) placeDetailsOverlay.hidden = true;
 }
 
 function showPlaceDetails(place) {
@@ -187,7 +204,14 @@ function showPlaceDetails(place) {
   placeDetailsOverlay.hidden = false;
 }
 
+// ✅ Filters allowed for every category EXCEPT these:
 function categoryHasFilters(catKey) {
+  if (!catKey) return false;
+  if (catKey === "toppicks") return false;
+  if (catKey === "pharmacies") return false;
+  if (catKey === "gas") return false;
+  if (catKey === "grocery") return false;
+
   const defs = SECONDARY_FILTERS[catKey];
   return !!(defs && defs.length);
 }
@@ -195,22 +219,84 @@ function categoryHasFilters(catKey) {
 function updateFiltersButtonState() {
   if (!filtersBtn) return;
 
-  // Top Picks never shows filters
-  if (currentCategory === "toppicks") {
-    filtersBtn.disabled = true;
-    filtersBtn.style.opacity = "0.55";
-    return;
-  }
+  const enabled = categoryHasFilters(currentCategory);
+  filtersBtn.disabled = !enabled;
 
-  const has = categoryHasFilters(currentCategory);
-  filtersBtn.disabled = !has;
-  filtersBtn.style.opacity = has ? "1" : "0.55";
-
-  // If the category has no filters, make sure row is hidden
-  if (!has && secondaryFiltersEl) {
+  // if filters aren’t supported, force-hide the row
+  if (!enabled && secondaryFiltersEl) {
     secondaryFiltersEl.hidden = true;
     secondaryFiltersEl.innerHTML = "";
   }
+}
+
+// ✅ Single selector: set category + update label + load results
+function setCategory(catKey) {
+  currentCategory = catKey;
+  currentSecondaryId = "all";
+
+  if (categorySelectLabelEl) {
+    categorySelectLabelEl.textContent = CATEGORY_LABELS[catKey] || "Restaurants";
+  }
+
+  // Top Picks: no filters row
+  if (catKey === "toppicks") {
+    if (secondaryFiltersEl) {
+      secondaryFiltersEl.hidden = true;
+      secondaryFiltersEl.innerHTML = "";
+    }
+  } else {
+    renderSecondaryFilters(catKey, false);
+  }
+
+  updateFiltersButtonState();
+  loadPlacesForCategory(currentCategory, currentSecondaryId);
+}
+
+// ✅ Single selector open/close + menu clicks + outside click close
+function setupCategorySelector() {
+  if (!categorySelectBtn || !categoryMenuEl) return;
+
+  categorySelectBtn.addEventListener("click", () => {
+    if (!selectedVenue) return;
+    categoryMenuEl.hidden = !categoryMenuEl.hidden;
+  });
+
+  const items = Array.from(categoryMenuEl.querySelectorAll(".category-menu-item"));
+  items.forEach(item => {
+    item.addEventListener("click", () => {
+      if (!selectedVenue) return;
+      const cat = item.dataset.category;
+      if (!cat) return;
+      setCategory(cat);
+      categoryMenuEl.hidden = true;
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!categoryMenuEl || categoryMenuEl.hidden) return;
+    const withinMenu = categoryMenuEl.contains(e.target);
+    const withinBtn = categorySelectBtn && categorySelectBtn.contains(e.target);
+    if (!withinMenu && !withinBtn) categoryMenuEl.hidden = true;
+  });
+}
+
+function setupFiltersButton() {
+  if (!filtersBtn) return;
+
+  filtersBtn.addEventListener("click", () => {
+    if (!selectedVenue) return;
+
+    // if this category doesn’t support filters, do nothing
+    if (!categoryHasFilters(currentCategory)) return;
+
+    // toggle visibility
+    secondaryFiltersEl.hidden = !secondaryFiltersEl.hidden;
+
+    // render only the first time it opens
+    if (!secondaryFiltersEl.hidden && !secondaryFiltersEl.hasChildNodes()) {
+      renderSecondaryFilters(currentCategory, true);
+    }
+  });
 }
 
 // Make initMap visible for Google callback
@@ -223,14 +309,17 @@ window.initMap = function () {
   });
 
   placesService = new google.maps.places.PlacesService(map);
+
   guidePanelEl = document.getElementById("guidePanel");
   guideResultsEl = document.getElementById("guideResults");
   secondaryFiltersEl = document.getElementById("guideSecondaryFilters");
 
-  // All category pills are in ONE row now (including Top Picks)
-  categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
+  // ✅ New selector elements
+  categorySelectBtn = document.getElementById("categorySelectBtn");
+  categorySelectLabelEl = document.getElementById("categorySelectLabel");
+  categoryMenuEl = document.getElementById("categoryMenu");
 
-  // Fixed Filters button (right side)
+  // Filters button
   filtersBtn = document.getElementById("filtersBtn");
 
   // Details overlay elements
@@ -254,7 +343,7 @@ window.initMap = function () {
     });
   }
 
-  setupCategoryPills();
+  setupCategorySelector();
   setupFiltersButton();
 
   // Load venues, then Top Picks
@@ -263,6 +352,7 @@ window.initMap = function () {
     .then(data => {
       venues = data;
 
+      // Attach a stable key for each venue (name+city+state)
       venues.forEach(v => {
         v.key = makeVenueKey(v.name, v.city, v.state);
       });
@@ -270,6 +360,7 @@ window.initMap = function () {
       createMarkers();
       setupSearch();
 
+      // Load curated Top Picks (optional file)
       return fetch("data/top_picks.json");
     })
     .then(res => (res && res.ok ? res.json() : []))
@@ -292,6 +383,7 @@ function createMarkers() {
       position: { lat: venue.lat, lng: venue.lng },
       map,
       title: venue.name,
+      // ✅ Silver pins for festivals (venue.isFestival === true)
       icon: venue.isFestival ? SILVER_PIN_ICON : NAVY_PIN_ICON
     });
 
@@ -307,8 +399,12 @@ function focusVenue(venue) {
   if (!venue || !venue.lat || !venue.lng) return;
 
   selectedVenue = venue;
-  currentCategory = "restaurants";
-  currentSecondaryId = "all";
+
+  // ✅ Default to Restaurants every time a venue is selected
+  setCategory("restaurants");
+
+  // ensure dropdown closes
+  if (categoryMenuEl) categoryMenuEl.hidden = true;
 
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
@@ -331,17 +427,11 @@ function focusVenue(venue) {
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  // Active pill defaults to Restaurants
-  if (categoryButtons.length) {
-    categoryButtons.forEach(b => b.classList.remove("active"));
-    const restaurantsBtn = categoryButtons.find(
-      b => (b.dataset.category || "") === "restaurants"
-    );
-    if (restaurantsBtn) restaurantsBtn.classList.add("active");
+  // hide filters row on venue change (until user taps Filters)
+  if (secondaryFiltersEl) {
+    secondaryFiltersEl.hidden = true;
+    secondaryFiltersEl.innerHTML = "";
   }
-
-  renderSecondaryFilters(currentCategory, false);
-  updateFiltersButtonState();
 
   guidePanelEl.classList.remove("guide-panel--hidden");
   loadPlacesForCategory(currentCategory, currentSecondaryId);
@@ -377,11 +467,7 @@ function setupSearch() {
     return (
       venues.find(v => v.name.toLowerCase() === q) ||
       venues.find(v => v.name.toLowerCase().includes(q)) ||
-      venues.find(
-        v =>
-          v.city.toLowerCase().includes(q) ||
-          v.state.toLowerCase().includes(q)
-      ) ||
+      venues.find(v => v.city.toLowerCase().includes(q) || v.state.toLowerCase().includes(q)) ||
       null
     );
   }
@@ -418,66 +504,8 @@ function setupSearch() {
   });
 }
 
-function setupCategoryPills() {
-  if (!categoryButtons.length) return;
-
-  categoryButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (!selectedVenue) return;
-
-      categoryButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      currentCategory = btn.dataset.category || "restaurants";
-      currentSecondaryId = "all";
-
-      // Top Picks is curated: hide filters immediately
-      if (currentCategory === "toppicks" && secondaryFiltersEl) {
-        secondaryFiltersEl.hidden = true;
-        secondaryFiltersEl.innerHTML = "";
-      } else {
-        renderSecondaryFilters(currentCategory, false);
-      }
-
-      updateFiltersButtonState();
-      loadPlacesForCategory(currentCategory, currentSecondaryId);
-    });
-  });
-}
-
-function setupFiltersButton() {
-  if (!filtersBtn) return;
-
-  filtersBtn.addEventListener("click", () => {
-    if (!selectedVenue) return;
-    if (filtersBtn.disabled) return;
-
-    const defs = SECONDARY_FILTERS[currentCategory];
-    if (!defs || !defs.length) {
-      secondaryFiltersEl.hidden = true;
-      secondaryFiltersEl.innerHTML = "";
-      return;
-    }
-
-    // toggle visibility
-    secondaryFiltersEl.hidden = !secondaryFiltersEl.hidden;
-
-    // lazy render if opening for the first time
-    if (!secondaryFiltersEl.hidden && !secondaryFiltersEl.hasChildNodes()) {
-      renderSecondaryFilters(currentCategory, true);
-    }
-  });
-}
-
 function renderSecondaryFilters(catKey, keepVisible) {
   if (!secondaryFiltersEl) return;
-
-  // No filters for curated Top Picks
-  if (catKey === "toppicks") {
-    secondaryFiltersEl.hidden = true;
-    secondaryFiltersEl.innerHTML = "";
-    return;
-  }
 
   const defs = SECONDARY_FILTERS[catKey];
   secondaryFiltersEl.innerHTML = "";
@@ -499,9 +527,8 @@ function renderSecondaryFilters(catKey, keepVisible) {
 
     b.addEventListener("click", () => {
       currentSecondaryId = def.id;
-      Array.from(
-        secondaryFiltersEl.querySelectorAll(".guide-secondary-pill")
-      ).forEach(el => el.classList.remove("active"));
+      Array.from(secondaryFiltersEl.querySelectorAll(".guide-secondary-pill"))
+        .forEach(el => el.classList.remove("active"));
       b.classList.add("active");
       loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
@@ -571,6 +598,7 @@ function loadTopPicksForVenue(venue) {
       }
 
       if (mapsUrl) pseudoPlace.url = mapsUrl;
+
       showPlaceDetails(pseudoPlace);
     });
 
@@ -581,6 +609,7 @@ function loadTopPicksForVenue(venue) {
 function loadPlacesForCategory(catKey, subFilterId) {
   if (!selectedVenue) return;
 
+  // Curated Top Picks: don't hit Places API
   if (catKey === "toppicks") {
     loadTopPicksForVenue(selectedVenue);
     return;
@@ -651,12 +680,7 @@ function renderPlaces(places) {
     if (selectedVenue && place.geometry && place.geometry.location) {
       const lat2 = place.geometry.location.lat();
       const lng2 = place.geometry.location.lng();
-      const meters = distanceMeters(
-        selectedVenue.lat,
-        selectedVenue.lng,
-        lat2,
-        lng2
-      );
+      const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, lat2, lng2);
       const miles = metersToMiles(meters);
       bits.push(`${miles.toFixed(1)} mi`);
     }
