@@ -32,10 +32,21 @@ let detailsWebsiteRowEl = null;
 let detailsMapsLinkEl = null;
 let detailsHoursEl = null;
 
-// Navy pin icon for Concerto
+// Navy pin icon for Concerto (default venues)
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
   fillColor: "#121E36",
+  fillOpacity: 1,
+  strokeColor: "#F8F9F9",
+  strokeWeight: 1,
+  scale: 1.4,
+  anchor: { x: 12, y: 22 }
+};
+
+// Silver pin icon (festival venues)
+const SILVER_PIN_ICON = {
+  path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+  fillColor: "#C0C0C0",
   fillOpacity: 1,
   strokeColor: "#F8F9F9",
   strokeWeight: 1,
@@ -122,10 +133,8 @@ function hidePlaceDetails() {
 function showPlaceDetails(place) {
   if (!placeDetailsOverlay) return;
 
-  // Name
   detailsNameEl.textContent = place.name || "";
 
-  // Meta: rating + review count + a simple type
   const bits = [];
   if (place.rating) {
     const rating = place.rating.toFixed(1);
@@ -138,11 +147,9 @@ function showPlaceDetails(place) {
   }
   detailsMetaEl.textContent = bits.join(" • ");
 
-  // Address
   detailsAddressEl.textContent =
     place.formatted_address || place.vicinity || "";
 
-  // Phone
   if (place.formatted_phone_number) {
     detailsPhoneRowEl.hidden = false;
     detailsPhoneEl.textContent = place.formatted_phone_number;
@@ -152,7 +159,6 @@ function showPlaceDetails(place) {
     detailsPhoneRowEl.hidden = true;
   }
 
-  // Website
   if (place.website) {
     detailsWebsiteRowEl.hidden = false;
     detailsWebsiteEl.textContent = place.website.replace(/^https?:\/\//, "");
@@ -161,7 +167,6 @@ function showPlaceDetails(place) {
     detailsWebsiteRowEl.hidden = true;
   }
 
-  // Maps link
   let mapsUrl;
   if (place.url) {
     mapsUrl = place.url;
@@ -175,7 +180,6 @@ function showPlaceDetails(place) {
   }
   detailsMapsLinkEl.href = mapsUrl;
 
-  // Hours (if available)
   if (place.opening_hours && place.opening_hours.weekday_text) {
     detailsHoursEl.hidden = false;
     detailsHoursEl.textContent = place.opening_hours.weekday_text.join("\n");
@@ -219,10 +223,8 @@ window.initMap = function () {
   detailsHoursEl = document.getElementById("detailsHours");
 
   const closeBtn = document.getElementById("placeDetailsClose");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", hidePlaceDetails);
-  }
-  // Close when tapping the dimmed background, but not the card itself
+  if (closeBtn) closeBtn.addEventListener("click", hidePlaceDetails);
+
   if (placeDetailsOverlay) {
     placeDetailsOverlay.addEventListener("click", (e) => {
       if (e.target === placeDetailsOverlay) hidePlaceDetails();
@@ -270,7 +272,8 @@ function createMarkers() {
       position: { lat: venue.lat, lng: venue.lng },
       map,
       title: venue.name,
-      icon: NAVY_PIN_ICON
+      // ✅ Silver pins for festivals (venue.isFestival === true)
+      icon: venue.isFestival ? SILVER_PIN_ICON : NAVY_PIN_ICON
     });
 
     marker.addListener("click", () => {
@@ -291,21 +294,15 @@ function focusVenue(venue) {
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-  // Center the venue pin nicely between header and panel
   google.maps.event.addListenerOnce(map, "idle", () => {
     const mapDiv = document.getElementById("map");
     const panel = document.getElementById("guidePanel");
 
     if (mapDiv && panel) {
       const panelHeight = panel.clientHeight;
-
-      // Move the map down by ~70% of the panel height
       const offset = panelHeight * 0.7;
-
-      // Positive y moves the map down → pin appears higher on screen
       map.panBy(0, offset);
     } else if (mapDiv) {
-      // fallback if panel can't be read for some reason
       map.panBy(0, mapDiv.clientHeight * 0.3);
     }
   });
@@ -315,19 +312,9 @@ function focusVenue(venue) {
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  // Show/hide Top Picks pill based on curated data
-  const key = venue.key || makeVenueKey(venue.name, venue.city, venue.state);
-  const hasTopPicks = !!(topPicksByKey[key] && topPicksByKey[key].length);
-
+  // ✅ Always show Top Picks button (prevents layout shifting / off-center)
   if (topPicksPill) {
-    if (hasTopPicks) {
-      topPicksPill.style.display = "inline-flex";
-    } else {
-      topPicksPill.style.display = "none";
-      if (currentCategory === "toppicks") {
-        currentCategory = "restaurants";
-      }
-    }
+    topPicksPill.style.display = "inline-flex";
   }
 
   // reset main pills
@@ -376,11 +363,7 @@ function setupSearch() {
     return (
       venues.find(v => v.name.toLowerCase() === q) ||
       venues.find(v => v.name.toLowerCase().includes(q)) ||
-      venues.find(
-        v =>
-          v.city.toLowerCase().includes(q) ||
-          v.state.toLowerCase().includes(q)
-      ) ||
+      venues.find(v => v.city.toLowerCase().includes(q) || v.state.toLowerCase().includes(q)) ||
       null
     );
   }
@@ -426,7 +409,7 @@ function setupCategoryPills() {
       btn.classList.add("active");
       currentCategory = btn.dataset.category || "restaurants";
       currentSecondaryId = "all";
-      renderSecondaryFilters(currentCategory, false); // hide filters initially
+      renderSecondaryFilters(currentCategory, false);
       hideMoreCategoriesMenu();
       loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
@@ -445,17 +428,38 @@ function setupMainButtons() {
       }
     });
   }
+
+  // ✅ Top Picks button click → show curated list (even if empty)
+  if (topPicksPill) {
+    topPicksPill.addEventListener("click", () => {
+      if (!selectedVenue) return;
+
+      // clear active state on the "core 4" category pills
+      categoryButtons.forEach(b => b.classList.remove("active"));
+
+      currentCategory = "toppicks";
+      currentSecondaryId = "all";
+
+      // hide filters row (Top Picks is curated)
+      if (secondaryFiltersEl) {
+        secondaryFiltersEl.hidden = true;
+        secondaryFiltersEl.innerHTML = "";
+      }
+
+      hideMoreCategoriesMenu();
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
+    });
+  }
+
   if (filtersBtn) {
     filtersBtn.addEventListener("click", () => {
       if (!selectedVenue) return;
       const defs = SECONDARY_FILTERS[currentCategory];
       if (!defs || !defs.length) {
-        // no filters for this category
         secondaryFiltersEl.hidden = true;
         secondaryFiltersEl.innerHTML = "";
         return;
       }
-      // toggle visibility
       secondaryFiltersEl.hidden = !secondaryFiltersEl.hidden;
       if (!secondaryFiltersEl.hidden && !secondaryFiltersEl.hasChildNodes()) {
         renderSecondaryFilters(currentCategory, true);
@@ -464,9 +468,7 @@ function setupMainButtons() {
   }
 
   if (moreCategoriesMenu) {
-    const items = Array.from(
-      moreCategoriesMenu.querySelectorAll(".guide-menu-item")
-    );
+    const items = Array.from(moreCategoriesMenu.querySelectorAll(".guide-menu-item"));
     items.forEach(item => {
       item.addEventListener("click", () => {
         const cat = item.dataset.category;
@@ -474,7 +476,6 @@ function setupMainButtons() {
         currentCategory = cat;
         currentSecondaryId = "all";
 
-        // visually unselect main pills (they represent the "core 4")
         categoryButtons.forEach(b => b.classList.remove("active"));
         hideMoreCategoriesMenu();
         renderSecondaryFilters(currentCategory, false);
@@ -492,8 +493,7 @@ function setupOutsideMenuClick() {
   document.addEventListener("click", e => {
     if (!moreCategoriesMenu || moreCategoriesMenu.hidden) return;
     const withinMenu = moreCategoriesMenu.contains(e.target);
-    const withinButton =
-      moreCategoriesBtn && moreCategoriesBtn.contains(e.target);
+    const withinButton = moreCategoriesBtn && moreCategoriesBtn.contains(e.target);
     if (!withinMenu && !withinButton) {
       hideMoreCategoriesMenu();
     }
@@ -502,6 +502,14 @@ function setupOutsideMenuClick() {
 
 function renderSecondaryFilters(catKey, keepVisible) {
   if (!secondaryFiltersEl) return;
+
+  // ✅ No filters for curated Top Picks
+  if (catKey === "toppicks") {
+    secondaryFiltersEl.hidden = true;
+    secondaryFiltersEl.innerHTML = "";
+    return;
+  }
+
   const defs = SECONDARY_FILTERS[catKey];
   secondaryFiltersEl.innerHTML = "";
 
@@ -511,7 +519,7 @@ function renderSecondaryFilters(catKey, keepVisible) {
   }
 
   if (!keepVisible) {
-    secondaryFiltersEl.hidden = true; // only show when Filters is tapped
+    secondaryFiltersEl.hidden = true;
   }
 
   defs.forEach(def => {
@@ -522,9 +530,8 @@ function renderSecondaryFilters(catKey, keepVisible) {
 
     b.addEventListener("click", () => {
       currentSecondaryId = def.id;
-      Array.from(
-        secondaryFiltersEl.querySelectorAll(".guide-secondary-pill")
-      ).forEach(el => el.classList.remove("active"));
+      Array.from(secondaryFiltersEl.querySelectorAll(".guide-secondary-pill"))
+        .forEach(el => el.classList.remove("active"));
       b.classList.add("active");
       loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
@@ -562,14 +569,12 @@ function loadTopPicksForVenue(venue) {
     const bits = [];
     if (item.address) bits.push(item.address);
     if (item.notes) bits.push(item.notes);
-
     metaEl.textContent = bits.join(" • ");
 
     card.appendChild(nameEl);
     card.appendChild(metaEl);
 
     card.addEventListener("click", () => {
-      // Build a pseudo-place object for the overlay
       const pseudoPlace = {
         name: item.name,
         formatted_address: item.address,
@@ -581,7 +586,6 @@ function loadTopPicksForVenue(venue) {
         types: item.types || []
       };
 
-      // Build Google Maps URL
       let mapsUrl;
       if (item.mapsUrl) {
         mapsUrl = item.mapsUrl;
@@ -589,19 +593,14 @@ function loadTopPicksForVenue(venue) {
         const base =
           "https://www.google.com/maps/search/?api=1&query=" +
           encodeURIComponent(item.name || "");
-        mapsUrl =
-          base + "&query_place_id=" + encodeURIComponent(item.placeId);
+        mapsUrl = base + "&query_place_id=" + encodeURIComponent(item.placeId);
       } else if (item.name || item.address) {
         mapsUrl =
           "https://www.google.com/maps/search/?api=1&query=" +
-          encodeURIComponent(
-            (item.name || "") + " " + (item.address || "")
-          );
+          encodeURIComponent((item.name || "") + " " + (item.address || ""));
       }
 
-      if (mapsUrl) {
-        pseudoPlace.url = mapsUrl;
-      }
+      if (mapsUrl) pseudoPlace.url = mapsUrl;
 
       showPlaceDetails(pseudoPlace);
     });
@@ -613,7 +612,6 @@ function loadTopPicksForVenue(venue) {
 function loadPlacesForCategory(catKey, subFilterId) {
   if (!selectedVenue) return;
 
-  // Curated Top Picks: don't hit Places API
   if (catKey === "toppicks") {
     loadTopPicksForVenue(selectedVenue);
     return;
@@ -635,9 +633,7 @@ function loadPlacesForCategory(catKey, subFilterId) {
   const defs = SECONDARY_FILTERS[catKey];
   if (defs && subFilterId) {
     const match = defs.find(d => d.id === subFilterId);
-    if (match && match.keyword) {
-      keyword = match.keyword;
-    }
+    if (match && match.keyword) keyword = match.keyword;
   }
   if (keyword) request.keyword = keyword;
 
@@ -649,10 +645,7 @@ function loadPlacesForCategory(catKey, subFilterId) {
   placesService.nearbySearch(request, (results, status) => {
     if (!guideResultsEl) return;
 
-    if (
-      status !== google.maps.places.PlacesServiceStatus.OK ||
-      !results
-    ) {
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
       guideResultsEl.innerHTML =
         '<div class="hint">No places found for this category here yet.</div>';
       return;
@@ -689,27 +682,19 @@ function renderPlaces(places) {
     if (selectedVenue && place.geometry && place.geometry.location) {
       const lat2 = place.geometry.location.lat();
       const lng2 = place.geometry.location.lng();
-      const meters = distanceMeters(
-        selectedVenue.lat,
-        selectedVenue.lng,
-        lat2,
-        lng2
-      );
+      const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, lat2, lng2);
       const miles = metersToMiles(meters);
       bits.push(`${miles.toFixed(1)} mi`);
     }
 
     if (place.rating) bits.push(`${place.rating.toFixed(1)}★`);
-
     meta.textContent = bits.join(" • ");
 
     card.appendChild(name);
     card.appendChild(meta);
 
-    // Click → in-app details sheet using Places Details API
     card.addEventListener("click", () => {
       if (!placesService || !place.place_id) {
-        // fallback: show what we already have
         showPlaceDetails(place);
         return;
       }
@@ -730,10 +715,7 @@ function renderPlaces(places) {
       };
 
       placesService.getDetails(request, (details, status) => {
-        if (
-          status === google.maps.places.PlacesServiceStatus.OK &&
-          details
-        ) {
+        if (status === google.maps.places.PlacesServiceStatus.OK && details) {
           showPlaceDetails(details);
         } else {
           showPlaceDetails(place);
