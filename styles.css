@@ -222,25 +222,30 @@ html, body {
   color: #fff;
 }
 
-/* ===== More Categories / Filters ===== */
+/* ===== More Categories / Top Picks / Filters (EVEN + CENTERED) ===== */
 .guide-main-actions {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   padding: 0 2px 6px;
+  justify-items: stretch;
+  align-items: center;
 }
 
 .guide-main-btn {
+  width: 100%;
+  min-width: 0;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 6px 16px;
+  padding: 6px 12px;
   font-size: 0.86rem;
   color: var(--ink);
   cursor: pointer;
   box-shadow: var(--shadow-soft);
   transition: background 0.15s ease, box-shadow 0.15s ease,
     transform 0.12s ease;
+  white-space: nowrap;
 }
 
 .guide-main-btn:hover {
