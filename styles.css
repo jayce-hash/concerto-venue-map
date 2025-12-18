@@ -191,22 +191,25 @@ html, body {
   color: var(--muted);
 }
 
-/* ===== Category Pills ===== */
+/* ===== Category Pills (TOP ROW) ===== */
 .guide-categories {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 2px 4px;
+  justify-content: center;     /* ✅ center the whole row */
+  align-items: center;
+  gap: 10px;                   /* a touch more breathing room */
+  padding: 6px 2px 4px;
 }
 
 .guide-pill {
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 6px 12px;
+  padding: 7px 14px;           /* ✅ slightly larger + consistent */
   font-size: 0.86rem;
   color: var(--ink);
   cursor: pointer;
+  white-space: nowrap;         /* ✅ prevents label wrapping */
   transition: background 0.15s ease, border-color 0.15s ease,
     box-shadow 0.15s ease, transform 0.12s ease;
 }
