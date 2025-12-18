@@ -18,7 +18,7 @@ let guidePanelEl = null;
 
 // Top Picks data
 let topPicksByKey = {};
-let topPicksPill = null;
+let topPicksBtn = null;
 
 // --- Place details overlay elements ---
 let placeDetailsOverlay = null;
@@ -208,7 +208,7 @@ window.initMap = function () {
   categoryButtons = Array.from(document.querySelectorAll(".guide-pill"));
   moreCategoriesBtn = document.getElementById("moreCategoriesBtn");
   filtersBtn = document.getElementById("filtersBtn");
-  topPicksPill = document.getElementById("topPicksPill");
+  topPicksBtn = document.getElementById("topPicksBtn");
 
   // Details overlay elements
   placeDetailsOverlay = document.getElementById("placeDetails");
@@ -311,11 +311,6 @@ function focusVenue(venue) {
   const locEl = document.getElementById("guideVenueLocation");
   nameEl.textContent = venue.name;
   locEl.textContent = `${venue.city}, ${venue.state}`;
-
-  // ✅ Always show Top Picks button (prevents layout shifting / off-center)
-  if (topPicksPill) {
-    topPicksPill.style.display = "inline-flex";
-  }
 
   // reset main pills
   if (categoryButtons.length) {
@@ -430,26 +425,26 @@ function setupMainButtons() {
   }
 
   // ✅ Top Picks button click → show curated list (even if empty)
-  if (topPicksPill) {
-    topPicksPill.addEventListener("click", () => {
-      if (!selectedVenue) return;
+if (topPicksBtn) {
+  topPicksBtn.addEventListener("click", () => {
+    if (!selectedVenue) return;
 
-      // clear active state on the "core 4" category pills
-      categoryButtons.forEach(b => b.classList.remove("active"));
+    // clear active state on the "core 4" category pills
+    categoryButtons.forEach(b => b.classList.remove("active"));
 
-      currentCategory = "toppicks";
-      currentSecondaryId = "all";
+    currentCategory = "toppicks";
+    currentSecondaryId = "all";
 
-      // hide filters row (Top Picks is curated)
-      if (secondaryFiltersEl) {
-        secondaryFiltersEl.hidden = true;
-        secondaryFiltersEl.innerHTML = "";
-      }
+    // hide filters row (Top Picks is curated)
+    if (secondaryFiltersEl) {
+      secondaryFiltersEl.hidden = true;
+      secondaryFiltersEl.innerHTML = "";
+    }
 
-      hideMoreCategoriesMenu();
-      loadPlacesForCategory(currentCategory, currentSecondaryId);
-    });
-  }
+    hideMoreCategoriesMenu();
+    loadPlacesForCategory(currentCategory, currentSecondaryId);
+  });
+}
 
   if (filtersBtn) {
     filtersBtn.addEventListener("click", () => {
