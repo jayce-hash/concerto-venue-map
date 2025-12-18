@@ -191,25 +191,50 @@ html, body {
   color: var(--muted);
 }
 
-/* ===== Category Pills (TOP ROW) ===== */
-.guide-categories {
+/* ============================================================
+   ✅ NEW: Layout A — One scrolling pill row + fixed Filters btn
+   (Targets ONLY the new markup: .guide-category-bar + .guide-filter-btn)
+   ============================================================ */
+
+/* Wrapper: pills + fixed Filters button */
+.guide-category-bar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;     /* ✅ center the whole row */
   align-items: center;
-  gap: 10px;                   /* a touch more breathing room */
-  padding: 6px 2px 4px;
+  gap: 10px;
+  padding: 2px 2px 6px;
 }
 
+/* Pills row: single line, horizontal scroll */
+.guide-category-bar .guide-categories {
+  flex: 1;
+  min-width: 0;                /* ✅ critical for proper flex shrink */
+  display: flex;
+  flex-wrap: nowrap;           /* ✅ single line */
+  overflow-x: auto;            /* ✅ scroll if needed */
+  -webkit-overflow-scrolling: touch;
+  gap: 10px;
+  padding: 6px 2px 6px;
+  align-items: center;
+
+  /* hide scrollbars but keep scroll */
+  scrollbar-width: none;       /* Firefox */
+}
+.guide-category-bar .guide-categories::-webkit-scrollbar {
+  display: none;               /* Safari/Chrome */
+}
+
+/* Pills */
 .guide-pill {
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 7px 14px;           /* ✅ slightly larger + consistent */
+  padding: 7px 14px;
   font-size: 0.86rem;
+  font-weight: 500;
   color: var(--ink);
   cursor: pointer;
-  white-space: nowrap;         /* ✅ prevents label wrapping */
+  white-space: nowrap;
+  line-height: 1;
   transition: background 0.15s ease, border-color 0.15s ease,
     box-shadow 0.15s ease, transform 0.12s ease;
 }
@@ -225,33 +250,24 @@ html, body {
   color: #fff;
 }
 
-/* ===== More Categories / Top Picks / Filters (EVEN + CENTERED) ===== */
-.guide-main-actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  padding: 0 2px 6px;
-  justify-items: stretch;
-  align-items: center;
-}
-
-.guide-main-btn {
-  width: 100%;
-  min-width: 0;
+/* Fixed Filters button on the right */
+.guide-filter-btn {
+  flex: 0 0 auto;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 6px 12px;
+  padding: 7px 14px;
   font-size: 0.86rem;
+  font-weight: 600;
   color: var(--ink);
   cursor: pointer;
   box-shadow: var(--shadow-soft);
-  transition: background 0.15s ease, box-shadow 0.15s ease,
-    transform 0.12s ease;
   white-space: nowrap;
+  line-height: 1;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 
-.guide-main-btn:hover {
+.guide-filter-btn:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-strong);
 }
@@ -289,39 +305,6 @@ html, body {
   background: #e7ecf7;
   border-color: var(--accent-2);
   color: var(--accent-2);
-}
-
-/* ===== More Categories Menu ===== */
-.guide-menu {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  top: 120px;
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
-  padding: 6px 0;
-  z-index: 30;
-}
-
-.guide-menu[hidden] {
-  display: none;
-}
-
-.guide-menu-item {
-  width: 100%;
-  padding: 10px 14px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: var(--ink);
-}
-
-.guide-menu-item:hover {
-  background: #f5f7fb;
 }
 
 /* ===== Results ===== */
