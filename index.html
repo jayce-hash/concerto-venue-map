@@ -46,39 +46,29 @@
             <p id="guideVenueLocation" class="venue-location"></p>
           </div>
         </header>
-
-<!-- Row: Category + Filter (both dropdown pills) -->
-<div class="guide-toolbar">
-  <!-- Category dropdown pill -->
-  <button id="categorySelectBtn" class="select-pill" type="button" aria-haspopup="listbox" aria-expanded="false">
-    <span id="categorySelectLabel">Restaurants</span>
+        
+<!-- Two-row toolbar (full width pills) -->
+<div class="guide-toolbar-2">
+  <!-- Row 1: Search by Category -->
+  <button id="categoryPillBtn" class="select-pill full" type="button">
+    <span id="categoryPillLabel">Search by Category</span>
     <span class="chev">▾</span>
   </button>
 
-  <!-- Filter dropdown pill (hidden unless current category supports filters) -->
-  <button id="filterSelectBtn" class="select-pill" type="button" hidden aria-haspopup="listbox" aria-expanded="false">
-    <span id="filterSelectLabel">All</span>
-    <span class="chev">▾</span>
-  </button>
+  <!-- Row 2: Search by Name -->
+  <div class="select-pill full input-pill" id="nameSearchPill">
+    <input
+      id="placeNameSearch"
+      type="text"
+      placeholder="Search by name (e.g., Joe’s Pizza, vegan brunch)"
+      autocomplete="off"
+    />
+    <button id="clearNameSearch" class="pill-x" type="button" aria-label="Clear">✕</button>
+  </div>
 </div>
 
-<!-- Category dropdown menu -->
-<div id="categoryMenu" class="select-menu" hidden>
-  <button class="select-menu-item" data-category="toppicks" type="button">Top Picks</button>
-  <button class="select-menu-item" data-category="restaurants" type="button">Restaurants</button>
-  <button class="select-menu-item" data-category="hotels" type="button">Hotels</button>
-  <button class="select-menu-item" data-category="bars" type="button">Bars</button>
-  <button class="select-menu-item" data-category="coffee" type="button">Coffee</button>
-  <button class="select-menu-item" data-category="transit" type="button">Public Transit</button>
-  <button class="select-menu-item" data-category="attractions" type="button">Attractions</button>
-  <button class="select-menu-item" data-category="retail" type="button">Retail Stores</button>
-  <button class="select-menu-item" data-category="pharmacies" type="button">Pharmacies</button>
-  <button class="select-menu-item" data-category="gas" type="button">Gas Stations</button>
-  <button class="select-menu-item" data-category="grocery" type="button">Grocery Stores</button>
-</div>
-
-<!-- Filter dropdown menu -->
-<div id="filterMenu" class="select-menu" hidden></div>
+<!-- ONE dropdown menu used for BOTH categories + filters -->
+<div id="categoryMenu" class="select-menu" hidden></div>
 
 <!-- Secondary filters row is no longer needed -->
 <!-- <div id="guideSecondaryFilters" class="guide-secondary" hidden></div> -->
