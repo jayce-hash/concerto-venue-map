@@ -47,35 +47,41 @@
           </div>
         </header>
 
-<!-- Category selector row -->
+<!-- Row: Category + Filter (both dropdown pills) -->
 <div class="guide-toolbar">
-  <button id="categorySelectBtn" class="category-select-btn" type="button">
+  <!-- Category dropdown pill -->
+  <button id="categorySelectBtn" class="select-pill" type="button" aria-haspopup="listbox" aria-expanded="false">
     <span id="categorySelectLabel">Restaurants</span>
-    <span class="category-select-caret">▾</span>
+    <span class="chev">▾</span>
   </button>
 
-  <button id="filtersBtn" class="guide-filter-btn" type="button">
-    Filters
+  <!-- Filter dropdown pill (hidden unless current category supports filters) -->
+  <button id="filterSelectBtn" class="select-pill" type="button" hidden aria-haspopup="listbox" aria-expanded="false">
+    <span id="filterSelectLabel">All</span>
+    <span class="chev">▾</span>
   </button>
 </div>
 
 <!-- Category dropdown menu -->
-<div id="categoryMenu" class="category-menu" hidden>
-  <button class="category-menu-item" data-category="toppicks">Top Picks</button>
-  <button class="category-menu-item" data-category="restaurants">Restaurants</button>
-  <button class="category-menu-item" data-category="hotels">Hotels</button>
-  <button class="category-menu-item" data-category="bars">Bars</button>
-  <button class="category-menu-item" data-category="coffee">Coffee</button>
-  <button class="category-menu-item" data-category="transit">Public Transit</button>
-  <button class="category-menu-item" data-category="attractions">Attractions</button>
-  <button class="category-menu-item" data-category="retail">Retail Stores</button>
-  <button class="category-menu-item" data-category="pharmacies">Pharmacies</button>
-  <button class="category-menu-item" data-category="gas">Gas Stations</button>
-  <button class="category-menu-item" data-category="grocery">Grocery Stores</button>
+<div id="categoryMenu" class="select-menu" hidden>
+  <button class="select-menu-item" data-category="toppicks" type="button">Top Picks</button>
+  <button class="select-menu-item" data-category="restaurants" type="button">Restaurants</button>
+  <button class="select-menu-item" data-category="hotels" type="button">Hotels</button>
+  <button class="select-menu-item" data-category="bars" type="button">Bars</button>
+  <button class="select-menu-item" data-category="coffee" type="button">Coffee</button>
+  <button class="select-menu-item" data-category="transit" type="button">Public Transit</button>
+  <button class="select-menu-item" data-category="attractions" type="button">Attractions</button>
+  <button class="select-menu-item" data-category="retail" type="button">Retail Stores</button>
+  <button class="select-menu-item" data-category="pharmacies" type="button">Pharmacies</button>
+  <button class="select-menu-item" data-category="gas" type="button">Gas Stations</button>
+  <button class="select-menu-item" data-category="grocery" type="button">Grocery Stores</button>
 </div>
 
-<!-- Optional secondary filters (per category) -->
-<div id="guideSecondaryFilters" class="guide-secondary" hidden></div>
+<!-- Filter dropdown menu -->
+<div id="filterMenu" class="select-menu" hidden></div>
+
+<!-- Secondary filters row is no longer needed -->
+<!-- <div id="guideSecondaryFilters" class="guide-secondary" hidden></div> -->
 
         <!-- Results list -->
         <div id="guideResults" class="guide-results">
