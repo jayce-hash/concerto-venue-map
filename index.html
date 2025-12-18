@@ -47,34 +47,30 @@
           </div>
         </header>
 
-        <!-- Row 1: main category pills -->
-        <div class="guide-categories">
+        <!-- Single row: scrollable categories + fixed Filters button -->
+<div class="guide-category-bar">
+  <div class="guide-categories" id="guideCategories">
+    <button type="button" class="guide-pill" data-category="toppicks">Top Picks</button>
 
-  <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
-  <button type="button" class="guide-pill" data-category="bars">Bars</button>
-  <button type="button" class="guide-pill" data-category="coffee">Coffee Shops</button>
-  <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
+    <button type="button" class="guide-pill active" data-category="restaurants">Restaurants</button>
+    <button type="button" class="guide-pill" data-category="hotels">Hotels</button>
+    <button type="button" class="guide-pill" data-category="bars">Bars</button>
+    <button type="button" class="guide-pill" data-category="coffee">Coffee</button>
+
+    <button type="button" class="guide-pill" data-category="transit">Public Transit</button>
+    <button type="button" class="guide-pill" data-category="attractions">Attractions</button>
+    <button type="button" class="guide-pill" data-category="retail">Retail Stores</button>
+    <button type="button" class="guide-pill" data-category="pharmacies">Pharmacies</button>
+    <button type="button" class="guide-pill" data-category="gas">Gas Stations</button>
+    <button type="button" class="guide-pill" data-category="grocery">Grocery Stores</button>
+  </div>
+
+  <button id="filtersBtn" class="guide-filter-btn" type="button">
+    Filters
+  </button>
 </div>
-
-        <!-- Row 2: centered More / Top Picks / Filters -->
-<div class="guide-main-actions">
-  <button id="moreCategoriesBtn" class="guide-main-btn" type="button">More Categories</button>
-  <button id="topPicksBtn" class="guide-main-btn" type="button">Top Picks</button>
-  <button id="filtersBtn" class="guide-main-btn" type="button">Filters</button>
-</div>
-
         <!-- Optional secondary filters (per category) -->
         <div id="guideSecondaryFilters" class="guide-secondary" hidden></div>
-
-        <!-- Dropdown menu for extra categories -->
-        <div id="moreCategoriesMenu" class="guide-menu" hidden>
-          <button class="guide-menu-item" data-category="retail">Retail</button>
-          <button class="guide-menu-item" data-category="attractions">Attractions</button>
-          <button class="guide-menu-item" data-category="transit">Transit</button>
-          <button class="guide-menu-item" data-category="pharmacies">Pharmacies</button>
-          <button class="guide-menu-item" data-category="gas">Gas</button>
-          <button class="guide-menu-item" data-category="grocery">Grocery</button>
-        </div>
 
         <!-- Results list -->
         <div id="guideResults" class="guide-results">
