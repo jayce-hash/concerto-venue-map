@@ -155,7 +155,7 @@ html, body {
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
 
-  /* ⭐ Lowered panel (was 56vh) */
+  /* Panel height */
   max-height: 52vh;
 
   display: flex;
@@ -192,123 +192,107 @@ html, body {
 }
 
 /* ============================================================
-   ✅ NEW: Layout A — One scrolling pill row + fixed Filters btn
-   (Targets ONLY the new markup: .guide-category-bar + .guide-filter-btn)
+   ✅ NEW: Two dropdown pills (Category + Filters) + scrollable menus
+   (Matches the JS/HTML I sent: #categorySelectBtn / #filterSelectBtn)
    ============================================================ */
 
-/* Wrapper: pills + fixed Filters button */
-.guide-category-bar {
+.guide-toolbar{
   display: flex;
-  align-items: center;
   gap: 10px;
-  padding: 2px 2px 6px;
+  padding: 6px 2px 8px;
+  align-items: center;
 }
 
-/* Pills row: single line, horizontal scroll */
-.guide-category-bar .guide-categories {
+/* Dropdown pill */
+.select-pill{
   flex: 1;
-  min-width: 0;                /* ✅ critical for proper flex shrink */
-  display: flex;
-  flex-wrap: nowrap;           /* ✅ single line */
-  overflow-x: auto;            /* ✅ scroll if needed */
-  -webkit-overflow-scrolling: touch;
-  gap: 10px;
-  padding: 6px 2px 6px;
+  min-width: 0;
+  display: inline-flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 
-  /* hide scrollbars but keep scroll */
-  scrollbar-width: none;       /* Firefox */
-}
-.guide-category-bar .guide-categories::-webkit-scrollbar {
-  display: none;               /* Safari/Chrome */
-}
-
-/* Pills */
-.guide-pill {
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
-  padding: 7px 14px;
-  font-size: 0.86rem;
+
+  padding: 10px 14px;
+  font-size: 0.92rem;
   font-weight: 500;
   color: var(--ink);
+
+  box-shadow: var(--shadow-soft);
   cursor: pointer;
   white-space: nowrap;
-  line-height: 1;
-  transition: background 0.15s ease, border-color 0.15s ease,
-    box-shadow 0.15s ease, transform 0.12s ease;
+
+  transition: transform 0.12s ease, box-shadow 0.15s ease;
 }
 
-.guide-pill:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.guide-pill.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  border-color: transparent;
-  color: #fff;
-}
-
-/* Fixed Filters button on the right */
-.guide-filter-btn {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 7px 14px;
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  white-space: nowrap;
-  line-height: 1;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
-}
-
-.guide-filter-btn:hover {
+.select-pill:hover{
   transform: translateY(-1px);
   box-shadow: var(--shadow-strong);
 }
 
-/* ===== Secondary Filters ===== */
-.guide-secondary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0 2px 4px;
+.select-pill .chev{
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+  transform: translateY(-1px);
 }
 
-.guide-secondary[hidden] {
+/* Prevent label overflow */
+#categorySelectLabel,
+#filterSelectLabel{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dropdown menu container */
+.select-menu{
+  position: absolute;
+  left: 14px;
+  right: 14px;
+
+  /* ✅ place under the toolbar; adjust if needed */
+  top: 128px;
+
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
+
+  padding: 6px 0;
+  z-index: 60;
+
+  /* ✅ scrollable */
+  max-height: 42vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.select-menu[hidden]{
   display: none;
 }
 
-.guide-secondary-pill {
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 4px 10px;
-  font-size: 0.78rem;
-  color: var(--muted);
+.select-menu-item{
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease,
-    box-shadow 0.15s ease, transform 0.12s ease, color 0.15s ease;
+  color: var(--ink);
 }
 
-.guide-secondary-pill:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.guide-secondary-pill.active {
-  background: #e7ecf7;
-  border-color: var(--accent-2);
-  color: var(--accent-2);
+.select-menu-item:hover{
+  background: #f5f7fb;
 }
 
 /* ===== Results ===== */
 .guide-results {
+  position: relative;
+  z-index: 1; /* menus sit above via z-index:60 */
   flex: 1;
   margin-top: 4px;
   padding: 4px 2px 4px;
@@ -385,7 +369,7 @@ html, body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 40;
+  z-index: 80;
 }
 
 .place-details-overlay[hidden] {
@@ -479,96 +463,4 @@ html, body {
   font-size: 0.86rem;
   color: var(--muted);
   white-space: pre-line;
-}
-
-/* ===== Category Selector (single pill) + Filters ===== */
-.guide-toolbar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding: 6px 2px 6px;
-}
-
-.category-select-btn{
-  flex: 1;
-  min-width: 0;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 9px 14px;
-  font-size: 0.92rem;
-  color: var(--ink);
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  white-space: nowrap;
-}
-
-.category-select-btn:hover{
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-strong);
-}
-
-#categorySelectLabel{
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-
-.category-select-caret{
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin-left: 10px;
-  flex: 0 0 auto;
-}
-
-.guide-filter-btn{
-  flex: 0 0 auto;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  padding: 9px 14px;
-  font-size: 0.92rem;
-  color: var(--ink);
-  cursor: pointer;
-  box-shadow: var(--shadow-soft);
-  white-space: nowrap;
-}
-
-.guide-filter-btn:disabled{
-  cursor: default;
-  opacity: 0.55;
-}
-
-/* ===== Category dropdown menu ===== */
-.category-menu{
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  /* sits right under the toolbar */
-  top: 208px;
-  background:#fff;
-  border-radius:16px;
-  border:1px solid var(--line);
-  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
-  padding: 6px 0;
-  z-index: 30;
-}
-
-.category-menu[hidden]{ display:none; }
-
-.category-menu-item{
-  width:100%;
-  padding: 11px 14px;
-  border:none;
-  background: transparent;
-  text-align:left;
-  font-size: 0.92rem;
-  cursor:pointer;
-  color: var(--ink);
-}
-
-.category-menu-item:hover{
-  background:#f5f7fb;
 }
