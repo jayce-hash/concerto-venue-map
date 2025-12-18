@@ -9,14 +9,7 @@ let placesService = null;
 let currentCategory = "restaurants";
 let currentSecondaryId = "all";
 
-// ✅ New UI elements (2 pills + 2 menus)
-let categorySelectBtn = null;
-let categorySelectLabelEl = null;
-let categoryMenuEl = null;
-
-let filterSelectBtn = null;
-let filterSelectLabelEl = null;
-let filterMenuEl = null;
+let guidePanelEl = null;
 
 // Top Picks data
 let topPicksByKey = {};
@@ -32,6 +25,18 @@ let detailsWebsiteEl = null;
 let detailsWebsiteRowEl = null;
 let detailsMapsLinkEl = null;
 let detailsHoursEl = null;
+
+// --- NEW toolbar elements ---
+let categoryPillBtn = null;
+let categoryPillLabel = null;
+let categoryMenuEl = null;
+
+let placeNameSearchEl = null;
+let clearNameSearchBtn = null;
+
+// Dropdown state
+let categoryMenuMode = "category"; // "category" | "filters"
+let pendingCategoryKey = "restaurants";
 
 // Navy pin icon for Concerto (default venues)
 const NAVY_PIN_ICON = {
@@ -57,61 +62,65 @@ const SILVER_PIN_ICON = {
 
 // Base category → Places search config
 const CATEGORY_SEARCH_CONFIG = {
-  restaurants: { type: "restaurant", radius: 3000 },
-  bars:        { type: "bar", radius: 3000 },
-  coffee:      { type: "cafe", radius: 3000 },
-  hotels:      { type: "lodging", radius: 4000 },
-  retail:      { keyword: "shopping", radius: 4000 },
-  attractions: { type: "tourist_attraction", radius: 5000 },
-  transit:     { type: "transit_station", radius: 4000 },
-  pharmacies:  { type: "pharmacy", radius: 3000 },
-  gas:         { type: "gas_station", radius: 4000 },
-  grocery:     { keyword: "grocery store", radius: 4000 }
+  toppicks:     { keyword: "top picks", radius: 3000 }, // handled separately
+  restaurants:  { type: "restaurant", radius: 3000, label: "Restaurants" },
+  hotels:       { type: "lodging", radius: 4000, label: "Hotels" },
+  bars:         { type: "bar", radius: 3000, label: "Bars" },
+  coffee:       { type: "cafe", radius: 3000, label: "Coffee" },
+  transit:      { type: "transit_station", radius: 4000, label: "Public Transit" },
+  attractions:  { type: "tourist_attraction", radius: 5000, label: "Attractions" },
+  retail:       { keyword: "shopping", radius: 4000, label: "Retail Stores" },
+  pharmacies:   { type: "pharmacy", radius: 3000, label: "Pharmacies" },
+  gas:          { type: "gas_station", radius: 4000, label: "Gas Stations" },
+  grocery:      { keyword: "grocery store", radius: 4000, label: "Grocery Stores" }
 };
 
-// ✅ “Good” filter sets: not too many, but useful
-const FILTERS = {
+// Secondary filters per category (keep it “good filters”: enough, not too many)
+const SECONDARY_FILTERS = {
   restaurants: [
-    { id: "all",     label: "All",           keyword: null },
-    { id: "sitdown", label: "Sit-Down",      keyword: "sit down restaurant" },
-    { id: "quick",   label: "Quick Bites",   keyword: "fast food" },
-    { id: "brunch",  label: "Brunch",        keyword: "brunch" },
-    { id: "pizza",   label: "Pizza",         keyword: "pizza" },
-    { id: "vegan",   label: "Vegan-Friendly",keyword: "vegan restaurant" }
+    { id: "all",     label: "All",            keyword: null },
+    { id: "sitdown", label: "Sit-Down",       keyword: "sit down restaurant" },
+    { id: "quick",   label: "Quick Bites",    keyword: "fast food" },
+    { id: "brunch",  label: "Brunch",         keyword: "brunch" },
+    { id: "pizza",   label: "Pizza",          keyword: "pizza" },
+    { id: "vegan",   label: "Vegan-Friendly", keyword: "vegan restaurant" }
   ],
   hotels: [
-    { id: "all",     label: "All",     keyword: null },
-    { id: "boutique",label: "Boutique",keyword: "boutique hotel" },
-    { id: "luxury",  label: "Luxury",  keyword: "luxury hotel" },
-    { id: "budget",  label: "Budget",  keyword: "budget hotel" }
+    { id: "all",      label: "All",      keyword: null },
+    { id: "boutique", label: "Boutique", keyword: "boutique hotel" },
+    { id: "luxury",   label: "Luxury",   keyword: "luxury hotel" },
+    { id: "budget",   label: "Budget",   keyword: "budget hotel" }
   ],
   bars: [
-    { id: "all",     label: "All",        keyword: null },
-    { id: "cocktail",label: "Cocktail",   keyword: "cocktail bar" },
-    { id: "sports",  label: "Sports Bar", keyword: "sports bar" },
-    { id: "rooftop", label: "Rooftop",    keyword: "rooftop bar" }
+    { id: "all",      label: "All",         keyword: null },
+    { id: "cocktail", label: "Cocktail",    keyword: "cocktail bar" },
+    { id: "sports",   label: "Sports Bars", keyword: "sports bar" },
+    { id: "rooftop",  label: "Rooftop",     keyword: "rooftop bar" }
   ],
   coffee: [
+    { id: "all",       label: "All",         keyword: null },
+    { id: "study",     label: "Study Spots", keyword: "coffee shop with wifi" },
+    { id: "bakery",    label: "Bakery",      keyword: "bakery" },
+    { id: "specialty", label: "Specialty",   keyword: "specialty coffee" }
+  ],
+  retail: [
     { id: "all",     label: "All",        keyword: null },
-    { id: "study",   label: "Study Spots",keyword: "coffee shop with wifi" },
-    { id: "bakery",  label: "Bakery",     keyword: "bakery" },
-    { id: "special", label: "Specialty",  keyword: "specialty coffee" }
+    { id: "clothes", label: "Clothing",   keyword: "clothing store" },
+    { id: "beauty",  label: "Beauty",     keyword: "beauty store" },
+    { id: "sports",  label: "Sporting",   keyword: "sporting goods" }
+  ],
+  attractions: [
+    { id: "all",     label: "All",        keyword: null },
+    { id: "museum",  label: "Museums",    keyword: "museum" },
+    { id: "park",    label: "Parks",      keyword: "park" },
+    { id: "views",   label: "Views",      keyword: "viewpoint" }
+  ],
+  transit: [
+    { id: "all",     label: "All",        keyword: null },
+    { id: "subway",  label: "Subway",     keyword: "subway station" },
+    { id: "bus",     label: "Bus",        keyword: "bus station" },
+    { id: "train",   label: "Train",      keyword: "train station" }
   ]
-};
-
-// Category labels for pill
-const CATEGORY_LABELS = {
-  toppicks: "Top Picks",
-  restaurants: "Restaurants",
-  hotels: "Hotels",
-  bars: "Bars",
-  coffee: "Coffee",
-  transit: "Public Transit",
-  attractions: "Attractions",
-  retail: "Retail Stores",
-  pharmacies: "Pharmacies",
-  gas: "Gas Stations",
-  grocery: "Grocery Stores"
 };
 
 // ----- Key helpers for venues / Top Picks -----
@@ -134,7 +143,9 @@ function distanceMeters(lat1, lng1, lat2, lng2) {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
-function metersToMiles(m) { return m / 1609.34; }
+function metersToMiles(m) {
+  return m / 1609.34;
+}
 
 // -------- Place details overlay helpers --------
 function hidePlaceDetails() {
@@ -201,61 +212,174 @@ function showPlaceDetails(place) {
   placeDetailsOverlay.hidden = false;
 }
 
-function hideMenus() {
+// ===== Dropdown (Categories + Filters inside) =====
+function hideCategoryMenu() {
   if (categoryMenuEl) categoryMenuEl.hidden = true;
-  if (filterMenuEl) filterMenuEl.hidden = true;
-  if (categorySelectBtn) categorySelectBtn.setAttribute("aria-expanded", "false");
-  if (filterSelectBtn) filterSelectBtn.setAttribute("aria-expanded", "false");
+  categoryMenuMode = "category";
 }
 
-function categorySupportsFilters(catKey) {
-  // filters only for these 4 categories
-  return !!FILTERS[catKey];
+function setCategoryPillText() {
+  const catLabel = CATEGORY_SEARCH_CONFIG[currentCategory]?.label || "Search by Category";
+  const filterLabel =
+    (SECONDARY_FILTERS[currentCategory] || []).find(f => f.id === currentSecondaryId)?.label || "All";
+
+  if (currentCategory === "toppicks") {
+    categoryPillLabel.textContent = "Search by Category • Top Picks";
+    return;
+  }
+
+  // If category supports filters, show both in the pill title
+  const hasFilters = (SECONDARY_FILTERS[currentCategory] || []).length > 0;
+  categoryPillLabel.textContent = hasFilters
+    ? `Search by Category • ${catLabel} • ${filterLabel}`
+    : `Search by Category • ${catLabel}`;
 }
 
-function renderFilterMenu(catKey) {
-  if (!filterMenuEl) return;
-  filterMenuEl.innerHTML = "";
+function renderCategoryMenu() {
+  if (!categoryMenuEl) return;
 
-  const defs = FILTERS[catKey];
-  if (!defs || !defs.length) return;
+  categoryMenuEl.innerHTML = "";
+
+  // Mode 1: categories
+  if (categoryMenuMode === "category") {
+    const cats = [
+      "toppicks","restaurants","hotels","bars","coffee",
+      "transit","attractions","retail","pharmacies","gas","grocery"
+    ];
+
+    cats.forEach(key => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "select-menu-item";
+      const label = key === "toppicks"
+        ? "Top Picks"
+        : (CATEGORY_SEARCH_CONFIG[key]?.label || key);
+
+      btn.textContent = label;
+
+      btn.addEventListener("click", () => {
+        // Top Picks: immediate
+        if (key === "toppicks") {
+          currentCategory = "toppicks";
+          currentSecondaryId = "all";
+          setCategoryPillText();
+          hideCategoryMenu();
+          clearNameSearch();
+          loadPlacesForCategory(currentCategory, currentSecondaryId);
+          return;
+        }
+
+        // If category has filters, open filter list within same dropdown
+        const defs = SECONDARY_FILTERS[key];
+        if (defs && defs.length) {
+          pendingCategoryKey = key;
+          categoryMenuMode = "filters";
+          renderCategoryMenu();
+          return;
+        }
+
+        // No filters: immediate
+        currentCategory = key;
+        currentSecondaryId = "all";
+        setCategoryPillText();
+        hideCategoryMenu();
+        clearNameSearch();
+        loadPlacesForCategory(currentCategory, currentSecondaryId);
+      });
+
+      categoryMenuEl.appendChild(btn);
+    });
+
+    return;
+  }
+
+  // Mode 2: filters for pendingCategoryKey
+  const back = document.createElement("button");
+  back.type = "button";
+  back.className = "select-menu-item small";
+  back.textContent = "← Back to Categories";
+  back.addEventListener("click", () => {
+    categoryMenuMode = "category";
+    renderCategoryMenu();
+  });
+  categoryMenuEl.appendChild(back);
+
+  const defs = SECONDARY_FILTERS[pendingCategoryKey] || [{ id: "all", label: "All", keyword: null }];
 
   defs.forEach(def => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "select-menu-item";
     btn.textContent = def.label;
+
     btn.addEventListener("click", () => {
-      currentSecondaryId = def.id;
-      if (filterSelectLabelEl) filterSelectLabelEl.textContent = def.label;
-      filterMenuEl.hidden = true;
-      filterSelectBtn.setAttribute("aria-expanded", "false");
+      currentCategory = pendingCategoryKey;
+      currentSecondaryId = def.id || "all";
+      setCategoryPillText();
+      hideCategoryMenu();
+      clearNameSearch();
       loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
-    filterMenuEl.appendChild(btn);
+
+    categoryMenuEl.appendChild(btn);
   });
 }
 
-function setCategory(catKey) {
-  currentCategory = catKey;
-  currentSecondaryId = "all";
+function openCategoryMenu() {
+  if (!selectedVenue) return;
+  if (!categoryMenuEl) return;
 
-  if (categorySelectLabelEl) {
-    categorySelectLabelEl.textContent = CATEGORY_LABELS[catKey] || "Restaurants";
+  categoryMenuEl.hidden = false;
+  categoryMenuMode = "category";
+  renderCategoryMenu();
+}
+
+// ===== Search by Name =====
+function clearNameSearch() {
+  if (placeNameSearchEl) placeNameSearchEl.value = "";
+}
+
+function runNameSearch(q) {
+  if (!selectedVenue || !placesService) return;
+
+  const query = (q || "").trim();
+  if (!query) {
+    // go back to category results
+    loadPlacesForCategory(currentCategory, currentSecondaryId);
+    return;
   }
 
-  // Show/hide filter pill based on category
-  if (filterSelectBtn) {
-    const supported = categorySupportsFilters(catKey);
-    filterSelectBtn.hidden = !supported;
-    if (supported) {
-      // reset filter label + rebuild filter menu
-      if (filterSelectLabelEl) filterSelectLabelEl.textContent = "All";
-      renderFilterMenu(catKey);
+  const baseCfg = CATEGORY_SEARCH_CONFIG[currentCategory] || CATEGORY_SEARCH_CONFIG.restaurants;
+  const radius = baseCfg.radius || 3000;
+
+  // Bias the query by current category (so results match the “category style”)
+  let categoryHint = "";
+  if (currentCategory !== "toppicks") {
+    if (baseCfg.type) categoryHint = baseCfg.type.replace(/_/g, " ");
+    if (baseCfg.keyword) categoryHint = baseCfg.keyword;
+  }
+
+  const request = {
+    location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
+    radius,
+    query: categoryHint ? `${query} ${categoryHint}` : query
+  };
+
+  if (guideResultsEl) {
+    guideResultsEl.innerHTML = '<div class="hint">Searching…</div>';
+  }
+
+  placesService.textSearch(request, (results, status) => {
+    if (!guideResultsEl) return;
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+      guideResultsEl.innerHTML = '<div class="hint">No matches found.</div>';
+      return;
     }
-  }
 
-  loadPlacesForCategory(currentCategory, currentSecondaryId);
+    // Match category behavior: show first 20
+    renderPlaces(results.slice(0, 20));
+  });
 }
 
 // Make initMap visible for Google callback
@@ -268,17 +392,16 @@ window.initMap = function () {
   });
 
   placesService = new google.maps.places.PlacesService(map);
-
+  guidePanelEl = document.getElementById("guidePanel");
   guideResultsEl = document.getElementById("guideResults");
 
-  // ✅ new elements
-  categorySelectBtn = document.getElementById("categorySelectBtn");
-  categorySelectLabelEl = document.getElementById("categorySelectLabel");
+  // NEW toolbar hooks
+  categoryPillBtn = document.getElementById("categoryPillBtn");
+  categoryPillLabel = document.getElementById("categoryPillLabel");
   categoryMenuEl = document.getElementById("categoryMenu");
 
-  filterSelectBtn = document.getElementById("filterSelectBtn");
-  filterSelectLabelEl = document.getElementById("filterSelectLabel");
-  filterMenuEl = document.getElementById("filterMenu");
+  placeNameSearchEl = document.getElementById("placeNameSearch");
+  clearNameSearchBtn = document.getElementById("clearNameSearch");
 
   // Details overlay elements
   placeDetailsOverlay = document.getElementById("placeDetails");
@@ -301,53 +424,51 @@ window.initMap = function () {
     });
   }
 
-  // ✅ Category pill click
-  if (categorySelectBtn) {
-    categorySelectBtn.addEventListener("click", () => {
+  // Category pill open
+  if (categoryPillBtn) {
+    categoryPillBtn.addEventListener("click", () => {
       if (!selectedVenue) return;
-      const willOpen = categoryMenuEl.hidden;
-      hideMenus();
-      categoryMenuEl.hidden = !willOpen;
-      categorySelectBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      const isHidden = categoryMenuEl?.hidden ?? true;
+      if (isHidden) openCategoryMenu();
+      else hideCategoryMenu();
     });
   }
 
-  // ✅ Category menu items
-  if (categoryMenuEl) {
-    Array.from(categoryMenuEl.querySelectorAll(".select-menu-item")).forEach(item => {
-      item.addEventListener("click", () => {
-        if (!selectedVenue) return;
-        const cat = item.dataset.category;
-        if (!cat) return;
-        setCategory(cat);
-        hideMenus();
-      });
+  // Name search behaviors
+  if (placeNameSearchEl) {
+    placeNameSearchEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        runNameSearch(placeNameSearchEl.value);
+      }
+    });
+
+    // optional: run search when they stop typing
+    let t = null;
+    placeNameSearchEl.addEventListener("input", () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(() => {
+        runNameSearch(placeNameSearchEl.value);
+      }, 350);
+    });
+
+    // prevent map drag while interacting
+    placeNameSearchEl.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+  }
+
+  if (clearNameSearchBtn) {
+    clearNameSearchBtn.addEventListener("click", () => {
+      clearNameSearch();
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
     });
   }
 
-  // ✅ Filter pill click
-  if (filterSelectBtn) {
-    filterSelectBtn.addEventListener("click", () => {
-      if (!selectedVenue) return;
-      if (filterSelectBtn.hidden) return;
-
-      const willOpen = filterMenuEl.hidden;
-      hideMenus();
-      filterMenuEl.hidden = !willOpen;
-      filterSelectBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
-    });
-  }
-
-  // ✅ Outside click closes menus
+  // Close menus on outside tap
   document.addEventListener("click", (e) => {
-    const inCategory = categorySelectBtn && categorySelectBtn.contains(e.target);
-    const inCategoryMenu = categoryMenuEl && categoryMenuEl.contains(e.target);
-    const inFilter = filterSelectBtn && filterSelectBtn.contains(e.target);
-    const inFilterMenu = filterMenuEl && filterMenuEl.contains(e.target);
-
-    if (!inCategory && !inCategoryMenu && !inFilter && !inFilterMenu) {
-      hideMenus();
-    }
+    if (!categoryMenuEl || categoryMenuEl.hidden) return;
+    const withinMenu = categoryMenuEl.contains(e.target);
+    const withinBtn = categoryPillBtn && categoryPillBtn.contains(e.target);
+    if (!withinMenu && !withinBtn) hideCategoryMenu();
   });
 
   // Load venues, then Top Picks
@@ -355,10 +476,13 @@ window.initMap = function () {
     .then(res => res.json())
     .then(data => {
       venues = data;
-      venues.forEach(v => { v.key = makeVenueKey(v.name, v.city, v.state); });
+
+      venues.forEach(v => {
+        v.key = makeVenueKey(v.name, v.city, v.state);
+      });
 
       createMarkers();
-      setupSearch();
+      setupVenueSearch();
 
       return fetch("data/top_picks.json");
     })
@@ -385,10 +509,7 @@ function createMarkers() {
       icon: venue.isFestival ? SILVER_PIN_ICON : NAVY_PIN_ICON
     });
 
-    marker.addListener("click", () => {
-      focusVenue(venue);
-    });
-
+    marker.addListener("click", () => focusVenue(venue));
     return { venueId: venue.id, marker };
   });
 }
@@ -397,6 +518,11 @@ function focusVenue(venue) {
   if (!venue || !venue.lat || !venue.lng) return;
 
   selectedVenue = venue;
+  currentCategory = "restaurants";
+  currentSecondaryId = "all";
+  pendingCategoryKey = "restaurants";
+  hideCategoryMenu();
+  clearNameSearch();
 
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
@@ -416,16 +542,16 @@ function focusVenue(venue) {
 
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
-  nameEl.textContent = venue.name;
-  locEl.textContent = `${venue.city}, ${venue.state}`;
+  if (nameEl) nameEl.textContent = venue.name;
+  if (locEl) locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  document.getElementById("guidePanel").classList.remove("guide-panel--hidden");
+  setCategoryPillText();
 
-  hideMenus();
-  setCategory("restaurants");
+  if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
+  loadPlacesForCategory(currentCategory, currentSecondaryId);
 }
 
-function setupSearch() {
+function setupVenueSearch() {
   const input = document.getElementById("venueSearch");
   const resultsEl = document.getElementById("searchResults");
 
@@ -449,17 +575,6 @@ function setupSearch() {
     resultsEl.classList.add("visible");
   }
 
-  function findBestMatch(query) {
-    const q = query.trim().toLowerCase();
-    if (!q) return null;
-    return (
-      venues.find(v => v.name.toLowerCase() === q) ||
-      venues.find(v => v.name.toLowerCase().includes(q)) ||
-      venues.find(v => v.city.toLowerCase().includes(q) || v.state.toLowerCase().includes(q)) ||
-      null
-    );
-  }
-
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
     if (!q) {
@@ -477,7 +592,12 @@ function setupSearch() {
   input.addEventListener("keydown", e => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const match = findBestMatch(input.value);
+      const q = input.value.trim().toLowerCase();
+      const match =
+        venues.find(v => v.name.toLowerCase() === q) ||
+        venues.find(v => v.name.toLowerCase().includes(q)) ||
+        venues.find(v => v.city.toLowerCase().includes(q) || v.state.toLowerCase().includes(q)) ||
+        null;
       if (match) {
         renderResults([]);
         focusVenue(match);
@@ -520,7 +640,11 @@ function loadTopPicksForVenue(venue) {
 
     const bits = [];
     if (item.address) bits.push(item.address);
-    if (item.notes) bits.push(item.notes);
+    if (selectedVenue && item.lat && item.lng) {
+      const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng);
+      bits.push(`${metersToMiles(meters).toFixed(1)} mi`);
+    }
+    if (item.rating) bits.push(`${Number(item.rating).toFixed(1)}★`);
     metaEl.textContent = bits.join(" • ");
 
     card.appendChild(nameEl);
@@ -571,7 +695,8 @@ function loadPlacesForCategory(catKey, subFilterId) {
 
   if (!placesService) return;
 
-  const baseCfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+  const baseCfg =
+    CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
 
   const request = {
     location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
@@ -579,10 +704,9 @@ function loadPlacesForCategory(catKey, subFilterId) {
   };
 
   if (baseCfg.type) request.type = baseCfg.type;
-
-  // apply keyword from filter if supported
   let keyword = baseCfg.keyword || null;
-  const defs = FILTERS[catKey];
+
+  const defs = SECONDARY_FILTERS[catKey];
   if (defs && subFilterId) {
     const match = defs.find(d => d.id === subFilterId);
     if (match && match.keyword) keyword = match.keyword;
