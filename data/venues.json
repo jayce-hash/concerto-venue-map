@@ -1829,17 +1829,6 @@
     "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.4909&lng=-71.337&venue=Newport%20Jazz%20Festival"
   },
   {
-    "id": "vans-warped-tour-select-dates",
-    "name": "Vans Warped Tour (Select Dates)",
-    "city": "Various",
-    "state": "USA",
-    "country": "USA",
-    "lat": 39.8283,
-    "lng": -98.5795,
-    "isFestival": true,
-    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.8283&lng=-98.5795&venue=Vans%20Warped%20Tour%20(Select%20Dates)"
-  },
-  {
     "id": "austin-city-limits-music-festival",
     "name": "Austin City Limits Music Festival",
     "city": "Austin",
