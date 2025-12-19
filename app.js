@@ -100,62 +100,62 @@ const CATEGORY_ORDER = [
 // Base category → Places search config
 const CATEGORY_SEARCH_CONFIG = {
   restaurants: { type: "restaurant", radius: 3000 },
-  bars:        { type: "bar", radius: 3000 },
-  coffee:      { type: "cafe", radius: 3000 },
-  hotels:      { type: "lodging", radius: 4000 },
-  retail:      { keyword: "shopping", radius: 4000 },
+  bars: { type: "bar", radius: 3000 },
+  coffee: { type: "cafe", radius: 3000 },
+  hotels: { type: "lodging", radius: 4000 },
+  retail: { keyword: "shopping", radius: 4000 },
   attractions: { type: "tourist_attraction", radius: 5000 },
-  transit:     { type: "transit_station", radius: 4000 },
-  pharmacies:  { type: "pharmacy", radius: 3000 },
-  gas:         { type: "gas_station", radius: 4000 },
-  grocery:     { keyword: "grocery store", radius: 4000 }
+  transit: { type: "transit_station", radius: 4000 },
+  pharmacies: { type: "pharmacy", radius: 3000 },
+  gas: { type: "gas_station", radius: 4000 },
+  grocery: { keyword: "grocery store", radius: 4000 }
 };
 
 // “Good filters” (not too many, but useful)
 const SECONDARY_FILTERS = {
   restaurants: [
-    { id: "all",     label: "All",            keyword: null },
-    { id: "sitdown", label: "Sit-Down",       keyword: "sit down restaurant" },
-    { id: "quick",   label: "Quick Bites",    keyword: "fast food" },
-    { id: "brunch",  label: "Brunch",         keyword: "brunch" },
-    { id: "pizza",   label: "Pizza",          keyword: "pizza" },
-    { id: "vegan",   label: "Vegan-Friendly", keyword: "vegan restaurant" }
+    { id: "all", label: "All", keyword: null },
+    { id: "sitdown", label: "Sit-Down", keyword: "sit down restaurant" },
+    { id: "quick", label: "Quick Bites", keyword: "fast food" },
+    { id: "brunch", label: "Brunch", keyword: "brunch" },
+    { id: "pizza", label: "Pizza", keyword: "pizza" },
+    { id: "vegan", label: "Vegan-Friendly", keyword: "vegan restaurant" }
   ],
   hotels: [
-    { id: "all",      label: "All",      keyword: null },
+    { id: "all", label: "All", keyword: null },
     { id: "boutique", label: "Boutique", keyword: "boutique hotel" },
-    { id: "luxury",   label: "Luxury",   keyword: "luxury hotel" },
-    { id: "budget",   label: "Budget",   keyword: "budget hotel" }
+    { id: "luxury", label: "Luxury", keyword: "luxury hotel" },
+    { id: "budget", label: "Budget", keyword: "budget hotel" }
   ],
   bars: [
-    { id: "all",      label: "All",         keyword: null },
-    { id: "cocktail", label: "Cocktail",    keyword: "cocktail bar" },
-    { id: "sports",   label: "Sports Bars", keyword: "sports bar" },
-    { id: "rooftop",  label: "Rooftop",     keyword: "rooftop bar" }
+    { id: "all", label: "All", keyword: null },
+    { id: "cocktail", label: "Cocktail", keyword: "cocktail bar" },
+    { id: "sports", label: "Sports Bars", keyword: "sports bar" },
+    { id: "rooftop", label: "Rooftop", keyword: "rooftop bar" }
   ],
   coffee: [
-    { id: "all",       label: "All",         keyword: null },
-    { id: "study",     label: "Study Spots", keyword: "coffee shop with wifi" },
-    { id: "bakery",    label: "Bakery",      keyword: "bakery" },
-    { id: "specialty", label: "Specialty",   keyword: "specialty coffee" }
+    { id: "all", label: "All", keyword: null },
+    { id: "study", label: "Study Spots", keyword: "coffee shop with wifi" },
+    { id: "bakery", label: "Bakery", keyword: "bakery" },
+    { id: "specialty", label: "Specialty", keyword: "specialty coffee" }
   ],
   attractions: [
-    { id: "all",     label: "All",     keyword: null },
+    { id: "all", label: "All", keyword: null },
     { id: "museums", label: "Museums", keyword: "museum" },
-    { id: "parks",   label: "Parks",   keyword: "park" },
-    { id: "views",   label: "Views",   keyword: "observation deck" }
+    { id: "parks", label: "Parks", keyword: "park" },
+    { id: "views", label: "Views", keyword: "observation deck" }
   ],
   retail: [
-    { id: "all",      label: "All",      keyword: null },
-    { id: "mall",     label: "Malls",    keyword: "mall" },
+    { id: "all", label: "All", keyword: null },
+    { id: "mall", label: "Malls", keyword: "mall" },
     { id: "clothing", label: "Clothing", keyword: "clothing store" },
-    { id: "gifts",    label: "Gifts",    keyword: "gift shop" }
+    { id: "gifts", label: "Gifts", keyword: "gift shop" }
   ],
   transit: [
-    { id: "all",    label: "All",    keyword: null },
+    { id: "all", label: "All", keyword: null },
     { id: "subway", label: "Subway", keyword: "subway station" },
-    { id: "train",  label: "Train",  keyword: "train station" },
-    { id: "bus",    label: "Bus",    keyword: "bus station" }
+    { id: "train", label: "Train", keyword: "train station" },
+    { id: "bus", label: "Bus", keyword: "bus station" }
   ]
 };
 
@@ -196,13 +196,13 @@ function showPlaceDetails(place) {
 
   const bits = [];
   if (place.rating) {
-    const rating = place.rating.toFixed(1);
+    const rating = Number(place.rating).toFixed(1);
     const count = place.user_ratings_total;
     bits.push(`${rating}★${count ? ` (${count})` : ""}`);
   }
   if (place.types && place.types.length) {
-    const prettyType = place.types[0].replace(/_/g, " ");
-    bits.push(prettyType հավել to replace; // ignore
+    const prettyType = String(place.types[0]).replace(/_/g, " ");
+    bits.push(prettyType);
   }
   detailsMetaEl.textContent = bits.join(" • ");
 
@@ -309,19 +309,19 @@ function buildCategoryMenu(mode) {
         currentSecondaryId = "all";
         lastCategoryPicked = cat;
 
-        // If Top Picks or categories without filters -> load immediately
         const defs = SECONDARY_FILTERS[cat];
         const hasFilters = defs && defs.length && cat !== "toppicks";
 
+        const catLabel = CATEGORY_LABELS[cat] || cat;
+
         if (!hasFilters) {
-          categoryPillLabel.textContent = CATEGORY_LABELS[cat] || cat;
+          categoryPillLabel.textContent = catLabel;
           closeCategoryMenu();
           loadPlacesForCategory(currentCategory, currentSecondaryId);
           return;
         }
 
-        // Otherwise show filter list in same menu
-        categoryPillLabel.textContent = CATEGORY_LABELS[cat] || cat;
+        categoryPillLabel.textContent = catLabel;
         openCategoryMenu("filters");
       });
 
@@ -331,12 +331,6 @@ function buildCategoryMenu(mode) {
 
   if (mode === "filters") {
     const defs = SECONDARY_FILTERS[lastCategoryPicked] || [];
-
-    if (!defs.length || lastCategoryPicked === "toppicks") {
-      closeCategoryMenu();
-      loadPlacesForCategory(currentCategory, currentSecondaryId);
-      return;
-    }
 
     defs.forEach(def => {
       const item = document.createElement("button");
@@ -371,7 +365,7 @@ function setupCategoryPillUI() {
 
   if (!categoryPillBtn || !categoryPillLabel || !categoryMenu) return;
 
-  // Stop iOS webview "open then immediately close"
+  // Prevent iOS webview “open then instantly close”
   categoryPillBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
   categoryMenu.addEventListener("pointerdown", (e) => e.stopPropagation());
 
@@ -399,7 +393,6 @@ function setupCategoryPillUI() {
     if (e.key === "Escape") closeCategoryMenu();
   });
 
-  // Default label
   categoryPillLabel.textContent = "Search by Category";
 }
 
@@ -491,8 +484,7 @@ function loadPlacesForCategory(catKey, subFilterId) {
 
   if (!placesService) return;
 
-  const baseCfg =
-    CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+  const baseCfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
 
   const request = {
     location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
@@ -510,17 +502,13 @@ function loadPlacesForCategory(catKey, subFilterId) {
   }
   if (keyword) request.keyword = keyword;
 
-  if (guideResultsEl) {
-    guideResultsEl.innerHTML =
-      '<div class="hint">Loading nearby places…</div>';
-  }
+  if (guideResultsEl) guideResultsEl.innerHTML = '<div class="hint">Loading nearby places…</div>';
 
   placesService.nearbySearch(request, (results, status) => {
     if (!guideResultsEl) return;
 
     if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-      guideResultsEl.innerHTML =
-        '<div class="hint">No places found for this category here yet.</div>';
+      guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
       return;
     }
 
@@ -532,29 +520,32 @@ function loadPlacesForCategory(catKey, subFilterId) {
 function searchPlacesByName(query) {
   if (!selectedVenue || !placesService) return;
   const q = (query || "").trim();
+
   if (!q) {
     loadPlacesForCategory(currentCategory, currentSecondaryId);
     return;
   }
 
-  if (guideResultsEl) {
-    guideResultsEl.innerHTML = '<div class="hint">Searching…</div>';
-  }
+  if (guideResultsEl) guideResultsEl.innerHTML = '<div class="hint">Searching…</div>';
+
+  // Use a bounds bias near the venue
+  const center = new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng);
+  const bounds = new google.maps.LatLngBounds();
+  bounds.extend(new google.maps.LatLng(selectedVenue.lat + 0.05, selectedVenue.lng + 0.05));
+  bounds.extend(new google.maps.LatLng(selectedVenue.lat - 0.05, selectedVenue.lng - 0.05));
 
   const request = {
     query: q,
-    locationBias: new google.maps.Circle({
-      center: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
-      radius: 6000
-    })
+    location: center,
+    radius: 6000,
+    bounds
   };
 
   placesService.textSearch(request, (results, status) => {
     if (!guideResultsEl) return;
 
     if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-      guideResultsEl.innerHTML =
-        '<div class="hint">No results found for that search.</div>';
+      guideResultsEl.innerHTML = '<div class="hint">No results found for that search.</div>';
       return;
     }
 
@@ -569,13 +560,12 @@ function setupNameSearchUI() {
   if (!placeNameSearchEl) return;
 
   let t = null;
+
   placeNameSearchEl.addEventListener("input", () => {
     if (!selectedVenue) return;
     const val = placeNameSearchEl.value;
     if (t) clearTimeout(t);
-    t = setTimeout(() => {
-      searchPlacesByName(val);
-    }, 250);
+    t = setTimeout(() => searchPlacesByName(val), 250);
   });
 
   placeNameSearchEl.addEventListener("keydown", (e) => {
@@ -598,8 +588,7 @@ function renderPlaces(places) {
   guideResultsEl.innerHTML = "";
 
   if (!places.length) {
-    guideResultsEl.innerHTML =
-      '<div class="hint">No places found for this category here yet.</div>';
+    guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
     return;
   }
 
@@ -625,7 +614,7 @@ function renderPlaces(places) {
       bits.push(`${metersToMiles(meters).toFixed(1)} mi`);
     }
 
-    if (place.rating) bits.push(`${place.rating.toFixed(1)}★`);
+    if (place.rating) bits.push(`${Number(place.rating).toFixed(1)}★`);
     meta.textContent = bits.join(" • ");
 
     card.appendChild(name);
@@ -763,6 +752,7 @@ function focusVenue(venue) {
   if (locEl) locEl.textContent = `${venue.city}, ${venue.state}`;
 
   if (categoryPillLabel) categoryPillLabel.textContent = "Search by Category";
+  if (placeNameSearchEl) placeNameSearchEl.value = "";
 
   if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
   ensureBackButton();
@@ -882,6 +872,7 @@ window.initMap = function () {
     .then(res => res.json())
     .then(data => {
       venues = data;
+
       venues.forEach(v => {
         v.key = makeVenueKey(v.name, v.city, v.state);
       });
