@@ -7,20 +7,21 @@ let placesService = null;
 let guidePanelEl = null;
 let guideResultsEl = null;
 
-// --- New UI elements (Category + Filter dropdown pills) ---
-let categorySelectBtn = null;
-let categorySelectLabel = null;
+// --- Category pill (single dropdown menu) ---
+let categoryPillBtn = null;
+let categoryPillLabel = null;
 let categoryMenu = null;
 
-let filterSelectBtn = null;
-let filterSelectLabel = null;
-let filterMenu = null;
+// --- Name search pill ---
+let placeNameSearchEl = null;
+let clearNameSearchBtn = null;
 
-let backToMapBtn = null;
-
-// --- Existing search UI ---
+// --- Existing venue search UI (top search bar) ---
 let venueSearchInput = null;
 let venueSearchResultsEl = null;
+
+// Back button
+let backToMapBtn = null;
 
 // Top Picks data
 let topPicksByKey = {};
@@ -40,6 +41,10 @@ let detailsHoursEl = null;
 // State
 let currentCategory = "restaurants";
 let currentSecondaryId = "all";
+
+// Single menu mode
+let menuMode = "categories"; // "categories" | "filters"
+let lastCategoryPicked = "restaurants";
 
 // Navy pin icon for Concerto (default venues)
 const NAVY_PIN_ICON = {
@@ -77,6 +82,20 @@ const CATEGORY_LABELS = {
   gas: "Gas Stations",
   grocery: "Grocery Stores"
 };
+
+const CATEGORY_ORDER = [
+  "toppicks",
+  "restaurants",
+  "hotels",
+  "bars",
+  "coffee",
+  "transit",
+  "attractions",
+  "retail",
+  "pharmacies",
+  "gas",
+  "grocery"
+];
 
 // Base category → Places search config
 const CATEGORY_SEARCH_CONFIG = {
@@ -183,7 +202,7 @@ function showPlaceDetails(place) {
   }
   if (place.types && place.types.length) {
     const prettyType = place.types[0].replace(/_/g, " ");
-    bits.push(prettyType);
+    bits.push(prettyType հավել to replace; // ignore
   }
   detailsMetaEl.textContent = bits.join(" • ");
 
@@ -230,103 +249,158 @@ function showPlaceDetails(place) {
   placeDetailsOverlay.hidden = false;
 }
 
-// ---------- Dropdown positioning (fixes “weird open” + mobile scroll) ----------
+// ---------- Menu positioning (place under pill, inside panel) ----------
 function positionMenuUnderButton(menuEl, buttonEl) {
   if (!menuEl || !buttonEl || !guidePanelEl) return;
 
   const panelRect = guidePanelEl.getBoundingClientRect();
   const btnRect = buttonEl.getBoundingClientRect();
-
-  // menu is inside the panel visually, so set top relative to the panel
   const top = (btnRect.bottom - panelRect.top) + 6;
   menuEl.style.top = `${top}px`;
 }
 
-function closeMenus() {
-  if (categoryMenu) categoryMenu.hidden = true;
-  if (filterMenu) filterMenu.hidden = true;
-  if (categorySelectBtn) categorySelectBtn.setAttribute("aria-expanded", "false");
-  if (filterSelectBtn) filterSelectBtn.setAttribute("aria-expanded", "false");
+// ---------- Single dropdown menu (Categories -> Filters) ----------
+function closeCategoryMenu() {
+  if (!categoryMenu) return;
+  categoryMenu.hidden = true;
+  menuMode = "categories";
 }
 
-function toggleMenu(menuEl, btnEl) {
-  if (!menuEl || !btnEl) return;
+function openCategoryMenu(mode = "categories") {
+  if (!categoryMenu || !categoryPillBtn) return;
 
-  const opening = menuEl.hidden === true;
-
-  // close other menu first
-  if (menuEl === categoryMenu && filterMenu && !filterMenu.hidden) {
-    filterMenu.hidden = true;
-    if (filterSelectBtn) filterSelectBtn.setAttribute("aria-expanded", "false");
-  }
-  if (menuEl === filterMenu && categoryMenu && !categoryMenu.hidden) {
-    categoryMenu.hidden = true;
-    if (categorySelectBtn) categorySelectBtn.setAttribute("aria-expanded", "false");
-  }
-
-  if (opening) {
-    positionMenuUnderButton(menuEl, btnEl);
-    menuEl.hidden = false;
-    btnEl.setAttribute("aria-expanded", "true");
-  } else {
-    menuEl.hidden = true;
-    btnEl.setAttribute("aria-expanded", "false");
-  }
+  menuMode = mode;
+  buildCategoryMenu(mode);
+  positionMenuUnderButton(categoryMenu, categoryPillBtn);
+  categoryMenu.hidden = false;
 }
 
-// ---------- UI state for filter pill ----------
-function updateFilterUIForCategory(catKey) {
-  const defs = SECONDARY_FILTERS[catKey];
+function buildCategoryMenu(mode) {
+  if (!categoryMenu) return;
+  categoryMenu.innerHTML = "";
 
-  // No filters for Top Picks + Pharmacies + Gas + Grocery (per your requirement)
-  const shouldHide =
-    catKey === "toppicks" ||
-    catKey === "pharmacies" ||
-    catKey === "gas" ||
-    catKey === "grocery" ||
-    !defs ||
-    !defs.length;
-
-  if (!filterSelectBtn || !filterSelectLabel || !filterMenu) return;
-
-  if (shouldHide) {
-    filterSelectBtn.hidden = true;
-    filterMenu.innerHTML = "";
-    currentSecondaryId = "all";
-    return;
-  }
-
-  // Show filter pill, rebuild filter menu
-  filterSelectBtn.hidden = false;
-  buildFilterMenu(catKey);
-
-  // Default to “All”
-  currentSecondaryId = "all";
-  filterSelectLabel.textContent = "All";
-}
-
-function buildFilterMenu(catKey) {
-  if (!filterMenu) return;
-  filterMenu.innerHTML = "";
-
-  const defs = SECONDARY_FILTERS[catKey] || [];
-  defs.forEach(def => {
-    const item = document.createElement("button");
-    item.type = "button";
-    item.className = "select-menu-item";
-    item.dataset.filterId = def.id;
-    item.textContent = def.label;
-
-    item.addEventListener("click", () => {
-      currentSecondaryId = def.id;
-      if (filterSelectLabel) filterSelectLabel.textContent = def.label;
-
-      closeMenus();
-      loadPlacesForCategory(currentCategory, currentSecondaryId);
+  if (mode === "filters") {
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "select-menu-item";
+    back.textContent = "← Back to Categories";
+    back.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openCategoryMenu("categories");
     });
+    categoryMenu.appendChild(back);
+  }
 
-    filterMenu.appendChild(item);
+  if (mode === "categories") {
+    CATEGORY_ORDER.forEach(cat => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "select-menu-item";
+      item.dataset.category = cat;
+      item.textContent = CATEGORY_LABELS[cat] || cat;
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!selectedVenue) return;
+
+        currentCategory = cat;
+        currentSecondaryId = "all";
+        lastCategoryPicked = cat;
+
+        // If Top Picks or categories without filters -> load immediately
+        const defs = SECONDARY_FILTERS[cat];
+        const hasFilters = defs && defs.length && cat !== "toppicks";
+
+        if (!hasFilters) {
+          categoryPillLabel.textContent = CATEGORY_LABELS[cat] || cat;
+          closeCategoryMenu();
+          loadPlacesForCategory(currentCategory, currentSecondaryId);
+          return;
+        }
+
+        // Otherwise show filter list in same menu
+        categoryPillLabel.textContent = CATEGORY_LABELS[cat] || cat;
+        openCategoryMenu("filters");
+      });
+
+      categoryMenu.appendChild(item);
+    });
+  }
+
+  if (mode === "filters") {
+    const defs = SECONDARY_FILTERS[lastCategoryPicked] || [];
+
+    if (!defs.length || lastCategoryPicked === "toppicks") {
+      closeCategoryMenu();
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
+      return;
+    }
+
+    defs.forEach(def => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "select-menu-item";
+      item.dataset.filterId = def.id;
+      item.textContent = def.label;
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        currentSecondaryId = def.id;
+
+        const catLabel = CATEGORY_LABELS[lastCategoryPicked] || lastCategoryPicked;
+        categoryPillLabel.textContent =
+          def.id === "all" ? catLabel : `${catLabel} • ${def.label}`;
+
+        closeCategoryMenu();
+        loadPlacesForCategory(currentCategory, currentSecondaryId);
+      });
+
+      categoryMenu.appendChild(item);
+    });
+  }
+}
+
+function setupCategoryPillUI() {
+  categoryPillBtn = document.getElementById("categoryPillBtn");
+  categoryPillLabel = document.getElementById("categoryPillLabel");
+  categoryMenu = document.getElementById("categoryMenu");
+
+  if (!categoryPillBtn || !categoryPillLabel || !categoryMenu) return;
+
+  // Stop iOS webview "open then immediately close"
+  categoryPillBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+  categoryMenu.addEventListener("pointerdown", (e) => e.stopPropagation());
+
+  categoryPillBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!selectedVenue) return;
+
+    if (!categoryMenu.hidden) {
+      closeCategoryMenu();
+      return;
+    }
+    openCategoryMenu("categories");
   });
+
+  // Close on outside click
+  document.addEventListener("pointerdown", (e) => {
+    if (!categoryMenu || categoryMenu.hidden) return;
+    const inside = categoryPillBtn.contains(e.target) || categoryMenu.contains(e.target);
+    if (!inside) closeCategoryMenu();
+  });
+
+  // ESC closes
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeCategoryMenu();
+  });
+
+  // Default label
+  categoryPillLabel.textContent = "Search by Category";
 }
 
 // ----- Top Picks loader (curated) -----
@@ -358,7 +432,6 @@ function loadTopPicksForVenue(venue) {
     const bits = [];
     if (item.address) bits.push(item.address);
 
-    // add distance if we can (optional but nice)
     if (item.lat && item.lng && selectedVenue) {
       const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng);
       bits.push(`${metersToMiles(meters).toFixed(1)} mi`);
@@ -453,6 +526,72 @@ function loadPlacesForCategory(catKey, subFilterId) {
 
     renderPlaces(results.slice(0, 20));
   });
+}
+
+// ----- Name search near venue (same cards) -----
+function searchPlacesByName(query) {
+  if (!selectedVenue || !placesService) return;
+  const q = (query || "").trim();
+  if (!q) {
+    loadPlacesForCategory(currentCategory, currentSecondaryId);
+    return;
+  }
+
+  if (guideResultsEl) {
+    guideResultsEl.innerHTML = '<div class="hint">Searching…</div>';
+  }
+
+  const request = {
+    query: q,
+    locationBias: new google.maps.Circle({
+      center: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
+      radius: 6000
+    })
+  };
+
+  placesService.textSearch(request, (results, status) => {
+    if (!guideResultsEl) return;
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+      guideResultsEl.innerHTML =
+        '<div class="hint">No results found for that search.</div>';
+      return;
+    }
+
+    renderPlaces(results.slice(0, 20));
+  });
+}
+
+function setupNameSearchUI() {
+  placeNameSearchEl = document.getElementById("placeNameSearch");
+  clearNameSearchBtn = document.getElementById("clearNameSearch");
+
+  if (!placeNameSearchEl) return;
+
+  let t = null;
+  placeNameSearchEl.addEventListener("input", () => {
+    if (!selectedVenue) return;
+    const val = placeNameSearchEl.value;
+    if (t) clearTimeout(t);
+    t = setTimeout(() => {
+      searchPlacesByName(val);
+    }, 250);
+  });
+
+  placeNameSearchEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchPlacesByName(placeNameSearchEl.value);
+    }
+  });
+
+  if (clearNameSearchBtn) {
+    clearNameSearchBtn.addEventListener("click", () => {
+      placeNameSearchEl.value = "";
+      loadPlacesForCategory(currentCategory, currentSecondaryId);
+      placeNameSearchEl.focus();
+    });
+  }
 }
 
 function renderPlaces(places) {
@@ -572,22 +711,23 @@ function ensureBackButton() {
   btn.style.flex = "0 0 auto";
 
   btn.addEventListener("click", () => {
-    closeMenus();
+    closeCategoryMenu();
     hidePlaceDetails();
 
     selectedVenue = null;
     currentCategory = "restaurants";
     currentSecondaryId = "all";
+    lastCategoryPicked = "restaurants";
+    menuMode = "categories";
+
+    if (placeNameSearchEl) placeNameSearchEl.value = "";
+    if (categoryPillLabel) categoryPillLabel.textContent = "Search by Category";
 
     if (guidePanelEl) guidePanelEl.classList.add("guide-panel--hidden");
     if (guideResultsEl) guideResultsEl.innerHTML = "";
 
-    // reset map view
     map.setZoom(4);
     map.panTo({ lat: 39.5, lng: -98.35 });
-
-    // optionally clear the venue search input (not required)
-    // if (venueSearchInput) venueSearchInput.value = "";
   });
 
   header.appendChild(btn);
@@ -599,16 +739,16 @@ function focusVenue(venue) {
 
   selectedVenue = venue;
 
-  // default state
   currentCategory = "restaurants";
   currentSecondaryId = "all";
+  lastCategoryPicked = "restaurants";
+  menuMode = "categories";
 
-  closeMenus();
+  closeCategoryMenu();
 
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
-  // keep venue above panel
   google.maps.event.addListenerOnce(map, "idle", () => {
     const panel = document.getElementById("guidePanel");
     if (panel) {
@@ -617,22 +757,16 @@ function focusVenue(venue) {
     }
   });
 
-  // set header text
   const nameEl = document.getElementById("guideVenueName");
   const locEl = document.getElementById("guideVenueLocation");
   if (nameEl) nameEl.textContent = venue.name;
   if (locEl) locEl.textContent = `${venue.city}, ${venue.state}`;
 
-  // set UI labels to default
-  if (categorySelectLabel) categorySelectLabel.textContent = CATEGORY_LABELS[currentCategory] || "Restaurants";
-  updateFilterUIForCategory(currentCategory);
+  if (categoryPillLabel) categoryPillLabel.textContent = "Search by Category";
 
-  // show panel
   if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
-
   ensureBackButton();
 
-  // load places
   loadPlacesForCategory(currentCategory, currentSecondaryId);
 }
 
@@ -705,87 +839,6 @@ function setupVenueSearch() {
   });
 }
 
-function setupCategoryAndFilterUI() {
-  categorySelectBtn = document.getElementById("categorySelectBtn");
-  categorySelectLabel = document.getElementById("categorySelectLabel");
-  categoryMenu = document.getElementById("categoryMenu");
-
-  filterSelectBtn = document.getElementById("filterSelectBtn");
-  filterSelectLabel = document.getElementById("filterSelectLabel");
-  filterMenu = document.getElementById("filterMenu");
-
-  // ✅ Prevent iOS/WebView from immediately triggering the document click close
-  if (categorySelectBtn) {
-    categorySelectBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleMenu(categoryMenu, categorySelectBtn);
-    });
-  }
-
-  if (filterSelectBtn) {
-    filterSelectBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (filterSelectBtn.hidden) return;
-      toggleMenu(filterMenu, filterSelectBtn);
-    });
-  }
-
-  // ✅ Also stop propagation when clicking inside menus
-  if (categoryMenu) {
-    categoryMenu.addEventListener("click", (e) => e.stopPropagation());
-
-    const items = Array.from(categoryMenu.querySelectorAll(".select-menu-item"));
-    items.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!selectedVenue) return;
-
-        const cat = item.dataset.category;
-        if (!cat) return;
-
-        currentCategory = cat;
-        currentSecondaryId = "all";
-
-        if (categorySelectLabel) {
-          categorySelectLabel.textContent = CATEGORY_LABELS[cat] || cat;
-        }
-
-        updateFilterUIForCategory(cat);
-
-        closeMenus();
-        loadPlacesForCategory(currentCategory, currentSecondaryId);
-      });
-    });
-  }
-
-  if (filterMenu) {
-    filterMenu.addEventListener("click", (e) => e.stopPropagation());
-  }
-
-  // Close menus on outside click
-  document.addEventListener("click", (e) => {
-    if (!selectedVenue) return;
-
-    const withinCategoryBtn = categorySelectBtn && categorySelectBtn.contains(e.target);
-    const withinCategoryMenu = categoryMenu && categoryMenu.contains(e.target);
-
-    const withinFilterBtn = filterSelectBtn && filterSelectBtn.contains(e.target);
-    const withinFilterMenu = filterMenu && filterMenu.contains(e.target);
-
-    if (!withinCategoryBtn && !withinCategoryMenu && !withinFilterBtn && !withinFilterMenu) {
-      closeMenus();
-    }
-  });
-
-  // ESC closes menus
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeMenus();
-  });
-}
-
 // Make initMap visible for Google callback
 window.initMap = function () {
   map = new google.maps.Map(document.getElementById("map"), {
@@ -821,22 +874,20 @@ window.initMap = function () {
   }
 
   setupVenueSearch();
-  setupCategoryAndFilterUI();
+  setupCategoryPillUI();
+  setupNameSearchUI();
 
   // Load venues, then Top Picks
   fetch("data/venues.json")
     .then(res => res.json())
     .then(data => {
       venues = data;
-
-      // Attach a stable key for each venue (name+city+state)
       venues.forEach(v => {
         v.key = makeVenueKey(v.name, v.city, v.state);
       });
 
       createMarkers();
 
-      // Load curated Top Picks (optional file)
       return fetch("data/top_picks.json");
     })
     .then(res => (res && res.ok ? res.json() : []))
