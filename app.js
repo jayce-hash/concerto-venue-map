@@ -705,7 +705,6 @@ function setupVenueSearch() {
   });
 }
 
-// ----- Category + Filter dropdown wiring -----
 function setupCategoryAndFilterUI() {
   categorySelectBtn = document.getElementById("categorySelectBtn");
   categorySelectLabel = document.getElementById("categorySelectLabel");
@@ -715,18 +714,33 @@ function setupCategoryAndFilterUI() {
   filterSelectLabel = document.getElementById("filterSelectLabel");
   filterMenu = document.getElementById("filterMenu");
 
-  if (categorySelectBtn && categoryMenu) {
-    categorySelectBtn.addEventListener("click", () => {
-      if (!selectedVenue) return;
+  // ✅ Prevent iOS/WebView from immediately triggering the document click close
+  if (categorySelectBtn) {
+    categorySelectBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       toggleMenu(categoryMenu, categorySelectBtn);
     });
   }
 
-  // Category menu click
+  if (filterSelectBtn) {
+    filterSelectBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (filterSelectBtn.hidden) return;
+      toggleMenu(filterMenu, filterSelectBtn);
+    });
+  }
+
+  // ✅ Also stop propagation when clicking inside menus
   if (categoryMenu) {
+    categoryMenu.addEventListener("click", (e) => e.stopPropagation());
+
     const items = Array.from(categoryMenu.querySelectorAll(".select-menu-item"));
-    items.forEach(item => {
-      item.addEventListener("click", () => {
+    items.forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (!selectedVenue) return;
 
         const cat = item.dataset.category;
@@ -739,7 +753,6 @@ function setupCategoryAndFilterUI() {
           categorySelectLabel.textContent = CATEGORY_LABELS[cat] || cat;
         }
 
-        // update filters UI for this category
         updateFilterUIForCategory(cat);
 
         closeMenus();
@@ -748,16 +761,11 @@ function setupCategoryAndFilterUI() {
     });
   }
 
-  // Filter pill click
-  if (filterSelectBtn && filterMenu) {
-    filterSelectBtn.addEventListener("click", () => {
-      if (!selectedVenue) return;
-      if (filterSelectBtn.hidden) return;
-      toggleMenu(filterMenu, filterSelectBtn);
-    });
+  if (filterMenu) {
+    filterMenu.addEventListener("click", (e) => e.stopPropagation());
   }
 
-  // Close menus on outside click (important on mobile)
+  // Close menus on outside click
   document.addEventListener("click", (e) => {
     if (!selectedVenue) return;
 
