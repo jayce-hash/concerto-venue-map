@@ -46,6 +46,42 @@ let currentSecondaryId = "all";
 let menuMode = "categories"; // "categories" | "filters"
 let lastCategoryPicked = "restaurants";
 
+/* ============================================================
+   ✅ NEW: "Google Maps amount of results" engine
+   - pagination (20 results per page)
+   - infinite scroll
+   - progressive radius expansion
+   ============================================================ */
+
+const RESULTS_TARGET = 60;          // Aim for ~60 results if available
+const RESULTS_HARD_CAP = 80;        // Don't overload UI
+const RADIUS_STEPS_METERS = [       // expands outward as needed
+  3000, 4500, 6000, 8000, 11000, 13000
+];
+const NEXT_PAGE_DELAY_MS = 1800;    // Google requires a short delay before nextPage()
+
+let activeResultsMode = "category"; // "category" | "name"
+let activeRequestToken = 0;
+
+let resultsState = {
+  token: 0,
+  mode: "category",
+  // for category mode:
+  catKey: "restaurants",
+  filterId: "all",
+  // for name mode:
+  query: "",
+  // shared:
+  radiusIndex: 0,
+  pagesFetchedAtRadius: 0,
+  hasNextPage: false,
+  nextPageFn: null,
+  isLoading: false,
+  canLoadMore: false,
+  seen: new Set(),     // place_id dedupe
+  places: []           // accumulated results
+};
+
 // Navy pin icon for Concerto (default venues)
 const NAVY_PIN_ICON = {
   path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
@@ -184,7 +220,410 @@ function metersToMiles(m) {
   return m / 1609.34;
 }
 
-// -------- Place details overlay helpers --------
+/* ============================================================
+   ✅ Results engine helpers
+   ============================================================ */
+
+function newToken() {
+  activeRequestToken = Date.now();
+  return activeRequestToken;
+}
+
+function isTokenActive(token) {
+  return token === activeRequestToken;
+}
+
+function resetResultsState(token, mode) {
+  resultsState = {
+    token,
+    mode,
+    catKey: currentCategory,
+    filterId: currentSecondaryId,
+    query: "",
+    radiusIndex: 0,
+    pagesFetchedAtRadius: 0,
+    hasNextPage: false,
+    nextPageFn: null,
+    isLoading: false,
+    canLoadMore: false,
+    seen: new Set(),
+    places: []
+  };
+}
+
+function appendPlacesDedup(list) {
+  if (!Array.isArray(list)) return 0;
+  let added = 0;
+  for (const p of list) {
+    const id = p && p.place_id ? p.place_id : (p && p.id ? p.id : null);
+    if (id && resultsState.seen.has(id)) continue;
+    if (id) resultsState.seen.add(id);
+    resultsState.places.push(p);
+    added++;
+    if (resultsState.places.length >= RESULTS_HARD_CAP) break;
+  }
+  return added;
+}
+
+function renderAccumulatedPlaces() {
+  // Render whatever we’ve accumulated (deduped), sorted by distance
+  if (!guideResultsEl) return;
+
+  const places = resultsState.places.slice();
+
+  if (selectedVenue) {
+    const vLat = selectedVenue.lat;
+    const vLng = selectedVenue.lng;
+    places.sort((a, b) => {
+      const al = a?.geometry?.location;
+      const bl = b?.geometry?.location;
+      const ad = al ? distanceMeters(vLat, vLng, al.lat(), al.lng()) : 1e12;
+      const bd = bl ? distanceMeters(vLat, vLng, bl.lat(), bl.lng()) : 1e12;
+      return ad - bd;
+    });
+  }
+
+  // If empty:
+  if (!places.length) {
+    guideResultsEl.innerHTML = '<div class="hint">No results found yet.</div>';
+    return;
+  }
+
+  // Render cards
+  guideResultsEl.innerHTML = "";
+  places.forEach(place => renderPlaceCard(place));
+
+  // Add a subtle “loading more” hint if we can load more
+  if (resultsState.canLoadMore && places.length < RESULTS_HARD_CAP) {
+    const hint = document.createElement("div");
+    hint.className = "hint";
+    hint.textContent = resultsState.isLoading ? "Loading more…" : "Scroll for more results…";
+    hint.dataset.role = "loadmorehint";
+    guideResultsEl.appendChild(hint);
+  }
+}
+
+function setLoadingHint(text) {
+  if (!guideResultsEl) return;
+  guideResultsEl.innerHTML = `<div class="hint">${text}</div>`;
+}
+
+function setFooterHint(text) {
+  if (!guideResultsEl) return;
+  const old = guideResultsEl.querySelector('[data-role="loadmorehint"]');
+  if (old) old.remove();
+  const hint = document.createElement("div");
+  hint.className = "hint";
+  hint.textContent = text;
+  hint.dataset.role = "loadmorehint";
+  guideResultsEl.appendChild(hint);
+}
+
+function updateCanLoadMore() {
+  const moreRadius = resultsState.radiusIndex < (RADIUS_STEPS_METERS.length - 1);
+  const morePages = !!resultsState.nextPageFn && resultsState.hasNextPage;
+  const stillRoom = resultsState.places.length < RESULTS_HARD_CAP;
+
+  // load more if pages exist OR radius can expand, and we haven't hit cap
+  resultsState.canLoadMore = stillRoom && (morePages || moreRadius);
+}
+
+/* ============================================================
+   ✅ Places fetching (Category / NearbySearch)
+   ============================================================ */
+
+function buildNearbyRequest(catKey, filterId, radiusMeters) {
+  const baseCfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+
+  const request = {
+    location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
+    radius: radiusMeters
+  };
+
+  if (baseCfg.type) request.type = baseCfg.type;
+
+  let keyword = baseCfg.keyword || null;
+
+  // Apply secondary filter keyword if available
+  const defs = SECONDARY_FILTERS[catKey];
+  if (defs && filterId) {
+    const match = defs.find(d => d.id === filterId);
+    if (match && match.keyword) keyword = match.keyword;
+  }
+  if (keyword) request.keyword = keyword;
+
+  return request;
+}
+
+function fetchNearbyAtRadius(token, catKey, filterId, radiusMeters) {
+  if (!selectedVenue || !placesService) return;
+  if (!isTokenActive(token)) return;
+
+  resultsState.isLoading = true;
+  resultsState.hasNextPage = false;
+  resultsState.nextPageFn = null;
+  resultsState.pagesFetchedAtRadius = 0;
+
+  const request = buildNearbyRequest(catKey, filterId, radiusMeters);
+
+  placesService.nearbySearch(request, (results, status, pagination) => {
+    if (!isTokenActive(token)) return;
+
+    resultsState.isLoading = false;
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+      // no results at this radius
+      resultsState.hasNextPage = false;
+      resultsState.nextPageFn = null;
+      updateCanLoadMore();
+      if (!resultsState.places.length) {
+        setLoadingHint("No places found — try expanding search…");
+      } else {
+        renderAccumulatedPlaces();
+      }
+      maybeAutoExpandOrPage(token);
+      return;
+    }
+
+    resultsState.pagesFetchedAtRadius += 1;
+
+    appendPlacesDedup(results);
+
+    // pagination wiring
+    if (pagination && pagination.hasNextPage) {
+      resultsState.hasNextPage = true;
+      resultsState.nextPageFn = () => {
+        // required delay before next page
+        setTimeout(() => {
+          if (!isTokenActive(token)) return;
+          resultsState.isLoading = true;
+          renderAccumulatedPlaces();
+          pagination.nextPage();
+        }, NEXT_PAGE_DELAY_MS);
+      };
+    } else {
+      resultsState.hasNextPage = false;
+      resultsState.nextPageFn = null;
+    }
+
+    updateCanLoadMore();
+    renderAccumulatedPlaces();
+
+    // If we’re still “too few”, auto-expand / auto-page
+    maybeAutoExpandOrPage(token);
+  });
+}
+
+function maybeAutoExpandOrPage(token) {
+  if (!isTokenActive(token)) return;
+
+  // If we already have enough, stop
+  if (resultsState.places.length >= RESULTS_TARGET) return;
+
+  // Prefer consuming pages first (up to 3 pages typically)
+  if (resultsState.nextPageFn && resultsState.hasNextPage && resultsState.pagesFetchedAtRadius < 3) {
+    resultsState.isLoading = true;
+    updateCanLoadMore();
+    setFooterHint("Loading more…");
+    resultsState.nextPageFn();
+    return;
+  }
+
+  // No more pages (or pages exhausted) — expand radius if possible
+  if (resultsState.radiusIndex < (RADIUS_STEPS_METERS.length - 1)) {
+    resultsState.radiusIndex += 1;
+    const nextRadius = RADIUS_STEPS_METERS[resultsState.radiusIndex];
+    resultsState.isLoading = true;
+    updateCanLoadMore();
+    setFooterHint("Expanding search area…");
+    fetchNearbyAtRadius(token, resultsState.catKey, resultsState.filterId, nextRadius);
+  }
+}
+
+function startCategoryResults(catKey, filterId) {
+  if (!selectedVenue) return;
+
+  // Curated Top Picks
+  if (catKey === "toppicks") {
+    activeResultsMode = "category";
+    const token = newToken();
+    resetResultsState(token, "category");
+    setLoadingHint("Loading Top Picks…");
+    loadTopPicksForVenue(selectedVenue);
+    return;
+  }
+
+  activeResultsMode = "category";
+  const token = newToken();
+  resetResultsState(token, "category");
+  resultsState.catKey = catKey;
+  resultsState.filterId = filterId || "all";
+  resultsState.radiusIndex = 0;
+
+  setLoadingHint("Loading nearby places…");
+
+  const initialRadius = RADIUS_STEPS_METERS[0] || 3000;
+  fetchNearbyAtRadius(token, catKey, resultsState.filterId, initialRadius);
+}
+
+/* ============================================================
+   ✅ Places fetching (Name / TextSearch) + pagination + radius
+   ============================================================ */
+
+function buildTextSearchRequest(query, radiusMeters) {
+  const center = new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng);
+
+  // bounds bias near venue
+  const bounds = new google.maps.LatLngBounds();
+  const delta = Math.min(0.12, radiusMeters / 111000); // approx deg from meters
+  bounds.extend(new google.maps.LatLng(selectedVenue.lat + delta, selectedVenue.lng + delta));
+  bounds.extend(new google.maps.LatLng(selectedVenue.lat - delta, selectedVenue.lng - delta));
+
+  return {
+    query,
+    location: center,
+    radius: radiusMeters,
+    bounds
+  };
+}
+
+function fetchTextSearchAtRadius(token, query, radiusMeters) {
+  if (!selectedVenue || !placesService) return;
+  if (!isTokenActive(token)) return;
+
+  resultsState.isLoading = true;
+  resultsState.hasNextPage = false;
+  resultsState.nextPageFn = null;
+  resultsState.pagesFetchedAtRadius = 0;
+
+  const request = buildTextSearchRequest(query, radiusMeters);
+
+  placesService.textSearch(request, (results, status, pagination) => {
+    if (!isTokenActive(token)) return;
+
+    resultsState.isLoading = false;
+
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+      resultsState.hasNextPage = false;
+      resultsState.nextPageFn = null;
+      updateCanLoadMore();
+
+      if (!resultsState.places.length) {
+        setLoadingHint("No results found — try a broader search.");
+      } else {
+        renderAccumulatedPlaces();
+      }
+
+      maybeAutoExpandOrPage(token);
+      return;
+    }
+
+    resultsState.pagesFetchedAtRadius += 1;
+
+    appendPlacesDedup(results);
+
+    if (pagination && pagination.hasNextPage) {
+      resultsState.hasNextPage = true;
+      resultsState.nextPageFn = () => {
+        setTimeout(() => {
+          if (!isTokenActive(token)) return;
+          resultsState.isLoading = true;
+          renderAccumulatedPlaces();
+          pagination.nextPage();
+        }, NEXT_PAGE_DELAY_MS);
+      };
+    } else {
+      resultsState.hasNextPage = false;
+      resultsState.nextPageFn = null;
+    }
+
+    updateCanLoadMore();
+    renderAccumulatedPlaces();
+
+    maybeAutoExpandOrPage(token);
+  });
+}
+
+function startNameResults(query) {
+  if (!selectedVenue) return;
+
+  const q = (query || "").trim();
+  if (!q) {
+    // fall back to category results
+    startCategoryResults(currentCategory, currentSecondaryId);
+    return;
+  }
+
+  activeResultsMode = "name";
+  const token = newToken();
+  resetResultsState(token, "name");
+  resultsState.query = q;
+  resultsState.radiusIndex = 0;
+
+  setLoadingHint("Searching…");
+  const initialRadius = Math.max(6000, RADIUS_STEPS_METERS[0] || 3000);
+  fetchTextSearchAtRadius(token, q, initialRadius);
+}
+
+/* ============================================================
+   ✅ Infinite scroll: load more when near bottom
+   ============================================================ */
+
+function setupInfiniteScroll() {
+  if (!guideResultsEl) return;
+
+  let ticking = false;
+
+  guideResultsEl.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+
+    requestAnimationFrame(() => {
+      ticking = false;
+
+      if (!selectedVenue) return;
+      if (resultsState.isLoading) return;
+      if (!resultsState.canLoadMore) return;
+
+      const nearBottom =
+        guideResultsEl.scrollTop + guideResultsEl.clientHeight >=
+        guideResultsEl.scrollHeight - 140;
+
+      if (!nearBottom) return;
+
+      // Prefer nextPage if available
+      if (resultsState.nextPageFn && resultsState.hasNextPage && resultsState.pagesFetchedAtRadius < 3) {
+        resultsState.isLoading = true;
+        updateCanLoadMore();
+        setFooterHint("Loading more…");
+        resultsState.nextPageFn();
+        return;
+      }
+
+      // Otherwise expand radius
+      if (resultsState.radiusIndex < (RADIUS_STEPS_METERS.length - 1)) {
+        resultsState.radiusIndex += 1;
+        const nextRadius = RADIUS_STEPS_METERS[resultsState.radiusIndex];
+        resultsState.isLoading = true;
+        updateCanLoadMore();
+        setFooterHint("Expanding search area…");
+
+        const token = resultsState.token;
+
+        if (resultsState.mode === "category") {
+          fetchNearbyAtRadius(token, resultsState.catKey, resultsState.filterId, nextRadius);
+        } else {
+          fetchTextSearchAtRadius(token, resultsState.query, nextRadius);
+        }
+      }
+    });
+  });
+}
+
+/* ============================================================
+   Place details overlay helpers
+   ============================================================ */
+
 function hidePlaceDetails() {
   if (placeDetailsOverlay) placeDetailsOverlay.hidden = true;
 }
@@ -249,7 +688,10 @@ function showPlaceDetails(place) {
   placeDetailsOverlay.hidden = false;
 }
 
-// ---------- Menu positioning (place under pill, inside panel) ----------
+/* ============================================================
+   Menu positioning (place under pill, inside panel)
+   ============================================================ */
+
 function positionMenuUnderButton(menuEl, buttonEl) {
   if (!menuEl || !buttonEl || !guidePanelEl) return;
 
@@ -309,6 +751,9 @@ function buildCategoryMenu(mode) {
         currentSecondaryId = "all";
         lastCategoryPicked = cat;
 
+        // clear name search if they switch category
+        if (placeNameSearchEl) placeNameSearchEl.value = "";
+
         const defs = SECONDARY_FILTERS[cat];
         const hasFilters = defs && defs.length && cat !== "toppicks";
 
@@ -317,7 +762,7 @@ function buildCategoryMenu(mode) {
         if (!hasFilters) {
           categoryPillLabel.textContent = catLabel;
           closeCategoryMenu();
-          loadPlacesForCategory(currentCategory, currentSecondaryId);
+          startCategoryResults(currentCategory, currentSecondaryId);
           return;
         }
 
@@ -345,12 +790,15 @@ function buildCategoryMenu(mode) {
 
         currentSecondaryId = def.id;
 
+        // clear name search if they select a filter
+        if (placeNameSearchEl) placeNameSearchEl.value = "";
+
         const catLabel = CATEGORY_LABELS[lastCategoryPicked] || lastCategoryPicked;
         categoryPillLabel.textContent =
           def.id === "all" ? catLabel : `${catLabel} • ${def.label}`;
 
         closeCategoryMenu();
-        loadPlacesForCategory(currentCategory, currentSecondaryId);
+        startCategoryResults(currentCategory, currentSecondaryId);
       });
 
       categoryMenu.appendChild(item);
@@ -473,86 +921,74 @@ function loadTopPicksForVenue(venue) {
   });
 }
 
-function loadPlacesForCategory(catKey, subFilterId) {
-  if (!selectedVenue) return;
+/* ============================================================
+   ✅ Rendering
+   ============================================================ */
 
-  // Curated Top Picks
-  if (catKey === "toppicks") {
-    loadTopPicksForVenue(selectedVenue);
-    return;
+function renderPlaceCard(place) {
+  if (!guideResultsEl) return;
+
+  const card = document.createElement("div");
+  card.className = "place-card";
+
+  const name = document.createElement("p");
+  name.className = "place-name";
+  name.textContent = place.name || "Unnamed Place";
+
+  const meta = document.createElement("p");
+  meta.className = "place-meta";
+
+  const bits = [];
+
+  if (place.vicinity) bits.push(place.vicinity);
+
+  if (selectedVenue && place.geometry && place.geometry.location) {
+    const lat2 = place.geometry.location.lat();
+    const lng2 = place.geometry.location.lng();
+    const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, lat2, lng2);
+    bits.push(`${metersToMiles(meters).toFixed(1)} mi`);
   }
 
-  if (!placesService) return;
+  if (place.rating) bits.push(`${Number(place.rating).toFixed(1)}★`);
+  meta.textContent = bits.join(" • ");
 
-  const baseCfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
+  card.appendChild(name);
+  card.appendChild(meta);
 
-  const request = {
-    location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
-    radius: baseCfg.radius || 3000
-  };
-
-  if (baseCfg.type) request.type = baseCfg.type;
-  let keyword = baseCfg.keyword || null;
-
-  // Apply secondary filter keyword if available
-  const defs = SECONDARY_FILTERS[catKey];
-  if (defs && subFilterId) {
-    const match = defs.find(d => d.id === subFilterId);
-    if (match && match.keyword) keyword = match.keyword;
-  }
-  if (keyword) request.keyword = keyword;
-
-  if (guideResultsEl) guideResultsEl.innerHTML = '<div class="hint">Loading nearby places…</div>';
-
-  placesService.nearbySearch(request, (results, status) => {
-    if (!guideResultsEl) return;
-
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-      guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
+  card.addEventListener("click", () => {
+    if (!placesService || !place.place_id) {
+      showPlaceDetails(place);
       return;
     }
 
-    renderPlaces(results.slice(0, 20));
+    const request = {
+      placeId: place.place_id,
+      fields: [
+        "name",
+        "rating",
+        "user_ratings_total",
+        "formatted_address",
+        "formatted_phone_number",
+        "website",
+        "url",
+        "opening_hours",
+        "types"
+      ]
+    };
+
+    placesService.getDetails(request, (details, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && details) {
+        showPlaceDetails(details);
+      } else {
+        showPlaceDetails(place);
+      }
+    });
   });
+
+  guideResultsEl.appendChild(card);
 }
 
 // ----- Name search near venue (same cards) -----
-function searchPlacesByName(query) {
-  if (!selectedVenue || !placesService) return;
-  const q = (query || "").trim();
-
-  if (!q) {
-    loadPlacesForCategory(currentCategory, currentSecondaryId);
-    return;
-  }
-
-  if (guideResultsEl) guideResultsEl.innerHTML = '<div class="hint">Searching…</div>';
-
-  // Use a bounds bias near the venue
-  const center = new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng);
-  const bounds = new google.maps.LatLngBounds();
-  bounds.extend(new google.maps.LatLng(selectedVenue.lat + 0.05, selectedVenue.lng + 0.05));
-  bounds.extend(new google.maps.LatLng(selectedVenue.lat - 0.05, selectedVenue.lng - 0.05));
-
-  const request = {
-    query: q,
-    location: center,
-    radius: 6000,
-    bounds
-  };
-
-  placesService.textSearch(request, (results, status) => {
-    if (!guideResultsEl) return;
-
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-      guideResultsEl.innerHTML = '<div class="hint">No results found for that search.</div>';
-      return;
-    }
-
-    renderPlaces(results.slice(0, 20));
-  });
-}
-
 function setupNameSearchUI() {
   placeNameSearchEl = document.getElementById("placeNameSearch");
   clearNameSearchBtn = document.getElementById("clearNameSearch");
@@ -565,93 +1001,23 @@ function setupNameSearchUI() {
     if (!selectedVenue) return;
     const val = placeNameSearchEl.value;
     if (t) clearTimeout(t);
-    t = setTimeout(() => searchPlacesByName(val), 250);
+    t = setTimeout(() => startNameResults(val), 250);
   });
 
   placeNameSearchEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      searchPlacesByName(placeNameSearchEl.value);
+      startNameResults(placeNameSearchEl.value);
     }
   });
 
   if (clearNameSearchBtn) {
     clearNameSearchBtn.addEventListener("click", () => {
       placeNameSearchEl.value = "";
-      loadPlacesForCategory(currentCategory, currentSecondaryId);
+      startCategoryResults(currentCategory, currentSecondaryId);
       placeNameSearchEl.focus();
     });
   }
-}
-
-function renderPlaces(places) {
-  guideResultsEl.innerHTML = "";
-
-  if (!places.length) {
-    guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
-    return;
-  }
-
-  places.forEach(place => {
-    const card = document.createElement("div");
-    card.className = "place-card";
-
-    const name = document.createElement("p");
-    name.className = "place-name";
-    name.textContent = place.name || "Unnamed Place";
-
-    const meta = document.createElement("p");
-    meta.className = "place-meta";
-
-    const bits = [];
-
-    if (place.vicinity) bits.push(place.vicinity);
-
-    if (selectedVenue && place.geometry && place.geometry.location) {
-      const lat2 = place.geometry.location.lat();
-      const lng2 = place.geometry.location.lng();
-      const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, lat2, lng2);
-      bits.push(`${metersToMiles(meters).toFixed(1)} mi`);
-    }
-
-    if (place.rating) bits.push(`${Number(place.rating).toFixed(1)}★`);
-    meta.textContent = bits.join(" • ");
-
-    card.appendChild(name);
-    card.appendChild(meta);
-
-    card.addEventListener("click", () => {
-      if (!placesService || !place.place_id) {
-        showPlaceDetails(place);
-        return;
-      }
-
-      const request = {
-        placeId: place.place_id,
-        fields: [
-          "name",
-          "rating",
-          "user_ratings_total",
-          "formatted_address",
-          "formatted_phone_number",
-          "website",
-          "url",
-          "opening_hours",
-          "types"
-        ]
-      };
-
-      placesService.getDetails(request, (details, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && details) {
-          showPlaceDetails(details);
-        } else {
-          showPlaceDetails(place);
-        }
-      });
-    });
-
-    guideResultsEl.appendChild(card);
-  });
 }
 
 // ----- Venue markers -----
@@ -709,6 +1075,9 @@ function ensureBackButton() {
     lastCategoryPicked = "restaurants";
     menuMode = "categories";
 
+    // reset request token to cancel any in-flight paging
+    newToken();
+
     if (placeNameSearchEl) placeNameSearchEl.value = "";
     if (categoryPillLabel) categoryPillLabel.textContent = "Search by Category";
 
@@ -735,6 +1104,9 @@ function focusVenue(venue) {
 
   closeCategoryMenu();
 
+  // Cancel any previous search token, start fresh
+  newToken();
+
   map.setZoom(13);
   map.panTo({ lat: venue.lat, lng: venue.lng });
 
@@ -757,7 +1129,8 @@ function focusVenue(venue) {
   if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
   ensureBackButton();
 
-  loadPlacesForCategory(currentCategory, currentSecondaryId);
+  // start default results with the upgraded engine
+  startCategoryResults(currentCategory, currentSecondaryId);
 }
 
 // ----- Venue search (top search bar) -----
@@ -866,6 +1239,7 @@ window.initMap = function () {
   setupVenueSearch();
   setupCategoryPillUI();
   setupNameSearchUI();
+  setupInfiniteScroll();
 
   // Load venues, then Top Picks
   fetch("data/venues.json")
