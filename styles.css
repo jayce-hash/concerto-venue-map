@@ -479,3 +479,42 @@ html, body {
   color: var(--muted);
   white-space: pre-line;
 }
+
+/* ============================================================
+   ✅ Bottom sheet: grab handle + expanded mode
+   ============================================================ */
+
+/* grab handle (no HTML needed) */
+.guide-panel::before{
+  content:"";
+  width: 40px;
+  height: 5px;
+  border-radius: 999px;
+  background: #D2D8E6;
+  margin: 2px auto 8px;
+  flex: 0 0 auto;
+}
+
+/* Make the top area feel draggable */
+.guide-header{
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.guide-header:active{ cursor: grabbing; }
+
+/* Expanded state */
+.guide-panel.guide-panel--expanded{
+  max-height: 92vh;                /* full-screen feel */
+  box-shadow: 0 -10px 34px rgba(18, 30, 54, 0.24);
+}
+
+/* In expanded mode, give results more room */
+.guide-panel.guide-panel--expanded .guide-results{
+  padding-bottom: 16px;
+}
+
+/* Optional: slightly tighter header spacing when expanded */
+.guide-panel.guide-panel--expanded .guide-header{
+  padding-bottom: 4px;
+}
