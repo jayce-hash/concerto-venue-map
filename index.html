@@ -1,481 +1,74 @@
-/* ============================================================
-   Concerto — Venue Map (Light Ultra-Clean Version)
-   Two-row pills: “Search by Category” + “Search by Name”
-   + ONE scrollable dropdown menu (JS positions it dynamically)
-   ============================================================ */
-
-:root {
-  --bg: #F8F9F9;
-  --ink: #121E36;
-  --muted: #5E6B86;
-  --accent: #1F2B4A;
-  --accent-2: #2A3A63;
-  --line: #E2E7F0;
-  --card: #FFFFFF;
-  --shadow-soft: 0 4px 10px rgba(18, 30, 54, 0.10);
-  --shadow-strong: 0 16px 40px rgba(18, 30, 54, 0.20);
-}
-
-/* ===== Reset ===== */
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-    sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
-
-/* ===== Layout Shell ===== */
-.page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* ===== Header ===== */
-.page-header {
-  background: var(--bg);
-  box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
-  padding: 10px 0 10px;
-  z-index: 10;
-}
-
-.page-header-inner {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 16px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 10px;
-}
-
-.brand-logo {
-  max-width: 260px;
-  width: 72%;
-  display: block;
-  margin: 0 auto;
-}
-
-/* ===== Search (top venue search) ===== */
-.search-wrapper { position: relative; }
-
-#venueSearch {
-  width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  padding: 9px 40px 9px 14px;
-  font-size: 15px;
-  background: #fff;
-  color: var(--ink);
-  outline: none;
-  box-shadow: var(--shadow-soft);
-}
-
-#venueSearch::placeholder { color: #9aa3b5; }
-
-.search-wrapper::after {
-  content: "⌕";
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* venue search dropdown */
-.search-results {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 110%;
-  margin-top: 4px;
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 26px rgba(18, 30, 54, 0.18);
-  max-height: 260px;
-  overflow-y: auto;
-  display: none;
-  z-index: 20;
-}
-
-.search-results.visible { display: block; }
-
-.search-result-item {
-  padding: 8px 11px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.search-result-item:hover { background: #f5f7fb; }
-
-/* ===== Map + panel ===== */
-.layout {
-  position: relative;
-  flex: 1;
-  background: #d8dde8;
-  overflow: hidden;
-}
-
-.map { width: 100%; height: 100%; }
-
-/* ===== Bottom sheet ===== */
-.guide-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  background: var(--bg);
-  border-radius: 24px 24px 0 0;
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
-  padding: 10px 14px 10px;
-
-  max-height: 52vh;
-
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.24s ease-out;
-}
-
-.guide-panel--hidden { transform: translateY(100%); }
-.guide-panel:not(.guide-panel--hidden) { transform: translateY(0%); }
-
-/* ===== Venue Header ===== */
-.guide-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 0 2px 6px;
-}
-
-.guide-header h2 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.venue-location {
-  margin: 2px 0 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-/* ============================================================
-   ✅ TWO ROW PILLS
-   Row 1: “Search by Category” (button)
-   Row 2: “Search by Name” (input pill)
-   Both are same height + full width (match results cards)
-   ============================================================ */
-
-.guide-toolbar-2{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 6px 2px 10px;
-}
-
-/* full-width pill base */
-.select-pill.full{
-  width: 100%;
-  height: 44px;                 /* ✅ same height for both rows */
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  box-shadow: var(--shadow-soft);
-  padding: 0 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--ink);
-
-  cursor: pointer;
-  transform: translateZ(0);
-  transition: transform 0.12s ease, box-shadow 0.15s ease;
-}
-
-.select-pill.full:hover{
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-strong);
-}
-
-.select-pill.full .chev{
-  color: var(--muted);
-  font-size: 0.9rem;
-  flex: 0 0 auto;
-}
-
-/* label can ellipsis */
-#categoryPillLabel{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* input pill row */
-.input-pill{
-  cursor: default;
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.input-pill:hover{
-  transform: none;
-  box-shadow: var(--shadow-soft);
-}
-
-.input-pill input{
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  color: var(--ink);
-}
-
-.input-pill input::placeholder{
-  color: #9aa3b5;
-}
-
-.pill-x{
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0 2px;
-}
-
-/* ============================================================
-   ✅ ONE DROPDOWN MENU (scrollable)
-   IMPORTANT: JS sets `top` dynamically so it sits under Row 1 pill
-   ============================================================ */
-
-.select-menu{
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 0;                       /* ✅ JS will override */
-
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
-
-  padding: 6px 0;
-  z-index: 80;
-
-  max-height: 38vh;             /* ✅ scrollable */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.select-menu[hidden]{ display: none; }
-
-.select-menu-item{
-  width: 100%;
-  padding: 12px 14px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 0.95rem;
-  cursor: pointer;
-  color: var(--ink);
-}
-
-.select-menu-item:hover{ background: #f5f7fb; }
-
-.select-menu-item.small{
-  font-size: 0.9rem;
-  color: var(--muted);
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* ===== Results ===== */
-.guide-results {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  margin-top: 4px;
-  padding: 4px 2px 4px;
-  overflow-y: auto;
-}
-
-.place-card {
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(18, 30, 54, 0.06);
-  cursor: pointer;
-  transition: box-shadow 0.12s ease, transform 0.12s ease;
-}
-
-.place-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.place-name {
-  margin: 0 0 2px;
-  font-size: 0.94rem;
-  font-weight: 500;
-}
-
-.place-meta {
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-}
-
-.place-meta span + span::before { content: " • "; }
-
-.guide-results .hint {
-  font-size: 0.86rem;
-  color: var(--muted);
-  padding: 10px 4px;
-}
-
-/* ===== Tablet/Desktop Tweaks ===== */
-@media (min-width: 768px) {
-  .page-header-inner {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .brand-logo {
-    width: 180px;
-    max-width: 180px;
-    margin: 0;
-  }
-
-  .search-wrapper { max-width: 320px; }
-
-  .guide-panel {
-    left: 50%;
-    transform: translate(50%, 100%);
-  }
-}
-
-/* ===== Place Details Overlay ===== */
-.place-details-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(18, 30, 54, 0.18);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 90;
-}
-
-.place-details-overlay[hidden] { display: none; }
-
-.place-details-card {
-  width: 100%;
-  max-height: 86vh;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -12px 32px rgba(18, 30, 54, 0.28);
-  padding: 14px 18px 18px;
-  overflow-y: auto;
-}
-
-.place-details-close {
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  padding: 4px;
-  float: right;
-  cursor: pointer;
-  color: var(--muted);
-}
-
-.details-name {
-  margin: 4px 0 4px;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.details-meta {
-  margin: 0 0 4px;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.details-address {
-  margin: 0 0 10px;
-  font-size: 0.9rem;
-}
-
-.details-row {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 6px;
-  font-size: 0.88rem;
-}
-
-.details-label {
-  min-width: 52px;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-.details-link {
-  color: var(--accent-2);
-  text-decoration: none;
-}
-
-.details-link:hover { text-decoration: underline; }
-
-.details-actions {
-  margin-top: 12px;
-  margin-bottom: 10px;
-}
-
-.details-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  font-size: 0.9rem;
-}
-
-.details-hours {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-  font-size: 0.86rem;
-  color: var(--muted);
-  white-space: pre-line;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concerto Venue Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page">
+
+    <header class="page-header">
+      <div class="page-header-inner">
+        <img src="IMG_3180.jpeg" class="brand-logo" alt="Concerto" />
+        <div class="search-wrapper">
+          <input id="venueSearch" type="text" placeholder="Search a venue..." autocomplete="off" />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <div id="map" class="map"></div>
+
+      <section id="guidePanel" class="guide-panel guide-panel--hidden">
+        <header class="guide-header">
+          <div>
+            <h2 id="guideVenueName"></h2>
+            <p id="guideVenueLocation" class="venue-location"></p>
+          </div>
+        </header>
+
+        <div class="guide-toolbar-2">
+          <button id="categoryPillBtn" class="select-pill full">
+            <span id="categoryPillLabel">Search by Category</span>
+            <span class="chev">▾</span>
+          </button>
+
+          <div class="select-pill full input-pill">
+            <input id="placeNameSearch" placeholder="Search by name (e.g., Joe’s Pizza)" />
+            <button id="clearNameSearch" class="pill-x">✕</button>
+          </div>
+        </div>
+
+        <div id="categoryMenu" class="select-menu" hidden></div>
+
+        <div id="guideResults" class="guide-results"></div>
+      </section>
+
+      <div id="placeDetails" class="place-details-overlay" hidden>
+        <div class="place-details-card">
+          <button id="placeDetailsClose" class="place-details-close">✕</button>
+          <h3 id="detailsName"></h3>
+          <p id="detailsMeta"></p>
+          <p id="detailsAddress"></p>
+          <div id="detailsPhoneRow"><a id="detailsPhone"></a></div>
+          <div id="detailsWebsiteRow"><a id="detailsWebsite"></a></div>
+          <a id="detailsMapsLink" class="details-primary-btn">Open in Google Maps</a>
+          <div id="detailsHours"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
+</body>
+</html>
