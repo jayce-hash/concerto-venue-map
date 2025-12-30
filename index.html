@@ -40,46 +40,47 @@
 
       <!-- Bottom guide panel -->
       <section id="guidePanel" class="guide-panel guide-panel--hidden">
+
+        <!-- ✅ Drag handle (tap/drag to expand) -->
+        <div id="sheetHandle" class="sheet-handle" role="button" aria-label="Expand panel"></div>
+
         <header class="guide-header">
           <div>
             <h2 id="guideVenueName"></h2>
             <p id="guideVenueLocation" class="venue-location"></p>
           </div>
         </header>
-        
-<!-- Two-row toolbar (full width pills) -->
-<div class="guide-toolbar-2">
-  <!-- Row 1: Search by Category -->
-  <button id="categoryPillBtn" class="select-pill full" type="button">
-    <span id="categoryPillLabel">Search by Category</span>
-    <span class="chev">▾</span>
-  </button>
 
-  <!-- Row 2: Search by Name -->
-  <div class="select-pill full input-pill" id="nameSearchPill">
-    <input
-      id="placeNameSearch"
-      type="text"
-      placeholder="Search by name (e.g., Joe’s Pizza, vegan brunch)"
-      autocomplete="off"
-    />
-    <button id="clearNameSearch" class="pill-x" type="button" aria-label="Clear">✕</button>
-  </div>
-</div>
+        <!-- Two-row toolbar (full width pills) -->
+        <div class="guide-toolbar-2">
+          <!-- Row 1: Search by Category -->
+          <button id="categoryPillBtn" class="select-pill full" type="button">
+            <span id="categoryPillLabel">Search by Category</span>
+            <span class="chev">▾</span>
+          </button>
 
-        <!-- Quick filters (only show when panel is expanded) -->
-<div id="quickChips" class="quick-chips" aria-label="Quick filters">
-  <button class="chip" data-chip="openNow" type="button">Open now</button>
-  <button class="chip" data-chip="topRated" type="button">Top rated</button>
-  <button class="chip" data-chip="closest" type="button">Closest</button>
-  <button class="chip chip-ghost" data-chip="reset" type="button">Reset</button>
-</div>
+          <!-- Row 2: Search by Name -->
+          <div class="select-pill full input-pill" id="nameSearchPill">
+            <input
+              id="placeNameSearch"
+              type="text"
+              placeholder="Search by name (e.g., Joe’s Pizza, vegan brunch)"
+              autocomplete="off"
+            />
+            <button id="clearNameSearch" class="pill-x" type="button" aria-label="Clear">✕</button>
+          </div>
+        </div>
 
-<!-- ONE dropdown menu used for BOTH categories + filters -->
-<div id="categoryMenu" class="select-menu" hidden></div>
+        <!-- Quick filters (CSS should show only when panel is expanded) -->
+        <div id="quickChips" class="quick-chips" aria-label="Quick filters">
+          <button class="chip" data-chip="openNow" type="button">Open now</button>
+          <button class="chip" data-chip="topRated" type="button">Top rated</button>
+          <button class="chip" data-chip="closest" type="button">Closest</button>
+          <button class="chip chip-ghost" data-chip="reset" type="button">Reset</button>
+        </div>
 
-<!-- Secondary filters row is no longer needed -->
-<!-- <div id="guideSecondaryFilters" class="guide-secondary" hidden></div> -->
+        <!-- ONE dropdown menu used for BOTH categories + filters -->
+        <div id="categoryMenu" class="select-menu" hidden></div>
 
         <!-- Results list -->
         <div id="guideResults" class="guide-results">
