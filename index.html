@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,36 +28,23 @@
     <main class="layout">
       <div id="map" class="map"></div>
 
-      <!-- Guide Panel: starts truly inactive (no sneaky sliver) -->
-      <section id="guidePanel" class="guide-panel guide-panel--inactive" aria-hidden="true">
-
-        <!-- Drag handle + expand toggle -->
-        <div class="sheet-handle-area" id="sheetHandle" role="button" aria-label="Expand panel">
-          <div class="sheet-handle"></div>
-        </div>
-
+      <section id="guidePanel" class="guide-panel guide-panel--hidden">
         <header class="guide-header">
-          <div class="guide-title">
+          <div>
             <h2 id="guideVenueName"></h2>
             <p id="guideVenueLocation" class="venue-location"></p>
           </div>
-          <!-- Back button is injected by JS (your existing logic) -->
         </header>
 
         <div class="guide-toolbar-2">
-          <button id="categoryPillBtn" class="select-pill full" type="button">
+          <button id="categoryPillBtn" class="select-pill full">
             <span id="categoryPillLabel">Search by Category</span>
             <span class="chev">▾</span>
           </button>
 
-          <div class="select-pill full input-pill" id="nameSearchPill">
-            <input
-              id="placeNameSearch"
-              type="text"
-              placeholder="Search by name (e.g., Joe’s Pizza, vegan brunch)"
-              autocomplete="off"
-            />
-            <button id="clearNameSearch" class="pill-x" type="button" aria-label="Clear">✕</button>
+          <div class="select-pill full input-pill">
+            <input id="placeNameSearch" placeholder="Search by name (e.g., Joe’s Pizza)" />
+            <button id="clearNameSearch" class="pill-x">✕</button>
           </div>
         </div>
 
@@ -69,39 +55,20 @@
 
       <div id="placeDetails" class="place-details-overlay" hidden>
         <div class="place-details-card">
-          <button id="placeDetailsClose" class="place-details-close" type="button">✕</button>
-
-          <h3 id="detailsName" class="details-name"></h3>
-          <p id="detailsMeta" class="details-meta"></p>
-          <p id="detailsAddress" class="details-address"></p>
-
-          <div class="details-row" id="detailsPhoneRow" hidden>
-            <span class="details-label">Phone</span>
-            <a id="detailsPhone" class="details-link" href="#"></a>
-          </div>
-
-          <div class="details-row" id="detailsWebsiteRow" hidden>
-            <span class="details-label">Website</span>
-            <a id="detailsWebsite" class="details-link" href="#" target="_blank" rel="noopener noreferrer"></a>
-          </div>
-
-          <div class="details-actions">
-            <a id="detailsMapsLink" class="details-primary-btn" href="#" target="_blank" rel="noopener noreferrer">
-              Open in Google Maps
-            </a>
-          </div>
-
-          <div id="detailsHours" class="details-hours" hidden></div>
+          <button id="placeDetailsClose" class="place-details-close">✕</button>
+          <h3 id="detailsName"></h3>
+          <p id="detailsMeta"></p>
+          <p id="detailsAddress"></p>
+          <div id="detailsPhoneRow"><a id="detailsPhone"></a></div>
+          <div id="detailsWebsiteRow"><a id="detailsWebsite"></a></div>
+          <a id="detailsMapsLink" class="details-primary-btn">Open in Google Maps</a>
+          <div id="detailsHours"></div>
         </div>
       </div>
     </main>
   </div>
 
   <script src="app.js"></script>
-  <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap"
-    async
-    defer
-  ></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
