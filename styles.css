@@ -62,7 +62,7 @@ html, body {
   margin: 0 auto;
 
   /* ✅ less bottom padding */
-  padding: 0 16px 0px;
+  padding: 0 14px 0px;
 
   display: flex;
   flex-direction: column;
