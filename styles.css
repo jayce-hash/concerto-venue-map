@@ -1,7 +1,7 @@
 /* ============================================================
    Concerto — Venue Map (Light Ultra-Clean Version)
-   Sticky header/pills + expandable bottom sheet (CSS-ready)
-   Concerto+ style result cards (image-ready)
+   Two-row pills: “Search by Category” + “Search by Name”
+   + ONE scrollable dropdown menu (JS positions it dynamically)
    ============================================================ */
 
 :root {
@@ -12,16 +12,8 @@
   --accent-2: #2A3A63;
   --line: #E2E7F0;
   --card: #FFFFFF;
-
   --shadow-soft: 0 4px 10px rgba(18, 30, 54, 0.10);
   --shadow-strong: 0 16px 40px rgba(18, 30, 54, 0.20);
-
-  /* Panel heights */
-  --panel-collapsed: 52vh;
-  --panel-expanded: 92vh;
-
-  /* Sticky offsets inside panel */
-  --sticky-top-pad: 10px; /* matches panel padding-top */
 }
 
 /* ===== Reset ===== */
@@ -42,10 +34,6 @@ html, body {
   overflow: hidden;
 }
 
-button, input {
-  font-family: inherit;
-}
-
 /* ===== Layout Shell ===== */
 .page {
   height: 100vh;
@@ -54,11 +42,11 @@ button, input {
   overflow: hidden;
 }
 
-/* ===== Header ===== */
+/* ===== Header (slightly shorter + logo slightly bigger) ===== */
 .page-header {
   background: var(--bg);
   box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
-  padding: 10px 0 10px;
+  padding: 8px 0 8px; /* reduced so the header doesn't drop too low */
   z-index: 10;
 }
 
@@ -66,16 +54,16 @@ button, input {
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  padding: 0 16px 4px;
+  padding: 0 16px 2px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+  gap: 8px; /* tighter spacing */
 }
 
 .brand-logo {
-  max-width: 260px;
-  width: 72%;
+  max-width: 300px; /* bigger than before */
+  width: 78%;
   display: block;
   margin: 0 auto;
 }
@@ -87,7 +75,7 @@ button, input {
   width: 100%;
   border-radius: 999px;
   border: 1px solid var(--line);
-  padding: 9px 40px 9px 14px;
+  padding: 10px 40px 10px 14px;
   font-size: 15px;
   background: #fff;
   color: var(--ink);
@@ -145,12 +133,10 @@ button, input {
 .map { width: 100%; height: 100%; }
 
 /* ============================================================
-   Bottom sheet
-   - Collapsed height + optional expanded class
-   - Pull handle (CSS-only)
-   - Sticky header & sticky pills
+   Bottom sheet (CONSISTENT BEHAVIOR)
+   - Hidden means: offscreen + no pointer events + no opacity
+   - Visible means: always same max height & spacing
    ============================================================ */
-
 .guide-panel {
   position: absolute;
   left: 0;
@@ -162,90 +148,65 @@ button, input {
   border-top: 1px solid var(--line);
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
 
-  padding: 12px 14px 10px;
-  max-height: var(--panel-collapsed);
+  padding: 12px 14px 12px;
+
+  /* consistent sizing across venues */
+  max-height: 56vh;
+  min-height: 290px;
 
   display: flex;
   flex-direction: column;
 
-  transform: translateY(100%);
-  transition: transform 0.24s ease-out, max-height 0.24s ease-out;
+  /* default (will be overridden by .guide-panel--hidden) */
+  transform: translateY(0);
+  transition: transform 0.24s ease-out, opacity 0.18s ease-out;
+  opacity: 1;
 }
 
-.guide-panel--hidden { transform: translateY(100%); }
-.guide-panel:not(.guide-panel--hidden) { transform: translateY(0%); }
-
-/* Expanded state (JS will toggle later) */
-.guide-panel--expanded {
-  max-height: var(--panel-expanded);
-}
-
-/* Pull handle (no HTML changes needed) */
-.guide-panel::before{
-  content:"";
-  position: absolute;
-  top: 7px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 46px;
-  height: 5px;
-  border-radius: 99px;
-  background: rgba(18,30,54,.14);
-  box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+/* ✅ TRULY HIDDEN (no sneaky panel on initial open) */
+.guide-panel--hidden {
+  transform: translateY(110%);
+  opacity: 0;
   pointer-events: none;
 }
 
-/* ===== Venue Header (sticky) ===== */
+/* ===== Venue Header ===== */
 .guide-header {
-  position: sticky;
-  top: var(--sticky-top-pad);
-  z-index: 5;
-
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-
-  padding: 14px 2px 8px; /* extra top padding so handle doesn't collide */
-  background: var(--bg);
+  padding: 0 2px 8px;
 }
 
 .guide-header h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .venue-location {
-  margin: 2px 0 0;
-  font-size: 0.85rem;
+  margin: 3px 0 0;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
 /* ============================================================
-   TWO ROW PILLS (sticky)
-   Row 1: Search by Category
-   Row 2: Search by Name
+   TWO ROW PILLS
+   Row 1: “Search by Category” (button)
+   Row 2: “Search by Name” (input pill)
    ============================================================ */
-
 .guide-toolbar-2{
-  position: sticky;
-  top: calc(var(--sticky-top-pad) + 56px); /* below header */
-  z-index: 5;
-
   display: flex;
   flex-direction: column;
   gap: 10px;
-
   padding: 6px 2px 10px;
-  background: var(--bg);
 }
 
 /* full-width pill base */
-.select-pill.full,
-.guide-toolbar-2 .select-pill.full{
+.select-pill.full{
   width: 100%;
-  height: 44px;
+  height: 46px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
@@ -257,7 +218,7 @@ button, input {
   justify-content: space-between;
   gap: 10px;
 
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 
@@ -273,7 +234,7 @@ button, input {
 
 .select-pill.full .chev{
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   flex: 0 0 auto;
 }
 
@@ -289,6 +250,7 @@ button, input {
   cursor: default;
   justify-content: flex-start;
   gap: 10px;
+  padding-right: 10px;
 }
 
 .input-pill:hover{
@@ -298,13 +260,11 @@ button, input {
 
 .input-pill input{
   width: 100%;
-  height: 100%;
   border: none;
   outline: none;
   background: transparent;
   font: inherit;
   color: var(--ink);
-  font-weight: 500;
 }
 
 .input-pill input::placeholder{
@@ -315,21 +275,21 @@ button, input {
   border: none;
   background: transparent;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 0 2px;
+  padding: 0 6px;
+  line-height: 1;
 }
 
 /* ============================================================
    ONE DROPDOWN MENU (scrollable)
-   JS sets `top` dynamically
+   IMPORTANT: JS sets `top` dynamically so it sits under Row 1 pill
    ============================================================ */
-
 .select-menu{
   position: absolute;
   left: 14px;
   right: 14px;
-  top: 0; /* JS overrides */
+  top: 0; /* JS will override */
 
   background: #fff;
   border-radius: 16px;
@@ -359,30 +319,27 @@ button, input {
 
 .select-menu-item:hover{ background: #f5f7fb; }
 
-/* ===== Results area (this is what scrolls) ===== */
+/* ===== Results (consistent: always scrolls inside panel) ===== */
 .guide-results {
   position: relative;
   z-index: 1;
   flex: 1;
-  margin-top: 2px;
   padding: 4px 2px 10px;
+
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
 
-/* ============================================================
-   Place cards (works now + ready for image thumbnails later)
-   - Current JS: .place-card + .place-name + .place-meta
-   - Future JS: add .place-thumb + .place-info + .place-badges
-   ============================================================ */
+  /* prevents iOS "scroll the whole page" weirdness */
+  overscroll-behavior: contain;
+}
 
 .place-card {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid var(--line);
   padding: 11px 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 10px rgba(18, 30, 54, 0.06);
+  margin-bottom: 9px;
+  box-shadow: 0 2px 6px rgba(18, 30, 54, 0.06);
   cursor: pointer;
   transition: box-shadow 0.12s ease, transform 0.12s ease;
 }
@@ -392,92 +349,21 @@ button, input {
   box-shadow: var(--shadow-soft);
 }
 
-/* Text-first (current) */
 .place-name {
-  margin: 0 0 3px;
-  font-size: 0.95rem;
+  margin: 0 0 2px;
+  font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .place-meta {
   margin: 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-}
-
-/* Image-card layout (future-ready — safe even if unused) */
-.place-card.place-card--img,
-.place-card.has-thumb {
-  display: grid;
-  grid-template-columns: 74px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 12px;
-}
-
-.place-thumb{
-  width: 74px;
-  height: 74px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(18,30,54,.10), rgba(18,30,54,.02));
-  border: 1px solid rgba(18,30,54,.08);
-  overflow: hidden;
-  flex: 0 0 auto;
-}
-
-.place-thumb img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.place-info{
-  min-width: 0;
-}
-
-.place-title{
-  margin: 0 0 4px;
-  font-size: 0.96rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.place-sub{
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-  line-height: 1.2;
-}
-
-/* Small badge row (optional) */
-.place-badges{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.badge{
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(18,30,54,.10);
-  background: rgba(18,30,54,.03);
-  font-size: 0.75rem;
-  color: rgba(18,30,54,.84);
-  font-weight: 600;
-}
-
-/* Hints */
-.guide-results .hint {
   font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.guide-results .hint {
+  font-size: 0.9rem;
   color: var(--muted);
   padding: 10px 4px;
 }
@@ -491,19 +377,15 @@ button, input {
   }
 
   .brand-logo {
-    width: 180px;
-    max-width: 180px;
+    width: 200px;
+    max-width: 200px;
     margin: 0;
   }
 
   .search-wrapper { max-width: 320px; }
 }
 
-/* ============================================================
-   Place Details Overlay
-   Your HTML uses ids without classes, so we style both.
-   ============================================================ */
-
+/* ===== Place Details Overlay ===== */
 .place-details-overlay {
   position: absolute;
   inset: 0;
@@ -527,8 +409,7 @@ button, input {
   -webkit-overflow-scrolling: touch;
 }
 
-.place-details-close,
-#placeDetailsClose {
+.place-details-close {
   border: none;
   background: transparent;
   font-size: 1rem;
@@ -538,63 +419,68 @@ button, input {
   color: var(--muted);
 }
 
-#detailsName {
-  margin: 8px 0 4px;
+.details-name {
+  margin: 4px 0 4px;
   font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-weight: 700;
 }
 
-#detailsMeta {
-  margin: 0 0 6px;
+.details-meta {
+  margin: 0 0 4px;
   font-size: 0.9rem;
   color: var(--muted);
 }
 
-#detailsAddress {
+.details-address {
   margin: 0 0 10px;
   font-size: 0.9rem;
 }
 
-/* rows (phone/website) */
-#detailsPhoneRow,
-#detailsWebsiteRow {
+.details-row {
   display: flex;
+  flex-direction: row;
   align-items: baseline;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 0.88rem;
-  color: var(--ink);
 }
 
-#detailsPhone,
-#detailsWebsite {
+.details-label {
+  min-width: 52px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.details-link {
   color: var(--accent-2);
   text-decoration: none;
 }
 
-#detailsPhone:hover,
-#detailsWebsite:hover { text-decoration: underline; }
+.details-link:hover { text-decoration: underline; }
 
-.details-primary-btn,
-#detailsMapsLink {
+.details-actions {
+  margin-top: 12px;
+  margin-bottom: 10px;
+}
+
+.details-primary-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 18px;
+  padding: 9px 18px;
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #fff;
   font-size: 0.9rem;
-  font-weight: 700;
   text-decoration: none;
-  margin-top: 10px;
 }
 
-#detailsHours {
-  margin-top: 12px;
-  padding-top: 10px;
+.details-hours {
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--line);
   font-size: 0.86rem;
   color: var(--muted);
