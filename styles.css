@@ -69,7 +69,7 @@ html, body {
   align-items: stretch;
 
   /* ✅ slightly tighter */
-  gap: 6px;
+  gap: 4px;
 }
 
 /* ✅ Logo spec you provided */
