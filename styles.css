@@ -14,6 +14,9 @@
   --card: #FFFFFF;
   --shadow-soft: 0 4px 10px rgba(18, 30, 54, 0.10);
   --shadow-strong: 0 16px 40px rgba(18, 30, 54, 0.20);
+
+  /* ✅ slightly softer placeholder gray */
+  --placeholder: #A6AFBF;
 }
 
 /* ===== Reset ===== */
@@ -46,7 +49,10 @@ html, body {
 .page-header {
   background: var(--bg);
   box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
-  padding: 10px 0 10px;
+
+  /* ✅ moved up a bit (less drop) */
+  padding: 8px 0 6px;
+
   z-index: 10;
 }
 
@@ -54,17 +60,24 @@ html, body {
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  padding: 0 16px 4px;
+
+  /* ✅ less bottom padding */
+  padding: 0 16px 2px;
+
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 10px;
+
+  /* ✅ slightly tighter */
+  gap: 8px;
 }
 
-.brand-logo {
-  max-width: 260px;
-  width: 72%;
-  display: block;
+/* ✅ Logo spec you provided */
+.brand-logo{
+  max-width: 320px;
+  width: 86%;
+  display:block;
+  height:auto;
   margin: 0 auto;
 }
 
@@ -83,7 +96,7 @@ html, body {
   box-shadow: var(--shadow-soft);
 }
 
-#venueSearch::placeholder { color: #9aa3b5; }
+#venueSearch::placeholder { color: var(--placeholder); }
 
 .search-wrapper::after {
   content: "⌕";
@@ -145,12 +158,19 @@ html, body {
   box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
   padding: 10px 14px 10px;
 
+  /* ✅ LOCKED size so it never visually moves/shrinks */
+  height: 52vh;
   max-height: 52vh;
+  min-height: 52vh;
 
   display: flex;
   flex-direction: column;
+
   transform: translateY(100%);
   transition: transform 0.24s ease-out;
+
+  /* ✅ stops content from affecting panel height */
+  overflow: hidden;
 }
 
 .guide-panel--hidden { transform: translateY(100%); }
@@ -162,6 +182,9 @@ html, body {
   align-items: flex-start;
   justify-content: space-between;
   padding: 0 2px 6px;
+
+  /* ✅ header never collapses */
+  flex: 0 0 auto;
 }
 
 .guide-header h2 {
@@ -188,12 +211,15 @@ html, body {
   flex-direction: column;
   gap: 10px;
   padding: 6px 2px 10px;
+
+  /* ✅ pills never collapse */
+  flex: 0 0 auto;
 }
 
 /* full-width pill base */
 .select-pill.full{
   width: 100%;
-  height: 44px;                 /* ✅ same height for both rows */
+  height: 44px;
   border-radius: 999px;
   border: 1px solid var(--line);
   background: #fff;
@@ -254,7 +280,7 @@ html, body {
 }
 
 .input-pill input::placeholder{
-  color: #9aa3b5;
+  color: var(--placeholder);
 }
 
 .pill-x{
@@ -275,7 +301,7 @@ html, body {
   position: absolute;
   left: 14px;
   right: 14px;
-  top: 0;                       /* ✅ JS will override */
+  top: 0; /* JS will override */
 
   background: #fff;
   border-radius: 16px;
@@ -285,7 +311,7 @@ html, body {
   padding: 6px 0;
   z-index: 80;
 
-  max-height: 38vh;             /* ✅ scrollable */
+  max-height: 38vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -316,10 +342,15 @@ html, body {
 .guide-results {
   position: relative;
   z-index: 1;
-  flex: 1;
+
+  /* ✅ ONLY this scrolls */
+  flex: 1 1 auto;
+  min-height: 0;
+
   margin-top: 4px;
-  padding: 4px 2px 4px;
+  padding: 4px 2px 10px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .place-card {
@@ -367,8 +398,8 @@ html, body {
   }
 
   .brand-logo {
-    width: 180px;
-    max-width: 180px;
+    width: 220px;
+    max-width: 220px;
     margin: 0;
   }
 
