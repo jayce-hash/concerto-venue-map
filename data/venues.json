@@ -2026,5 +2026,192 @@
     "isFestival": true,
     "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.962386&lng=-75.176683&venue=Made%20in%20America"
   }
+  {
+    "id": "history-toronto",
+    "name": "History",
+    "city": "Toronto",
+    "state": "ON",
+    "country": "CA",
+    "lat": 43.66032,
+    "lng": -79.33896,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.66032&lng=-79.33896&venue=History"
+  },
+  {
+    "id": "manhattan-center-hammerstein-ballroom",
+    "name": "Manhattan Center Hammerstein Ballroom",
+    "city": "New York",
+    "state": "NY",
+    "country": "US",
+    "lat": 40.75665,
+    "lng": -73.99421,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.75665&lng=-73.99421&venue=Manhattan%20Center%20Hammerstein%20Ballroom"
+  },
+  {
+    "id": "the-fillmore-detroit",
+    "name": "The Fillmore Detroit",
+    "city": "Detroit",
+    "state": "MI",
+    "country": "US",
+    "lat": 42.33764,
+    "lng": -83.05348,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.33764&lng=-83.05348&venue=The%20Fillmore%20Detroit"
+  },
+  {
+    "id": "o2-shepherds-bush-empire",
+    "name": "O2 Shepherds Bush Empire",
+    "city": "London",
+    "state": "",
+    "country": "UK",
+    "lat": 51.50427,
+    "lng": -0.22433,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=51.50427&lng=-0.22433&venue=O2%20Shepherds%20Bush%20Empire"
+  },
+  {
+    "id": "brooklyn-paramount",
+    "name": "Brooklyn Paramount",
+    "city": "Brooklyn",
+    "state": "NY",
+    "country": "US",
+    "lat": 40.69038,
+    "lng": -73.98359,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.69038&lng=-73.98359&venue=Brooklyn%20Paramount"
+  },
+  {
+    "id": "the-wiltern",
+    "name": "The Wiltern",
+    "city": "Los Angeles",
+    "state": "CA",
+    "country": "US",
+    "lat": 34.06141,
+    "lng": -118.30802,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=34.06141&lng=-118.30802&venue=The%20Wiltern"
+  },
+  {
+    "id": "center-stage-theater",
+    "name": "Center Stage Theater",
+    "city": "Atlanta",
+    "state": "GA",
+    "country": "US",
+    "lat": 33.7907,
+    "lng": -84.38644,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=33.7907&lng=-84.38644&venue=Center%20Stage%20Theater"
+  },
+  {
+    "id": "howard-theatre",
+    "name": "Howard Theatre",
+    "city": "Washington",
+    "state": "DC",
+    "country": "US",
+    "lat": 38.91653,
+    "lng": -77.02186,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=38.91653&lng=-77.02186&venue=Howard%20Theatre"
+  },
+  {
+    "id": "the-danforth-music-hall",
+    "name": "The Danforth Music Hall",
+    "city": "Toronto",
+    "state": "ON",
+    "country": "CA",
+    "lat": 43.67604,
+    "lng": -79.35795,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.67604&lng=-79.35795&venue=The%20Danforth%20Music%20Hall"
+  },
+  {
+    "id": "theatre-of-living-arts",
+    "name": "Theatre of Living Arts",
+    "city": "Philadelphia",
+    "state": "PA",
+    "country": "US",
+    "lat": 39.94424,
+    "lng": -75.1709,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.94424&lng=-75.1709&venue=Theatre%20of%20Living%20Arts"
+  },
+  {
+    "id": "irving-plaza",
+    "name": "Irving Plaza",
+    "city": "New York",
+    "state": "NY",
+    "country": "US",
+    "lat": 40.73488,
+    "lng": -73.98833,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.73488&lng=-73.98833&venue=Irving%20Plaza"
+  },
+  {
+    "id": "house-of-blues-chicago",
+    "name": "House of Blues Chicago",
+    "city": "Chicago",
+    "state": "IL",
+    "country": "US",
+    "lat": 41.88558,
+    "lng": -87.62792,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.88558&lng=-87.62792&venue=House%20of%20Blues%20Chicago"
+  },
+  {
+    "id": "summit-music-hall",
+    "name": "Summit Music Hall",
+    "city": "Denver",
+    "state": "CO",
+    "country": "US",
+    "lat": 39.74002,
+    "lng": -104.98964,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.74002&lng=-104.98964&venue=Summit%20Music%20Hall"
+  },
+  {
+    "id": "house-of-blues-las-vegas",
+    "name": "House of Blues Las Vegas",
+    "city": "Las Vegas",
+    "state": "NV",
+    "country": "US",
+    "lat": 36.09061,
+    "lng": -115.17417,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=36.09061&lng=-115.17417&venue=House%20of%20Blues%20Las%20Vegas"
+  },
+  {
+    "id": "viejas-arena",
+    "name": "Viejas Arena",
+    "city": "San Diego",
+    "state": "CA",
+    "country": "US",
+    "lat": 32.78376,
+    "lng": -117.11223,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=32.78376&lng=-117.11223&venue=Viejas%20Arena"
+  },
+  {
+    "id": "budweiser-stage",
+    "name": "Budweiser Stage",
+    "city": "Toronto",
+    "state": "ON",
+    "country": "CA",
+    "lat": 43.63051,
+    "lng": -79.39647,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=43.63051&lng=-79.39647&venue=Budweiser%20Stage"
+  },
+  {
+    "id": "merriweather-post-pavilion",
+    "name": "Merriweather Post Pavilion",
+    "city": "Columbia",
+    "state": "MD",
+    "country": "US",
+    "lat": 39.18583,
+    "lng": -76.83435,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.18583&lng=-76.83435&venue=Merriweather%20Post%20Pavilion"
+  }
 ]
   
