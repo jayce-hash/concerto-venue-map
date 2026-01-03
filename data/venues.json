@@ -2060,17 +2060,6 @@
     "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=42.33764&lng=-83.05348&venue=The%20Fillmore%20Detroit"
   },
   {
-    "id": "o2-shepherds-bush-empire",
-    "name": "O2 Shepherds Bush Empire",
-    "city": "London",
-    "state": "",
-    "country": "UK",
-    "lat": 51.50427,
-    "lng": -0.22433,
-    "isFestival": false,
-    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=51.50427&lng=-0.22433&venue=O2%20Shepherds%20Bush%20Empire"
-  },
-  {
     "id": "brooklyn-paramount",
     "name": "Brooklyn Paramount",
     "city": "Brooklyn",
@@ -2212,6 +2201,150 @@
     "lng": -76.83435,
     "isFestival": false,
     "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.18583&lng=-76.83435&venue=Merriweather%20Post%20Pavilion"
+  },
+  [
+  {
+    "id": "o2-shepherds-bush-empire",
+    "name": "O2 Shepherds Bush Empire",
+    "city": "London",
+    "state": "",
+    "country": "UK",
+    "lat": 51.50427,
+    "lng": -0.22433,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=51.50427&lng=-0.22433&venue=O2%20Shepherds%20Bush%20Empire"
+  },
+  {
+    "id": "psd-bank-dome-dusseldorf",
+    "name": "PSD Bank Dome",
+    "city": "Düsseldorf",
+    "state": "",
+    "country": "DE",
+    "lat": 51.23541,
+    "lng": 6.77623,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=51.23541&lng=6.77623&venue=PSD%20Bank%20Dome"
+  },
+  {
+    "id": "ziggo-dome-amsterdam",
+    "name": "Ziggo Dome",
+    "city": "Amsterdam",
+    "state": "",
+    "country": "NL",
+    "lat": 52.3147,
+    "lng": 4.94186,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=52.3147&lng=4.94186&venue=Ziggo%20Dome"
+  },
+  {
+    "id": "festhalle-frankfurt",
+    "name": "Festhalle",
+    "city": "Frankfurt",
+    "state": "",
+    "country": "DE",
+    "lat": 50.11064,
+    "lng": 8.67299,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=50.11064&lng=8.67299&venue=Festhalle"
+  },
+  {
+    "id": "mercedes-benz-arena-berlin",
+    "name": "Mercedes-Benz Arena",
+    "city": "Berlin",
+    "state": "",
+    "country": "DE",
+    "lat": 52.51007,
+    "lng": 13.43438,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=52.51007&lng=13.43438&venue=Mercedes-Benz%20Arena"
+  },
+  {
+    "id": "utilita-arena-newcastle",
+    "name": "Utilita Arena Newcastle",
+    "city": "Newcastle upon Tyne",
+    "state": "",
+    "country": "UK",
+    "lat": 54.97121,
+    "lng": -1.61075,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=54.97121&lng=-1.61075&venue=Utilita%20Arena%20Newcastle"
+  },
+  {
+    "id": "utilita-arena-birmingham",
+    "name": "Utilita Arena Birmingham",
+    "city": "Birmingham",
+    "state": "",
+    "country": "UK",
+    "lat": 52.4906,
+    "lng": -1.88477,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=52.4906&lng=-1.88477&venue=Utilita%20Arena%20Birmingham"
+  },
+  {
+    "id": "ovo-hydro-glasgow",
+    "name": "OVO Hydro",
+    "city": "Glasgow",
+    "state": "",
+    "country": "UK",
+    "lat": 55.86067,
+    "lng": -4.28568,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=55.86067&lng=-4.28568&venue=OVO%20Hydro"
+  },
+  {
+    "id": "co-op-live-manchester",
+    "name": "Co-op Live",
+    "city": "Manchester",
+    "state": "",
+    "country": "UK",
+    "lat": 53.48787,
+    "lng": -2.20026,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=53.48787&lng=-2.20026&venue=Co-op%20Live"
+  },
+  {
+    "id": "first-direct-arena-leeds",
+    "name": "First Direct Arena",
+    "city": "Leeds",
+    "state": "",
+    "country": "UK",
+    "lat": 53.80057,
+    "lng": -1.54831,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=53.80057&lng=-1.54831&venue=First%20Direct%20Arena"
+  },
+  {
+    "id": "motorpoint-arena-nottingham",
+    "name": "Motorpoint Arena Nottingham",
+    "city": "Nottingham",
+    "state": "",
+    "country": "UK",
+    "lat": 52.95479,
+    "lng": -1.14598,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=52.95479&lng=-1.14598&venue=Motorpoint%20Arena%20Nottingham"
+  },
+  {
+    "id": "the-sse-arena-belfast",
+    "name": "The SSE Arena Belfast",
+    "city": "Belfast",
+    "state": "",
+    "country": "UK",
+    "lat": 54.58308,
+    "lng": -5.93776,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=54.58308&lng=-5.93776&venue=The%20SSE%20Arena%20Belfast"
+  },
+  {
+    "id": "3arena-dublin",
+    "name": "3Arena",
+    "city": "Dublin",
+    "state": "",
+    "country": "IE",
+    "lat": 53.34679,
+    "lng": -6.23907,
+    "isFestival": false,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=53.34679&lng=-6.23907&venue=3Arena"
   }
 ]
   
