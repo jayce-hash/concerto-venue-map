@@ -279,7 +279,6 @@
   {"id": "uc-berkeley-greek-theatre", "name": "UC Berkeley Greek Theatre", "city": "Berkeley", "state": "CA", "country": "US", "lat": 37.8735, "lng": -122.2596, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=37.8735&lng=-122.2596&venue=UC%20Berkeley%20Greek%20Theatre"},
   {"id": "us-bank-stadium", "name": "U.S. Bank Stadium", "city": "Minneapolis", "state": "MN", "country": "US", "lat": 44.9738, "lng": -93.2581, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.9738&lng=-93.2581&venue=U.S.%20Bank%20Stadium"},
   {"id": "unipol-arena", "name": "Unipol Arena", "city": "Casalecchio di Reno", "state": "", "country": "IT", "lat": 44.4921, "lng": 11.2835, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=44.4921&lng=11.2835&venue=Unipol%20Arena"},
-[
   {"id": "unipol-forum", "name": "Unipol Forum", "city": "Assago", "state": "", "country": "IT", "lat": 45.398, "lng": 9.1469, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=45.398&lng=9.1469&venue=Unipol%20Forum"},
   {"id": "united-center", "name": "United Center", "city": "Chicago", "state": "IL", "country": "US", "lat": 41.8807, "lng": -87.6742, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=41.8807&lng=-87.6742&venue=United%20Center"},
   {"id": "unity-arena", "name": "Unity Arena", "city": "Fornebu", "state": "", "country": "NO", "lat": 59.9027, "lng": 10.625, "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=59.9027&lng=10.625&venue=Unity%20Arena"},
