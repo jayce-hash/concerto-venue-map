@@ -711,5 +711,25 @@
     "lng": -75.176683,
     "isFestival": true,
     "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=39.962386&lng=-75.176683&venue=Made%20in%20America"
-  }
+  },
+  {
+    "id": "radio-city-music-hall",
+    "name": "Radio City Music Hall",
+    "city": "New York",
+    "state": "NY",
+    "country": "US",
+    "lat": 40.7599,
+    "lng": -73.9795,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=40.7599&lng=-73.9795&venue=Radio%20City%20Music%20Hall"
+  },
+  {
+    "id": "the-gorge-amphitheatre",
+    "name": "The Gorge Amphitheatre",
+    "city": "George",
+    "state": "WA",
+    "country": "US",
+    "lat": 47.1199,
+    "lng": -119.8523,
+    "guideUrl": "https://fantastic-squirrel-0f95b8.netlify.app/?lat=47.1199&lng=-119.8523&venue=The%20Gorge%20Amphitheatre"
+  },
 ]
