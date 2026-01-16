@@ -31,10 +31,10 @@ let placeDetailsOverlay = null;
 let detailsNameEl = null;
 let detailsMetaEl = null;
 let detailsAddressEl = null;
-let detailsPhoneEl = null;
-let detailsPhoneRowEl = null;
-let detailsWebsiteEl = null;
-let detailsWebsiteRowEl = null;
+
+let detailsPhoneBtnEl = null;
+let detailsWebsiteBtnEl = null;
+
 let detailsMapsLinkEl = null;
 let detailsHoursEl = null;
 
@@ -192,8 +192,10 @@ function hidePlaceDetails() {
 function showPlaceDetails(place) {
   if (!placeDetailsOverlay) return;
 
-  detailsNameEl.textContent = place.name || "";
+  // Title
+  if (detailsNameEl) detailsNameEl.textContent = place.name || "";
 
+  // Meta line: rating + type
   const bits = [];
   if (place.rating) {
     const rating = Number(place.rating).toFixed(1);
@@ -204,28 +206,43 @@ function showPlaceDetails(place) {
     const prettyType = String(place.types[0]).replace(/_/g, " ");
     bits.push(prettyType);
   }
-  detailsMetaEl.textContent = bits.join(" • ");
+  if (detailsMetaEl) detailsMetaEl.textContent = bits.join(" • ");
 
-  detailsAddressEl.textContent =
-    place.formatted_address || place.vicinity || "";
-
-  if (place.formatted_phone_number) {
-    detailsPhoneRowEl.hidden = false;
-    detailsPhoneEl.textContent = place.formatted_phone_number;
-    detailsPhoneEl.href =
-      "tel:" + place.formatted_phone_number.replace(/\D/g, "");
-  } else {
-    detailsPhoneRowEl.hidden = true;
+  // Address
+  if (detailsAddressEl) {
+    detailsAddressEl.textContent = place.formatted_address || place.vicinity || "";
   }
 
-  if (place.website) {
-    detailsWebsiteRowEl.hidden = false;
-    detailsWebsiteEl.textContent = place.website.replace(/^https?:\/\//, "");
-    detailsWebsiteEl.href = place.website;
-  } else {
-    detailsWebsiteRowEl.hidden = true;
+  // --- Action buttons (Call / Website / Maps) ---
+
+  // Call
+  if (detailsPhoneBtnEl) {
+    if (place.formatted_phone_number) {
+      detailsPhoneBtnEl.hidden = false;
+      detailsPhoneBtnEl.textContent = "Call";
+      detailsPhoneBtnEl.href =
+        "tel:" + String(place.formatted_phone_number).replace(/\D/g, "");
+    } else {
+      detailsPhoneBtnEl.hidden = true;
+      detailsPhoneBtnEl.removeAttribute("href");
+    }
   }
 
+  // Website
+  if (detailsWebsiteBtnEl) {
+    if (place.website) {
+      detailsWebsiteBtnEl.hidden = false;
+      detailsWebsiteBtnEl.textContent = "Website";
+      detailsWebsiteBtnEl.href = place.website;
+      detailsWebsiteBtnEl.target = "_blank";
+      detailsWebsiteBtnEl.rel = "noopener noreferrer";
+    } else {
+      detailsWebsiteBtnEl.hidden = true;
+      detailsWebsiteBtnEl.removeAttribute("href");
+    }
+  }
+
+  // Maps URL (keep your existing logic)
   let mapsUrl;
   if (place.url) {
     mapsUrl = place.url;
@@ -237,13 +254,21 @@ function showPlaceDetails(place) {
       ? `${base}&query_place_id=${encodeURIComponent(place.place_id)}`
       : base;
   }
-  detailsMapsLinkEl.href = mapsUrl;
+  if (detailsMapsLinkEl) {
+    detailsMapsLinkEl.href = mapsUrl;
+    detailsMapsLinkEl.target = "_blank";
+    detailsMapsLinkEl.rel = "noopener noreferrer";
+  }
 
-  if (place.opening_hours && place.opening_hours.weekday_text) {
-    detailsHoursEl.hidden = false;
-    detailsHoursEl.textContent = place.opening_hours.weekday_text.join("\n");
-  } else {
-    detailsHoursEl.hidden = true;
+  // Hours
+  if (detailsHoursEl) {
+    if (place.opening_hours && place.opening_hours.weekday_text) {
+      detailsHoursEl.hidden = false;
+      detailsHoursEl.textContent = place.opening_hours.weekday_text.join("\n");
+    } else {
+      detailsHoursEl.hidden = true;
+      detailsHoursEl.textContent = "";
+    }
   }
 
   placeDetailsOverlay.hidden = false;
@@ -847,10 +872,8 @@ window.initMap = function () {
   detailsNameEl = document.getElementById("detailsName");
   detailsMetaEl = document.getElementById("detailsMeta");
   detailsAddressEl = document.getElementById("detailsAddress");
-  detailsPhoneEl = document.getElementById("detailsPhone");
-  detailsPhoneRowEl = document.getElementById("detailsPhoneRow");
-  detailsWebsiteEl = document.getElementById("detailsWebsite");
-  detailsWebsiteRowEl = document.getElementById("detailsWebsiteRow");
+  detailsPhoneBtnEl = document.getElementById("detailsPhoneBtn");
+  detailsWebsiteBtnEl = document.getElementById("detailsWebsiteBtn");
   detailsMapsLinkEl = document.getElementById("detailsMapsLink");
   detailsHoursEl = document.getElementById("detailsHours");
 
