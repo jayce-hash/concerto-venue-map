@@ -621,24 +621,42 @@ function renderTopPicksInline() {
     const card = document.createElement("div");
     card.className = "place-card top-pick-card";
 
-    const nameEl = document.createElement("p");
-    nameEl.className = "place-name";
-    nameEl.textContent = item.name || "Top Pick";
+    // --- Title row: name + Top Pick badge ---
+const titleRow = document.createElement("div");
+titleRow.style.display = "flex";
+titleRow.style.alignItems = "center";
+titleRow.style.justifyContent = "space-between";
+titleRow.style.gap = "8px";
 
-    const metaEl = document.createElement("p");
-    metaEl.className = "place-meta";
+const nameEl = document.createElement("p");
+nameEl.className = "place-name";
+nameEl.textContent = item.name || "Top Pick";
+nameEl.style.margin = "0";
 
-    // “Concerto Top Pick” + address + notes (keeps your clean look)
-    const bits = [];
-    bits.push("Concerto Top Pick");
-    if (item.address) bits.push(item.address);
-    if (item.notes) bits.push(item.notes);
+const badgeEl = document.createElement("span");
+badgeEl.className = "place-meta"; // keeps same color + font
+badgeEl.textContent = "★ Concerto Top Pick";
+badgeEl.style.whiteSpace = "nowrap";
 
-    metaEl.textContent = bits.join(" • ");
+titleRow.appendChild(nameEl);
+titleRow.appendChild(badgeEl);
 
-    card.appendChild(nameEl);
-    card.appendChild(metaEl);
+// --- Address line ---
+const addressEl = document.createElement("p");
+addressEl.className = "place-meta";
+addressEl.textContent = item.address || "";
+addressEl.style.margin = "4px 0 0";
 
+// --- Description line ---
+const notesEl = document.createElement("p");
+notesEl.className = "place-meta";
+notesEl.textContent = item.notes || "";
+notesEl.style.margin = "2px 0 0";
+
+// Append in order
+card.appendChild(titleRow);
+if (item.address) card.appendChild(addressEl);
+if (item.notes) card.appendChild(notesEl);
     card.addEventListener("click", () => {
       const pseudoPlace = {
         name: item.name,
