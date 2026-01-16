@@ -411,6 +411,31 @@ html, body {
   }
 }
 
+/* ===== Expanded mode (guide panel becomes a full page under header) ===== */
+.guide-panel.guide-panel--expanded{
+  top: 0;              /* inside <main>, so this is right under the header/logo */
+  bottom: 0;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+
+  border-radius: 0;    /* looks like a page */
+  box-shadow: none;    /* optional — cleaner as a page */
+  border-top: none;
+
+  transform: translateY(0) !important;
+}
+
+/* Optional: a slightly tighter top padding in expanded mode */
+.guide-panel.guide-panel--expanded .guide-header{
+  padding-top: 6px;
+}
+
+/* Optional: dropdown menu can be taller in expanded mode */
+.guide-panel.guide-panel--expanded .select-menu{
+  max-height: 60vh;
+}
+
 /* ===== Place Details Overlay ===== */
 .place-details-overlay {
   position: absolute;
