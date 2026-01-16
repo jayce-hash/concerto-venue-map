@@ -562,3 +562,15 @@ html, body {
 
   box-shadow: var(--shadow-soft);
 }
+
+/* Top Picks block */
+.top-pick-card .place-meta{
+  color: var(--muted);
+}
+
+/* Make “Concerto Top Pick” stand out slightly without changing layout */
+.top-pick-card .place-meta::before{
+  content: "★ ";
+  color: var(--accent-2);
+  font-weight: 700;
+}
