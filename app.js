@@ -23,6 +23,9 @@ let venueSearchResultsEl = null;
 // Back button
 let backToMapBtn = null;
 
+let expandPanelBtn = null;
+let isGuideExpanded = false;
+
 // Top Picks data
 let topPicksByKey = {};
 
@@ -697,6 +700,28 @@ function createMarkers() {
   });
 }
 
+function setGuideExpanded(expanded) {
+  isGuideExpanded = !!expanded;
+
+  if (!guidePanelEl) return;
+
+  if (isGuideExpanded) {
+    guidePanelEl.classList.add("guide-panel--expanded");
+    guidePanelEl.classList.remove("guide-panel--hidden");
+    if (expandPanelBtn) expandPanelBtn.textContent = "Collapse";
+  } else {
+    guidePanelEl.classList.remove("guide-panel--expanded");
+    if (expandPanelBtn) expandPanelBtn.textContent = "Expand";
+  }
+
+  // Re-position the dropdown menu if it's open (so it stays under the pill)
+  requestAnimationFrame(() => {
+    if (categoryMenu && !categoryMenu.hidden && categoryPillBtn) {
+      positionMenuUnderButton(categoryMenu, categoryPillBtn);
+    }
+  });
+}
+
 // ----- “Back to main map” -----
 function ensureBackButton() {
   if (!guidePanelEl) return;
@@ -704,11 +729,39 @@ function ensureBackButton() {
   const header = guidePanelEl.querySelector(".guide-header");
   if (!header) return;
 
+  // If buttons already exist, just re-hook references
   if (document.getElementById("backToMapBtn")) {
     backToMapBtn = document.getElementById("backToMapBtn");
+    expandPanelBtn = document.getElementById("expandPanelBtn");
     return;
   }
 
+  // --- Expand button (LEFT of Back) ---
+  const exp = document.createElement("button");
+  exp.id = "expandPanelBtn";
+  exp.type = "button";
+  exp.textContent = "Expand";
+  exp.style.border = "1px solid #E2E7F0";
+  exp.style.background = "#fff";
+  exp.style.borderRadius = "999px";
+  exp.style.padding = "7px 12px";
+  exp.style.fontSize = "0.85rem";
+  exp.style.color = "#121E36";
+  exp.style.boxShadow = "0 4px 10px rgba(18, 30, 54, 0.10)";
+  exp.style.cursor = "pointer";
+  exp.style.marginLeft = "10px";
+  exp.style.flex = "0 0 auto";
+
+  exp.addEventListener("click", () => {
+    closeCategoryMenu();
+    hidePlaceDetails();
+    setGuideExpanded(!isGuideExpanded);
+  });
+
+  header.appendChild(exp);
+  expandPanelBtn = exp;
+
+  // --- Back button (RIGHT of Expand) ---
   const btn = document.createElement("button");
   btn.id = "backToMapBtn";
   btn.type = "button";
@@ -727,6 +780,7 @@ function ensureBackButton() {
   btn.addEventListener("click", () => {
     closeCategoryMenu();
     hidePlaceDetails();
+    setGuideExpanded(false); // ✅ always reset expanded mode
 
     selectedVenue = null;
     currentCategory = "restaurants";
@@ -779,10 +833,11 @@ function focusVenue(venue) {
   if (categoryPillLabel) categoryPillLabel.textContent = "Search by Category";
   if (placeNameSearchEl) placeNameSearchEl.value = "";
 
-  if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
-  ensureBackButton();
+if (guidePanelEl) guidePanelEl.classList.remove("guide-panel--hidden");
+ensureBackButton();
+setGuideExpanded(false);
 
-  loadPlacesForCategory(currentCategory, currentSecondaryId);
+loadPlacesForCategory(currentCategory, currentSecondaryId);
 }
 
 // ----- Venue search (top search bar) -----
