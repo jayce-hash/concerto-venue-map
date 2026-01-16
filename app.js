@@ -73,7 +73,6 @@ const SILVER_PIN_ICON = {
 
 // Category labels for UI
 const CATEGORY_LABELS = {
-  toppicks: "Top Picks",
   restaurants: "Restaurants",
   hotels: "Hotels",
   bars: "Bars",
@@ -87,7 +86,6 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_ORDER = [
-  "toppicks",
   "restaurants",
   "hotels",
   "bars",
@@ -504,12 +502,6 @@ function loadTopPicksForVenue(venue) {
 function loadPlacesForCategory(catKey, subFilterId) {
   if (!selectedVenue) return;
 
-  // Curated Top Picks
-  if (catKey === "toppicks") {
-    loadTopPicksForVenue(selectedVenue);
-    return;
-  }
-
   if (!placesService) return;
 
   const baseCfg = CATEGORY_SEARCH_CONFIG[catKey] || CATEGORY_SEARCH_CONFIG.restaurants;
@@ -612,13 +604,96 @@ function setupNameSearchUI() {
   }
 }
 
+function getTopPicksForSelectedVenue() {
+  if (!selectedVenue) return [];
+  const key = selectedVenue.key || makeVenueKey(selectedVenue.name, selectedVenue.city, selectedVenue.state);
+  return topPicksByKey[key] || [];
+}
+
+function renderTopPicksInline() {
+  const picks = getTopPicksForSelectedVenue();
+  if (!picks.length) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "top-picks-block";
+
+  picks.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "place-card top-pick-card";
+
+    const nameEl = document.createElement("p");
+    nameEl.className = "place-name";
+    nameEl.textContent = item.name || "Top Pick";
+
+    const metaEl = document.createElement("p");
+    metaEl.className = "place-meta";
+
+    // “Concerto Top Pick” + address + notes (keeps your clean look)
+    const bits = [];
+    bits.push("Concerto Top Pick");
+    if (item.address) bits.push(item.address);
+    if (item.notes) bits.push(item.notes);
+
+    metaEl.textContent = bits.join(" • ");
+
+    card.appendChild(nameEl);
+    card.appendChild(metaEl);
+
+    card.addEventListener("click", () => {
+      const pseudoPlace = {
+        name: item.name,
+        formatted_address: item.address,
+        rating: item.rating || null,
+        user_ratings_total: item.user_ratings_total || null,
+        formatted_phone_number: item.phone || null,
+        website: item.website || null,
+        opening_hours: null,
+        types: item.types || []
+      };
+
+      // Maps URL fallbacks
+      let mapsUrl;
+      if (item.mapsUrl) {
+        mapsUrl = item.mapsUrl;
+      } else if (item.placeId) {
+        const base =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent(item.name || "");
+        mapsUrl = base + "&query_place_id=" + encodeURIComponent(item.placeId);
+      } else {
+        mapsUrl =
+          "https://www.google.com/maps/search/?api=1&query=" +
+          encodeURIComponent((item.name || "") + " " + (item.address || ""));
+      }
+
+      pseudoPlace.url = mapsUrl;
+      showPlaceDetails(pseudoPlace);
+    });
+
+    wrap.appendChild(card);
+  });
+
+  guideResultsEl.appendChild(wrap);
+}
+
 function renderPlaces(places) {
   guideResultsEl.innerHTML = "";
 
+  // ✅ Only prepend Top Picks when NOT using the name search
+  const nameQuery = (placeNameSearchEl && placeNameSearchEl.value || "").trim();
+  if (!nameQuery) {
+    renderTopPicksInline();
+  }
+
   if (!places.length) {
-    guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
+    // If there are top picks, don't show "no places" too aggressively
+    if (!getTopPicksForSelectedVenue().length) {
+      guideResultsEl.innerHTML = '<div class="hint">No places found for this category here yet.</div>';
+    }
     return;
   }
+
+  // ...keep the rest of your existing renderPlaces code the same...
 
   places.forEach(place => {
     const card = document.createElement("div");
@@ -736,21 +811,36 @@ function ensureBackButton() {
     return;
   }
 
-  // --- Expand button (LEFT of Back) ---
+  // --- RIGHT SIDE BUTTON GROUP ---
+  const right = document.createElement("div");
+  right.className = "guide-header-actions";
+  // inline styling so you don't have to touch CSS if you don't want to
+  right.style.display = "flex";
+  right.style.gap = "10px";
+  right.style.alignItems = "center";
+  right.style.marginLeft = "auto";
+  right.style.flex = "0 0 auto";
+
+  // helper to style both buttons the same
+  const styleHeaderBtn = (b) => {
+    b.style.border = "1px solid #E2E7F0";
+    b.style.background = "#fff";
+    b.style.borderRadius = "999px";
+    b.style.padding = "7px 12px";
+    b.style.fontSize = "0.85rem";
+    b.style.color = "#121E36";
+    b.style.boxShadow = "0 4px 10px rgba(18, 30, 54, 0.10)";
+    b.style.cursor = "pointer";
+    b.style.flex = "0 0 auto";
+    b.style.whiteSpace = "nowrap";
+  };
+
+  // --- Expand (left) ---
   const exp = document.createElement("button");
   exp.id = "expandPanelBtn";
   exp.type = "button";
-  exp.textContent = "Expand";
-  exp.style.border = "1px solid #E2E7F0";
-  exp.style.background = "#fff";
-  exp.style.borderRadius = "999px";
-  exp.style.padding = "7px 12px";
-  exp.style.fontSize = "0.85rem";
-  exp.style.color = "#121E36";
-  exp.style.boxShadow = "0 4px 10px rgba(18, 30, 54, 0.10)";
-  exp.style.cursor = "pointer";
-  exp.style.marginLeft = "10px";
-  exp.style.flex = "0 0 auto";
+  exp.textContent = isGuideExpanded ? "Collapse" : "Expand";
+  styleHeaderBtn(exp);
 
   exp.addEventListener("click", () => {
     closeCategoryMenu();
@@ -758,29 +848,17 @@ function ensureBackButton() {
     setGuideExpanded(!isGuideExpanded);
   });
 
-  header.appendChild(exp);
-  expandPanelBtn = exp;
-
-  // --- Back button (RIGHT of Expand) ---
+  // --- Back (right) ---
   const btn = document.createElement("button");
   btn.id = "backToMapBtn";
   btn.type = "button";
   btn.textContent = "Back";
-  btn.style.border = "1px solid #E2E7F0";
-  btn.style.background = "#fff";
-  btn.style.borderRadius = "999px";
-  btn.style.padding = "7px 12px";
-  btn.style.fontSize = "0.85rem";
-  btn.style.color = "#121E36";
-  btn.style.boxShadow = "0 4px 10px rgba(18, 30, 54, 0.10)";
-  btn.style.cursor = "pointer";
-  btn.style.marginLeft = "10px";
-  btn.style.flex = "0 0 auto";
+  styleHeaderBtn(btn);
 
   btn.addEventListener("click", () => {
     closeCategoryMenu();
     hidePlaceDetails();
-    setGuideExpanded(false); // ✅ always reset expanded mode
+    setGuideExpanded(false); // always reset expanded mode
 
     selectedVenue = null;
     currentCategory = "restaurants";
@@ -798,7 +876,11 @@ function ensureBackButton() {
     map.panTo({ lat: 39.5, lng: -98.35 });
   });
 
-  header.appendChild(btn);
+  right.appendChild(exp);
+  right.appendChild(btn);
+  header.appendChild(right);
+
+  expandPanelBtn = exp;
   backToMapBtn = btn;
 }
 
