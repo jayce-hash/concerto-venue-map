@@ -568,9 +568,7 @@ html, body {
   color: var(--muted);
 }
 
-/* Make “Concerto Top Pick” stand out slightly without changing layout */
+/* Star only for the Top Pick badge */
 .top-pick-card .place-meta::before{
-  content: "★ ";
-  color: var(--accent-2);
-  font-weight: 700;
+  content: none;
 }
