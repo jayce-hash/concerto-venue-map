@@ -53,18 +53,31 @@
         <div id="guideResults" class="guide-results"></div>
       </section>
 
-      <div id="placeDetails" class="place-details-overlay" hidden>
-        <div class="place-details-card">
-          <button id="placeDetailsClose" class="place-details-close">✕</button>
-          <h3 id="detailsName"></h3>
-          <p id="detailsMeta"></p>
-          <p id="detailsAddress"></p>
-          <div id="detailsPhoneRow"><a id="detailsPhone"></a></div>
-          <div id="detailsWebsiteRow"><a id="detailsWebsite"></a></div>
-          <a id="detailsMapsLink" class="details-primary-btn">Open in Google Maps</a>
-          <div id="detailsHours"></div>
-        </div>
-      </div>
+<div id="placeDetails" class="place-details-overlay" hidden>
+  <div class="place-details-card">
+    <button id="placeDetailsClose" class="place-details-close">✕</button>
+
+    <h3 id="detailsName" class="details-name"></h3>
+    <p id="detailsMeta" class="details-meta"></p>
+    <p id="detailsAddress" class="details-address"></p>
+
+    <div id="detailsPhoneRow" class="details-row">
+      <span class="details-label">Phone</span>
+      <a id="detailsPhone" class="details-link"></a>
+    </div>
+
+    <div id="detailsWebsiteRow" class="details-row">
+      <span class="details-label">Web</span>
+      <a id="detailsWebsite" class="details-link" target="_blank" rel="noopener noreferrer"></a>
+    </div>
+
+    <a id="detailsMapsLink" class="details-primary-btn" target="_blank" rel="noopener noreferrer">
+      Open in Google Maps
+    </a>
+
+    <div id="detailsHours" class="details-hours"></div>
+  </div>
+</div>
     </main>
   </div>
 
