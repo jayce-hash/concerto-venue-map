@@ -665,36 +665,109 @@ notesEl.style.margin = "2px 0 0";
 card.appendChild(titleRow);
 if (item.address) card.appendChild(addressEl);
 if (item.notes) card.appendChild(notesEl);
-    card.addEventListener("click", () => {
-      const pseudoPlace = {
-        name: item.name,
-        formatted_address: item.address,
-        rating: item.rating || null,
-        user_ratings_total: item.user_ratings_total || null,
-        formatted_phone_number: item.phone || null,
-        website: item.website || null,
-        opening_hours: null,
-        types: item.types || []
-      };
+card.addEventListener("click", () => {
+  if (!placesService || !selectedVenue) return;
 
-      // Maps URL fallbacks
-      let mapsUrl;
-      if (item.mapsUrl) {
-        mapsUrl = item.mapsUrl;
-      } else if (item.placeId) {
-        const base =
-          "https://www.google.com/maps/search/?api=1&query=" +
-          encodeURIComponent(item.name || "");
-        mapsUrl = base + "&query_place_id=" + encodeURIComponent(item.placeId);
-      } else {
-        mapsUrl =
-          "https://www.google.com/maps/search/?api=1&query=" +
-          encodeURIComponent((item.name || "") + " " + (item.address || ""));
+  // 1) If we already have a Place ID, get rich details (phone, website, etc.)
+  if (item.placeId) {
+    placesService.getDetails(
+      {
+        placeId: item.placeId,
+        fields: [
+          "name",
+          "rating",
+          "user_ratings_total",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "url",
+          "opening_hours",
+          "types",
+          "place_id"
+        ]
+      },
+      (details, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && details) {
+          showPlaceDetails(details);
+        } else {
+          // fallback to minimal display
+          showPlaceDetails({
+            name: item.name,
+            formatted_address: item.address || "",
+            website: item.website || null,
+            formatted_phone_number: item.phone || null,
+            types: item.types || []
+          });
+        }
       }
+    );
+    return;
+  }
 
-      pseudoPlace.url = mapsUrl;
-      showPlaceDetails(pseudoPlace);
-    });
+  // 2) No Place ID? Resolve it from name + address, biased near the venue.
+  const query = `${item.name || ""} ${item.address || ""}`.trim();
+  const request = {
+    query,
+    fields: ["place_id", "name", "formatted_address"],
+    locationBias: new google.maps.Circle({
+      center: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
+      radius: 6000
+    })
+  };
+
+  placesService.findPlaceFromQuery(request, (results, status) => {
+    if (
+      status !== google.maps.places.PlacesServiceStatus.OK ||
+      !results ||
+      !results[0] ||
+      !results[0].place_id
+    ) {
+      // fallback if Google can't resolve it
+      showPlaceDetails({
+        name: item.name,
+        formatted_address: item.address || "",
+        website: item.website || null,
+        formatted_phone_number: item.phone || null,
+        types: item.types || []
+      });
+      return;
+    }
+
+    const placeId = results[0].place_id;
+
+    placesService.getDetails(
+      {
+        placeId,
+        fields: [
+          "name",
+          "rating",
+          "user_ratings_total",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "url",
+          "opening_hours",
+          "types",
+          "place_id"
+        ]
+      },
+      (details, status2) => {
+        if (status2 === google.maps.places.PlacesServiceStatus.OK && details) {
+          showPlaceDetails(details);
+        } else {
+          showPlaceDetails({
+            name: item.name,
+            formatted_address: item.address || "",
+            website: item.website || null,
+            formatted_phone_number: item.phone || null,
+            types: item.types || [],
+            place_id: placeId
+          });
+        }
+      }
+    );
+  });
+});
 
     wrap.appendChild(card);
   });
