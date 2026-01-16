@@ -625,8 +625,8 @@ function renderTopPicksInline() {
 const titleRow = document.createElement("div");
 titleRow.style.display = "flex";
 titleRow.style.alignItems = "center";
-titleRow.style.justifyContent = "space-between";
-titleRow.style.gap = "8px";
+titleRow.style.justifyContent = "flex-start";
+titleRow.style.gap = "10px";
 
 const nameEl = document.createElement("p");
 nameEl.className = "place-name";
@@ -635,7 +635,15 @@ nameEl.style.margin = "0";
 
 const badgeEl = document.createElement("span");
 badgeEl.className = "place-meta"; // keeps same color + font
-badgeEl.textContent = "★ Concerto Top Pick";
+badgeEl.textContent = "Concerto Top Pick";
+badgeEl.style.display = "flex";
+badgeEl.style.alignItems = "center";
+badgeEl.style.gap = "4px";
+
+const star = document.createElement("span");
+star.textContent = "★";
+
+badgeEl.prepend(star);
 badgeEl.style.whiteSpace = "nowrap";
 
 titleRow.appendChild(nameEl);
