@@ -196,16 +196,22 @@
     "state": "CA",
     "items": [
       {
-        "name": "Cork & Batter",
-        "address": "3900 W Manchester Blvd, Inglewood, CA 90305",
+        "name": "The Serving Spoon",
+        "address": "1403 Centinela Ave, Inglewood, CA 90302",
         "placeId": null,
-        "notes": "Modern American restaurant and bar popular for pre-event dining and cocktails."
+        "notes": "Classic neighborhood diner known for Southern breakfast, fried catfish, chicken drumettes, and the best waffles in town."
       },
       {
         "name": "Coni'Seafood",
         "address": "3544 W Imperial Hwy, Inglewood, CA 90303",
         "placeId": null,
         "notes": "Renowned Mexican seafood spot specializing in Nayarit-style dishes."
+      },
+      {
+        "name": "Cork & Batter",
+        "address": "3900 W Manchester Blvd, Inglewood, CA 90305",
+        "placeId": null,
+        "notes": "Modern American restaurant and bar popular for pre-event dining and cocktails."
       },
       {
         "name": "Dulan's Soul Food Kitchen",
@@ -218,12 +224,6 @@
         "address": "1120 Centinela Ave, Inglewood, CA 90302",
         "placeId": null,
         "notes": "Italian-American restaurant focused on house-made pasta and rich sauces."
-      },
-      {
-        "name": "Stuff I Eat",
-        "address": "114 N Market St, Inglewood, CA 90301",
-        "placeId": null,
-        "notes": "Plant-based comfort food favorite offering vegan burgers, tacos, and soul food classics."
       }
     ]
   }
