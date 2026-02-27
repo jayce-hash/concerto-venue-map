@@ -5,6 +5,12 @@
     "state": "TX",
     "items": [
       {
+        "name": "El Chile Café Y Cantina",
+        "address": "1900 Manor Rd, Austin, TX 78722",
+        "placeId": null,
+        "notes": "An Austin Tex-Mex favorite known for margaritas, fajitas, and standout grilled pineapple salmon ceviche with smokey mezcal."
+      },
+      {
         "name": "Scholz Garten",
         "address": "1607 San Jacinto Blvd, Austin, TX 78701",
         "placeId": null,
