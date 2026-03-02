@@ -208,6 +208,12 @@
         "notes": "Renowned Mexican seafood spot specializing in Nayarit-style dishes."
       },
       {
+        "name": "The Meeting Spot",
+        "address": "1231 District Dr, Inglewood, CA 90303",
+        "placeId": null,
+        "notes": "The ideal pre-show spot, with freshly prepared dishes, innovative cocktails, and an amazing atmosphere."
+      },
+      {
         "name": "Cork & Batter",
         "address": "3900 W Manchester Blvd, Inglewood, CA 90305",
         "placeId": null,
