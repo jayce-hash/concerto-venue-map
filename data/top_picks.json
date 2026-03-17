@@ -85,34 +85,34 @@
     "state": "MA",
     "items": [
       {
-        "name": "Hub Hall",
-        "address": "80 Causeway St, Boston, MA 02114",
-        "placeId": null,
-        "notes": "Food hall directly connected to TD Garden featuring a curated mix of popular local Boston eateries."
-      },
-      {
-        "name": "Ducali Pizzeria",
-        "address": "50 Causeway St, Boston, MA 02114",
-        "placeId": null,
-        "notes": "Casual Italian spot known for Roman-style pizza and its unbeatable location across from TD Garden."
-      },
-      {
         "name": "Alcove",
         "address": "50 Lovejoy Wharf, Boston, MA 02114",
         "placeId": null,
-        "notes": "Waterfront restaurant offering seasonal New American dishes, cocktails, and scenic harbor views."
+        "notes": "Waterfront New England dishes and cocktails steps from North Station."
       },
       {
-        "name": "Chilacates",
+        "name": "Scampo",
+        "address": "215 Charles St, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Bold Italian and Mediterranean flavors inside the iconic Liberty Hotel."
+      },
+      {
+        "name": "Banners Kitchen & Tap",
         "address": "80 Causeway St, Boston, MA 02114",
         "placeId": null,
-        "notes": "Fast-casual Mexican eatery serving fresh tacos, burritos, bowls, and house-made salsas."
+        "notes": "Legendary sports bar with 60 taps and a massive screen."
       },
       {
-        "name": "A&B Kitchen and Bar",
-        "address": "15 Canal St, Boston, MA 02114",
+        "name": "Tip Tap Room",
+        "address": "138 Cambridge St, Boston, MA 02114",
         "placeId": null,
-        "notes": "Contemporary American restaurant offering elevated comfort food and cocktails in a stylish setting."
+        "notes": "Beacon Hill gastropub with steak tips and 36 beers on tap."
+      },
+      {
+        "name": "Night Shift Brewing",
+        "address": "1 Lovejoy Wharf, Boston, MA 02114",
+        "placeId": null,
+        "notes": "Detroit-style pizza and house-crafted beers with Boston Harbor views."
       }
     ]
   },
