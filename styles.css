@@ -119,10 +119,28 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 .top-pick-card .walk-badge { background: rgba(255,255,255,0.15) !important; color: #FFFFFF !important; }
 .top-pick-notes { color: rgba(255,255,255,0.6) !important; font-size: 11px !important; font-style: italic; margin-top: 6px !important; line-height: 1.4 !important; }
 
-/* --- Place Details Overlay --- */
-.details-overlay { position: absolute; inset: 0; background: rgba(18,30,54,0.3); backdrop-filter: blur(5px); z-index: 300; display: flex; align-items: flex-end; }
-.details-overlay.hidden { display: none; }
-.details-card { width: 100%; height: auto; max-height: 85vh; background: #FFF; border-radius: 32px 32px 0 0; padding: 30px 24px 40px; position: relative; box-shadow: var(--shadow-strong); overflow-y: auto;}
+/* --- Place Details Bottom Sheet (Fixed for Map Visibility) --- */
+.details-overlay { 
+  position: absolute; bottom: 0; left: 0; right: 0; 
+  z-index: 30; 
+  transform: translateY(0); 
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+  pointer-events: none; /* Allows tapping the map above the card */
+}
+.details-overlay.hidden { transform: translateY(120%); }
+
+.details-card { 
+  width: 100%; height: auto; max-height: 50vh; 
+  background: rgba(255, 255, 255, 0.95); 
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px 32px 0 0; 
+  padding: 30px 24px 40px; 
+  position: relative; 
+  box-shadow: var(--shadow-strong); 
+  overflow-y: auto;
+  pointer-events: auto; /* Re-enables clicking on the card itself */
+}
+
 .details-close { position: absolute; top: 24px; right: 24px; }
 .details-name { font-size: 28px; line-height: 1.1; margin-bottom: 8px; padding-right: 40px; color: #121E36; }
 .details-meta { color: var(--gold); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
