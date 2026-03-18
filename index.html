@@ -9,436 +9,63 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    /* =========================================
-       CONCERTO CITY GUIDES CSS
-       ========================================= */
-    :root {
-      --bg: #F8F9F9;
-      --ink: #121E36;
-      --muted: rgba(18, 30, 54, 0.55);
-      --gold: #C9A84C;
-      --line: rgba(18, 30, 54, 0.08);
-      --shadow: 0 12px 40px rgba(18, 30, 54, 0.15);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; color: var(--ink); overflow: hidden; background: var(--bg); }
-    h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
-
-    /* Header */
-    .page-header { background: #FFF; padding: 12px 20px; z-index: 100; position: absolute; top: 0; left: 0; right: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-    .page-header-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: 0 auto; gap: 20px; }
-    .brand-logo { height: 32px; object-fit: contain; mix-blend-mode: multiply; }
-    .search-wrapper { position: relative; flex: 1; max-width: 350px; }
-    #venueSearch { width: 100%; padding: 10px 16px; border-radius: 99px; border: 1px solid var(--line); background: var(--bg); font-family: inherit; font-size: 14px; outline: none; }
-    .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #FFF; border-radius: 12px; box-shadow: var(--shadow); margin-top: 8px; display: none; max-height: 250px; overflow-y: auto; z-index: 200; }
-    .search-results.visible { display: block; }
-    .search-result-item { padding: 12px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--line); }
-
-    /* Map Canvas */
-    .layout { height: 100vh; position: relative; width: 100%; }
-    .map { width: 100%; height: 100%; background: #E2E8F0; }
-
-    /* Floating Glass Panel */
-    .guide-panel { 
-      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); 
-      width: 100%; max-width: 420px; height: 65vh; 
-      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: 30px 30px 0 0; border: 1px solid rgba(255,255,255,0.4);
-      box-shadow: var(--shadow); display: flex; flex-direction: column; z-index: 10;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .guide-panel:not(.guide-panel--hidden) { transform: translateX(-50%) translateY(0); }
-    .drag-handle { width: 40px; height: 5px; background: rgba(18, 30, 54, 0.2); border-radius: 5px; margin: 12px auto 0; }
-
-    /* Header & Close */
-    .guide-header { padding: 15px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
-    .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-    #guideVenueName { font-size: 24px; line-height: 1.1; margin-bottom: 4px; }
-    .venue-location { font-size: 13px; color: var(--muted); }
-    .close-panel-btn { background: rgba(18,30,54,0.05); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: var(--ink); font-weight: bold; }
-
-    /* Horizontal Timeline Scroller */
-    .timeline-scroller { display: flex; gap: 8px; overflow-x: auto; padding: 0 24px 15px; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-bottom: 1px solid var(--line); }
-    .timeline-scroller::-webkit-scrollbar { display: none; }
-    .timeline-pill { flex: 0 0 auto; background: #FFF; border: 1px solid var(--line); border-radius: 99px; padding: 10px 16px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-    .timeline-pill.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
-
-    /* Results & Cards */
-    .guide-results { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .place-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer; }
-    .place-name { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 4px; }
-    .place-meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .walk-badge { display: inline-flex; align-items: center; background: rgba(18, 30, 54, 0.05); color: var(--ink); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 6px; }
-
-    /* Top Pick Styling */
-    .top-pick-card { background: var(--ink); border: 1px solid var(--gold); color: #FFF; padding: 20px; }
-    .top-pick-card .place-name { color: #FFF; font-size: 22px; }
-    .top-pick-card .place-meta { color: rgba(255,255,255,0.7); }
-    .top-pick-badge { display: block; color: var(--gold); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-
-    /* Overlay Details */
-    .place-details-overlay { position: absolute; inset: 0; background: rgba(18,30,54,0.4); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: flex-end; }
-    .place-details-card { width: 100%; max-width: 420px; margin: 0 auto; height: 80%; background: #FFF; border-radius: 24px 24px 0 0; padding: 30px 24px; position: relative; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);}
-    .place-details-close { position: absolute; top: 20px; right: 20px; background: rgba(18,30,54,0.05); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: bold;}
-    .details-name { font-size: 26px; line-height: 1.1; margin-bottom: 8px; font-family: 'Playfair Display', serif;}
-    .details-meta { color: var(--gold); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
-    .details-address { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
-    
-    .details-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-    .details-action-btn { text-align: center; padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; text-decoration: none; color: #FFF; background: var(--ink); border: 1px solid var(--line); }
-    
-    .details-hours { font-size: 13px; color: var(--muted); white-space: pre-line; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--line); }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page">
-    <header class="page-header">
-      <div class="page-header-inner">
-        <a href="index.html"><img src="logo.png" class="brand-logo" alt="Concerto" /></a>
-        <div class="search-wrapper">
-          <input id="venueSearch" type="text" placeholder="Search a venue..." autocomplete="off" />
-          <div id="searchResults" class="search-results"></div>
-        </div>
+  <div class="app-container">
+    
+    <header class="search-header">
+      <img src="logo.png" class="brand-logo" alt="Concerto" />
+      <div class="search-wrapper">
+        <input id="venueSearch" type="text" placeholder="Search a venue..." autocomplete="off" />
+        <div id="searchResults" class="search-results"></div>
       </div>
     </header>
 
-    <main class="layout">
-      <div id="map" class="map"></div>
+    <div id="map" class="map-canvas"></div>
 
-      <section id="guidePanel" class="guide-panel guide-panel--hidden">
-        <div class="drag-handle"></div>
-        
-        <header class="guide-header">
-          <div>
-            <p class="eyebrow">City Guide</p>
-            <h2 id="guideVenueName"></h2>
-            <p id="guideVenueLocation" class="venue-location"></p>
-          </div>
-          <button id="backToMapBtn" class="close-panel-btn">✕</button>
-        </header>
-
-        <div class="timeline-scroller" id="timelineScroller">
-          <button class="timeline-pill active" data-cat="pregame">🍸 Pre-Game</button>
-          <button class="timeline-pill" data-cat="afterglow">🍕 Afterglow</button>
-          <button class="timeline-pill" data-cat="recovery">☕ Recovery</button>
-          <button class="timeline-pill" data-cat="stay">🏨 Where to Stay</button>
+    <section id="guidePanel" class="bottom-sheet hidden">
+      <div class="drag-handle"></div>
+      
+      <header class="sheet-header">
+        <div class="sheet-title-group">
+          <span class="eyebrow">The Guide</span>
+          <h2 id="guideVenueName">Venue Name</h2>
+          <p id="guideVenueLocation">City, State</p>
         </div>
+        <button id="closePanelBtn" class="close-btn">✕</button>
+      </header>
 
-        <div id="guideResults" class="guide-results"></div>
-      </section>
-
-      <div id="placeDetails" class="place-details-overlay" hidden>
-        <div class="place-details-card">
-          <button id="placeDetailsClose" class="place-details-close" type="button">✕</button>
-          <h3 id="detailsName" class="details-name"></h3>
-          <p id="detailsMeta" class="details-meta"></p>
-          <p id="detailsAddress" class="details-address"></p>
-          <div class="details-actions">
-            <a id="detailsPhoneBtn" class="details-action-btn" href="#" hidden>Call</a>
-            <a id="detailsWebsiteBtn" class="details-action-btn" href="#" target="_blank" hidden>Website</a>
-          </div>
-          <div id="detailsHours" class="details-hours" hidden></div>
-        </div>
+      <div class="timeline-scroller">
+        <button class="timeline-pill active" data-cat="pregame">🍸 Pre-Game</button>
+        <button class="timeline-pill" data-cat="afterglow">🍕 Afterglow</button>
+        <button class="timeline-pill" data-cat="recovery">☕ Recovery</button>
+        <button class="timeline-pill" data-cat="stay">🏨 Stay</button>
       </div>
-    </main>
+
+      <div id="guideResults" class="results-scroll-area"></div>
+    </section>
+
+    <div id="placeDetails" class="details-overlay hidden">
+      <div class="details-card">
+        <button id="placeDetailsClose" class="close-btn details-close">✕</button>
+        
+        <h3 id="detailsName" class="details-name">Place Name</h3>
+        <p id="detailsMeta" class="details-meta">Meta Info</p>
+        <p id="detailsAddress" class="details-address">Address</p>
+        
+        <div class="details-actions">
+          <a id="detailsPhoneBtn" class="action-btn" href="#" hidden>Call</a>
+          <a id="detailsWebsiteBtn" class="action-btn" href="#" hidden target="_blank">Website</a>
+        </div>
+        
+        <a id="detailsMapsLink" class="route-btn" href="#" target="_system">ROUTE ME</a>
+      </div>
+    </div>
+
   </div>
 
-  <script>
-    let map;
-    let venues = [];
-    let markers = [];
-    let selectedVenue = null;
-    let placesService = null;
-    let guidePanelEl = null;
-    let guideResultsEl = null;
-    let venueSearchInput = null;
-    let venueSearchResultsEl = null;
-    let topPicksByKey = {};
-
-    let currentCategory = "pregame";
-
-    const NAVY_PIN_ICON = { path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z", fillColor: "#121E36", fillOpacity: 1, strokeColor: "#FFFFFF", strokeWeight: 1.5, scale: 1.4, anchor: { x: 12, y: 22 } };
-
-    const TIMELINE_CONFIG = {
-      pregame: { type: "restaurant", keyword: "drinks dinner", radius: 1500 }, 
-      afterglow: { type: "bar", keyword: "late night food", radius: 2500 }, 
-      recovery: { type: "cafe", keyword: "coffee breakfast", radius: 3000 },
-      stay: { type: "lodging", keyword: "boutique hotel", radius: 5000 }
-    };
-
-    function makeVenueKey(name, city, state) {
-      return (name + "|" + city + "|" + state).toLowerCase();
-    }
-
-    function distanceMeters(lat1, lng1, lat2, lng2) {
-      const R = 6371000;
-      const toRad = x => (x * Math.PI) / 180;
-      const dLat = toRad(lat2 - lat1);
-      const dLng = toRad(lng2 - lng1);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
-    function getWalkScore(meters) {
-      const minutes = Math.round(meters / 80); 
-      if (minutes <= 3) return "📍 Steps away";
-      if (minutes <= 20) return `🚶 ${minutes} min walk`;
-      const miles = (meters / 1609.34).toFixed(1);
-      return `🚗 ${miles} mi`;
-    }
-
-    // --- FETCH RICH DETAILS & OPEN OVERLAY ---
-    function fetchDetailsAndShow(placeId, fallbackPlace) {
-      if (!placesService || !placeId) {
-        showPlaceDetails(fallbackPlace);
-        return;
-      }
-      
-      placesService.getDetails({
-        placeId: placeId,
-        fields: ["name", "rating", "user_ratings_total", "formatted_address", "formatted_phone_number", "website", "opening_hours", "place_id", "url"]
-      }, (details, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && details) {
-          if (fallbackPlace.notes) details.notes = fallbackPlace.notes;
-          showPlaceDetails(details);
-        } else {
-          showPlaceDetails(fallbackPlace);
-        }
-      });
-    }
-
-    // --- RENDER TOP PICKS ---
-    function renderTopPicksInline() {
-      if (!selectedVenue) return;
-      const key = selectedVenue.key || makeVenueKey(selectedVenue.name, selectedVenue.city, selectedVenue.state);
-      const picks = topPicksByKey[key] || [];
-      
-      if (!picks.length) return;
-
-      picks.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "place-card top-pick-card";
-
-        let walkHTML = "";
-        if (item.lat && item.lng) {
-          const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng);
-          walkHTML = `<span class="walk-badge">${getWalkScore(meters)}</span>`;
-        }
-
-        card.innerHTML = `
-          <span class="top-pick-badge">★ Concerto Top Pick</span>
-          <p class="place-name">${item.name}</p>
-          <p class="place-meta">${walkHTML} ${item.address}</p>
-          <p class="place-meta" style="margin-top: 8px;">"${item.notes}"</p>
-        `;
-        
-        card.addEventListener("click", () => {
-          if (item.placeId) {
-            fetchDetailsAndShow(item.placeId, item);
-          } else {
-            showPlaceDetails(item);
-          }
-        });
-        guideResultsEl.appendChild(card);
-      });
-    }
-
-    // --- OVERLAY ---
-    function showPlaceDetails(place) {
-      const detailsOverlay = document.getElementById("placeDetails");
-      detailsOverlay.hidden = false;
-      
-      document.getElementById("detailsName").textContent = place.name || "Top Pick";
-      
-      const address = place.vicinity || place.formatted_address || place.address || "";
-      document.getElementById("detailsAddress").textContent = address;
-      
-      const metaBits = [];
-      if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
-      if (place.notes) metaBits.push(`Concerto Curated`); 
-      document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
-
-      const phoneBtn = document.getElementById("detailsPhoneBtn");
-      if (place.formatted_phone_number) {
-        phoneBtn.hidden = false;
-        phoneBtn.href = "tel:" + String(place.formatted_phone_number).replace(/\D/g, "");
-      } else {
-        phoneBtn.hidden = true;
-      }
-
-      const webBtn = document.getElementById("detailsWebsiteBtn");
-      if (place.website) {
-        webBtn.hidden = false;
-        webBtn.href = place.website;
-      } else {
-        webBtn.hidden = true;
-      }
-
-      const hoursEl = document.getElementById("detailsHours");
-      if (place.opening_hours && place.opening_hours.weekday_text) {
-        hoursEl.hidden = false;
-        hoursEl.textContent = "Hours:\n" + place.opening_hours.weekday_text.join("\n");
-      } else {
-        hoursEl.hidden = true;
-      }
-
-      document.getElementById("placeDetailsClose").onclick = () => {
-        detailsOverlay.hidden = true;
-      };
-    }
-
-    // --- RENDER GOOGLE PLACES ---
-    function loadPlacesForTimeline(catKey) {
-      if (!selectedVenue || !placesService) return;
-      const config = TIMELINE_CONFIG[catKey];
-      
-      const request = {
-        location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
-        radius: config.radius,
-        type: config.type,
-        keyword: config.keyword
-      };
-
-      guideResultsEl.innerHTML = '<div class="hint" style="padding: 20px;">Curating the timeline...</div>';
-
-      placesService.nearbySearch(request, (results, status) => {
-        guideResultsEl.innerHTML = "";
-        
-        if (catKey === "pregame") renderTopPicksInline();
-
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-          if (guideResultsEl.innerHTML === "") {
-            guideResultsEl.innerHTML = '<div class="hint">No immediate recommendations found.</div>';
-          }
-          return;
-        }
-
-        results.slice(0, 15).forEach(place => {
-          const card = document.createElement("div");
-          card.className = "place-card";
-
-          let walkHTML = "";
-          if (place.geometry && place.geometry.location) {
-            const meters = distanceMeters(selectedVenue.lat, selectedVenue.lng, place.geometry.location.lat(), place.geometry.location.lng());
-            walkHTML = `<span class="walk-badge">${getWalkScore(meters)}</span>`;
-          }
-          
-          const ratingStr = place.rating ? `${Number(place.rating).toFixed(1)}★` : "";
-          
-          card.innerHTML = `
-            <p class="place-name">${place.name}</p>
-            <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
-          `;
-          
-          card.addEventListener("click", () => {
-            fetchDetailsAndShow(place.place_id, place);
-          });
-          guideResultsEl.appendChild(card);
-        });
-      });
-    }
-
-    function setupTimelineUI() {
-      const pills = document.querySelectorAll(".timeline-pill");
-      pills.forEach(pill => {
-        pill.addEventListener("click", (e) => {
-          pills.forEach(p => p.classList.remove("active"));
-          e.target.classList.add("active");
-          currentCategory = e.target.dataset.cat;
-          loadPlacesForTimeline(currentCategory);
-        });
-      });
-    }
-
-    function focusVenue(venue) {
-      selectedVenue = venue;
-      currentCategory = "pregame"; 
-      
-      document.querySelectorAll(".timeline-pill").forEach(p => p.classList.remove("active"));
-      document.querySelector('.timeline-pill[data-cat="pregame"]').classList.add("active");
-
-      map.setZoom(14);
-      map.panTo({ lat: venue.lat, lng: venue.lng });
-      
-      google.maps.event.addListenerOnce(map, "idle", () => { map.panBy(0, 150); });
-
-      document.getElementById("guideVenueName").textContent = venue.name;
-      document.getElementById("guideVenueLocation").textContent = `${venue.city}, ${venue.state}`;
-      guidePanelEl.classList.remove("guide-panel--hidden");
-
-      loadPlacesForTimeline(currentCategory);
-    }
-
-    function setupVenueSearch() {
-      venueSearchInput = document.getElementById("venueSearch");
-      venueSearchResultsEl = document.getElementById("searchResults");
-      
-      venueSearchInput.addEventListener("input", () => {
-        const q = venueSearchInput.value.trim().toLowerCase();
-        venueSearchResultsEl.innerHTML = "";
-        if (!q) { venueSearchResultsEl.classList.remove("visible"); return; }
-        
-        const filtered = venues.filter(v => v.name.toLowerCase().includes(q) || v.city.toLowerCase().includes(q));
-        
-        filtered.slice(0, 10).forEach(v => {
-          const item = document.createElement("div");
-          item.className = "search-result-item";
-          item.textContent = `${v.name} — ${v.city}`;
-          item.addEventListener("click", () => {
-            venueSearchInput.value = v.name;
-            venueSearchResultsEl.classList.remove("visible");
-            focusVenue(v);
-          });
-          venueSearchResultsEl.appendChild(item);
-        });
-        venueSearchResultsEl.classList.add("visible");
-      });
-    }
-
-    window.initMap = function () {
-      const mapStyle = [ { "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }] }, { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "elementType": "labels.text.fill", "stylers": [{ "color": "#616161" }] }, { "elementType": "labels.text.stroke", "stylers": [{ "color": "#f5f5f5" }] }, { "featureType": "administrative.land_parcel", "elementType": "labels.text.fill", "stylers": [{ "color": "#bdbdbd" }] }, { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#eeeeee" }] }, { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#757575" }] }, { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "road.arterial", "elementType": "labels.text.fill", "stylers": [{ "color": "#757575" }] }, { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#dadada" }] }, { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#616161" }] }, { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#c9c9c9" }] } ];
-
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 39.5, lng: -98.35 },
-        zoom: 4,
-        disableDefaultUI: true,
-        styles: mapStyle
-      });
-
-      placesService = new google.maps.places.PlacesService(map);
-      guidePanelEl = document.getElementById("guidePanel");
-      guideResultsEl = document.getElementById("guideResults");
-      
-      document.getElementById("backToMapBtn").addEventListener("click", () => {
-        guidePanelEl.classList.add("guide-panel--hidden");
-        map.setZoom(4);
-        venueSearchInput.value = "";
-      });
-
-      setupVenueSearch();
-      setupTimelineUI();
-
-      fetch("data/venues.json").then(res => res.json()).then(data => {
-        venues = data;
-        venues.forEach(v => {
-          v.key = makeVenueKey(v.name, v.city, v.state);
-          const marker = new google.maps.Marker({ position: { lat: v.lat, lng: v.lng }, map, icon: NAVY_PIN_ICON });
-          marker.addListener("click", () => focusVenue(v));
-          markers.push({ venueId: v.id, marker });
-        });
-        return fetch("data/top_picks.json");
-      }).then(res => res.json()).then(tpData => {
-        tpData.forEach(entry => {
-          const key = makeVenueKey(entry.venueName, entry.city, entry.state);
-          topPicksByKey[key] = entry.items;
-        });
-      }).catch(err => console.error("Error loading data:", err));
-    };
-  </script>
-  
+  <script src="app.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
