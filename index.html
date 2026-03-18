@@ -15,7 +15,7 @@
   <div class="app-container">
     
     <header class="search-header">
-      <img src="logo.png" class="brand-logo" alt="Concerto" />
+      <a href="index.html"><img src="logo.png" class="brand-logo" alt="Concerto" /></a>
       <div class="search-wrapper">
         <input id="venueSearch" type="text" placeholder="Search a venue..." autocomplete="off" />
         <div id="searchResults" class="search-results"></div>
@@ -37,10 +37,12 @@
       </header>
 
       <div class="timeline-scroller">
-        <button class="timeline-pill active" data-cat="pregame">🍸 Pre-Game</button>
-        <button class="timeline-pill" data-cat="afterglow">🍕 Afterglow</button>
-        <button class="timeline-pill" data-cat="recovery">☕ Recovery</button>
-        <button class="timeline-pill" data-cat="stay">🏨 Stay</button>
+        <button class="timeline-pill hidden-pill" id="pill-toppicks" data-cat="toppicks">★ Top Picks</button>
+        <button class="timeline-pill" id="pill-pregame" data-cat="pregame">🍸 Pre-Game</button>
+        <button class="timeline-pill" id="pill-quickbites" data-cat="quickbites">🍔 Quick Bites</button>
+        <button class="timeline-pill" id="pill-afterglow" data-cat="afterglow">🍕 Afterglow</button>
+        <button class="timeline-pill" id="pill-recovery" data-cat="recovery">☕ Recovery</button>
+        <button class="timeline-pill" id="pill-stay" data-cat="stay">🏨 Stay</button>
       </div>
 
       <div id="guideResults" class="results-scroll-area"></div>
