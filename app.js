@@ -10,18 +10,22 @@ let currentCategory = "pregame";
 
 const TIMELINE_CONFIG = {
   pregame: { type: "restaurant", radius: 1500 },
-  quickbites: { keyword: "pizza casual", radius: 1500 },
+  quickbites: { keyword: "pizza casual fast food", radius: 1500 },
   afterglow: { type: "bar", radius: 2500 },
   recovery: { type: "cafe", radius: 3000 },
   stay: { type: "lodging", radius: 5000 }
 };
 
-function makeVenueKey(name, city, state) { return (name + "|" + city + "|" + state).toLowerCase(); }
+// --- MATH & UTILS ---
+function makeVenueKey(name, city, state) { 
+  return (name + "|" + city + "|" + state).toLowerCase(); 
+}
 
 function distanceMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const toRad = x => (x * Math.PI) / 180;
-  const a = Math.sin(toRad(lat2 - lat1) / 2) * Math.sin(toRad(lat2 - lat1) / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(toRad(lng2 - lng1) / 2) * Math.sin(toRad(lng2 - lng1) / 2);
+  const a = Math.sin(toRad(lat2 - lat1) / 2) * Math.sin(toRad(lat2 - lat1) / 2) + 
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(toRad(lng2 - lng1) / 2) * Math.sin(toRad(lng2 - lng1) / 2);
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
@@ -42,11 +46,8 @@ window.initGoogleAPI = function() {
 
 // --- INITIALIZE MAPBOX & APP ---
 document.addEventListener("DOMContentLoaded", () => {
-  
-  // DIAGNOSTIC: Check if the App Wrapper supports WebGL
   if (!mapboxgl.supported()) {
-    alert("Warning: Your app wrapper or browser does not support WebGL, which is required for 3D maps. We may need to enable it in your app builder settings.");
-    return;
+    console.warn("WebGL not supported. 3D maps may not render.");
   }
 
   mapboxgl.accessToken = 'pk.eyJ1Ijoiandjb25jZXJ0byIsImEiOiJjbW13aXhkNTkycnRiMnBwdGVpb3drd2E2In0.FnB70e0jozY5t1LBu_DRjw';
@@ -61,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   map.on('load', () => {
-    // Add 3D Buildings Layer securely after map loads
     map.addLayer({
       'id': '3d-buildings',
       'source': 'composite',
@@ -100,6 +100,7 @@ function loadData() {
           
         el.addEventListener('click', () => {
           document.getElementById("venueSearch").value = v.name;
+          document.getElementById("searchResults").classList.remove("visible");
           triggerVenueSelection(v);
         });
         
@@ -112,7 +113,7 @@ function loadData() {
       tpData.forEach(entry => topPicksByKey[makeVenueKey(entry.venueName, entry.city, entry.state)] = entry.items);
     })
     .catch(err => {
-      console.error("Data load error (Likely local file CORS):", err);
+      console.error("Data load error:", err);
     });
 }
 
@@ -124,13 +125,15 @@ function clearPlaceMarkers() {
 // --- VENUE SELECTION (THE 3D FLYOVER) ---
 function triggerVenueSelection(v) {
   selectedVenue = v;
+  clearRoute(); 
   
+  // Faster, snappier 3D Flyover
   map.flyTo({
     center: [v.lng, v.lat],
     zoom: 15.5,
     pitch: 60, 
     bearing: 20, 
-    duration: 2500,
+    duration: 1200, // Reduced from 2500ms
     padding: { bottom: 300 } 
   });
 
@@ -158,7 +161,84 @@ function triggerVenueSelection(v) {
   loadPlacesForTimeline(currentCategory);
 }
 
-// --- RENDER TIMELINE LIST & DROP PINS ---
+// --- GLOWING WALKING ROUTE ---
+async function drawRoute(startLng, startLat, endLng, endLat) {
+  const url = `https://api.mapbox.com/directions/v5/mapbox/walking/${startLng},${startLat};${endLng},${endLat}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    const route = data.routes[0].geometry;
+    
+    if (map.getSource('route')) {
+      map.getSource('route').setData(route);
+    } else {
+      map.addSource('route', { 'type': 'geojson', 'data': route });
+      
+      // The outer "Glow"
+      map.addLayer({
+        'id': 'route-glow',
+        'type': 'line',
+        'source': 'route',
+        'layout': { 'line-join': 'round', 'line-cap': 'round' },
+        'paint': { 'line-color': '#C9A84C', 'line-width': 8, 'line-opacity': 0.3, 'line-blur': 4 }
+      });
+      
+      // The core solid line
+      map.addLayer({
+        'id': 'route-core',
+        'type': 'line',
+        'source': 'route',
+        'layout': { 'line-join': 'round', 'line-cap': 'round' },
+        'paint': { 'line-color': '#C9A84C', 'line-width': 3 }
+      });
+    }
+
+    // Smoothly pan to fit both the Venue and the Destination on screen
+    const bounds = new mapboxgl.LngLatBounds([startLng, startLat], [startLng, startLat]);
+    bounds.extend([endLng, endLat]);
+    map.fitBounds(bounds, { padding: { top: 100, bottom: 400, left: 50, right: 50 }, duration: 1000 });
+    
+  } catch(e) { console.error("Could not fetch route", e); }
+}
+
+function clearRoute() {
+  if (map.getSource('route')) {
+    map.getSource('route').setData({ type: 'FeatureCollection', features: [] });
+  }
+}
+
+// --- RENDER TOP PICKS ---
+function renderTopPicksInline() {
+  if (!selectedVenue) return;
+  const picks = topPicksByKey[selectedVenue.key] || [];
+  const resultsEl = document.getElementById("guideResults");
+
+  picks.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "place-card top-pick-card";
+    let walkHTML = "";
+    
+    if (item.lat && item.lng) {
+      walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
+      const el = document.createElement('div');
+      el.className = 'place-marker';
+      const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
+      currentPlaceMarkers.push(m);
+    }
+
+    card.innerHTML = `
+      <span class="top-pick-badge">★ Concerto Top Pick</span>
+      <h3 class="place-name">${item.name}</h3>
+      <p class="place-meta">${walkHTML} ${item.address || ""}</p>
+      <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
+    `;
+    card.addEventListener("click", () => showPlaceDetails(item));
+    resultsEl.appendChild(card);
+  });
+}
+
+// --- RENDER GOOGLE PLACES ---
 function loadPlacesForTimeline(catKey) {
   const resultsEl = document.getElementById("guideResults");
   resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">Curating the timeline...</div>';
@@ -166,30 +246,7 @@ function loadPlacesForTimeline(catKey) {
 
   if (catKey === "toppicks") {
     resultsEl.innerHTML = "";
-    const picks = topPicksByKey[selectedVenue.key] || [];
-    
-    picks.forEach(item => {
-      const card = document.createElement("div");
-      card.className = "place-card top-pick-card";
-      let walkHTML = "";
-      
-      if (item.lat && item.lng) {
-        walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
-        const el = document.createElement('div');
-        el.className = 'place-marker';
-        const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
-        currentPlaceMarkers.push(m);
-      }
-
-      card.innerHTML = `
-        <span class="top-pick-badge">★ Concerto Top Pick</span>
-        <h3 class="place-name">${item.name}</h3>
-        <p class="place-meta">${walkHTML} ${item.address || ""}</p>
-        <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
-      `;
-      card.addEventListener("click", () => showPlaceDetails(item));
-      resultsEl.appendChild(card);
-    });
+    renderTopPicksInline();
     return;
   }
 
@@ -203,7 +260,7 @@ function loadPlacesForTimeline(catKey) {
     keyword: config.keyword
   }, (results, status) => {
     resultsEl.innerHTML = "";
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
       resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">No immediate recommendations found.</div>';
       return;
     }
@@ -239,6 +296,13 @@ function loadPlacesForTimeline(catKey) {
 function showPlaceDetails(place) {
   document.getElementById("placeDetails").classList.remove("hidden");
   document.getElementById("detailsName").textContent = place.name || "Location";
+
+  // Trigger Glowing Route
+  if (selectedVenue) {
+    let pLat = place.lat || (place.geometry ? place.geometry.location.lat() : null);
+    let pLng = place.lng || (place.geometry ? place.geometry.location.lng() : null);
+    if (pLat && pLng) drawRoute(selectedVenue.lng, selectedVenue.lat, pLng, pLat);
+  }
   
   const address = place.vicinity || place.formatted_address || place.address || "";
   document.getElementById("detailsAddress").textContent = address;
@@ -252,11 +316,14 @@ function showPlaceDetails(place) {
   let destName = place.name || "";
   if (address) destName += " " + address;
   
-  // Official cross-platform intent URL for Apple/Google Maps
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destName)}`;
+  // Official Universal Link format. Guaranteed to jump to Maps app.
+  let mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destName)}`;
+  if (place.place_id || place.placeId) {
+    mapsUrl += `&query_place_id=${place.place_id || place.placeId}`;
+  }
   
   routeBtn.href = mapsUrl;
-  routeBtn.target = "_system"; // Tells the app wrapper to bounce out to the OS
+  routeBtn.target = "_blank"; 
 }
 
 // --- EVENT LISTENERS ---
@@ -264,10 +331,17 @@ function setupEventListeners() {
   document.getElementById("closePanelBtn").onclick = () => {
     document.getElementById("guidePanel").classList.add("hidden");
     clearPlaceMarkers();
-    map.flyTo({ pitch: 0, zoom: 4 }); 
+    clearRoute();
+    map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
   };
 
-  document.getElementById("placeDetailsClose").onclick = () => document.getElementById("placeDetails").classList.add("hidden");
+  document.getElementById("placeDetailsClose").onclick = () => {
+    document.getElementById("placeDetails").classList.add("hidden");
+    clearRoute();
+    if (selectedVenue) {
+      map.flyTo({ center: [selectedVenue.lng, selectedVenue.lat], zoom: 15.5, pitch: 60, duration: 800, padding: {bottom: 300} });
+    }
+  };
 
   document.querySelectorAll(".timeline-pill").forEach(pill => {
     pill.addEventListener("click", (e) => {
