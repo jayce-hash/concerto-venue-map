@@ -6,28 +6,26 @@ let placesService = null;
 let topPicksByKey = {};
 let currentCategory = "pregame";
 
-// Custom Pins
 const NAVY_PIN = { path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z", fillColor: "#121E36", fillOpacity: 1, strokeColor: "#FFFFFF", strokeWeight: 2, scale: 1.4, anchor: { x: 12, y: 22 } };
 
-// Timeline Config
+// Broadened Timeline Config to guarantee results
 const TIMELINE_CONFIG = {
-  pregame: { type: "restaurant", keyword: "drinks dinner", radius: 1500 },
-  afterglow: { type: "bar", keyword: "late night food", radius: 2500 },
-  recovery: { type: "cafe", keyword: "coffee breakfast", radius: 3000 },
-  stay: { type: "lodging", keyword: "boutique hotel", radius: 5000 }
+  pregame: { type: "restaurant", radius: 1500 },
+  quickbites: { keyword: "pizza fast food casual", radius: 1500 },
+  afterglow: { type: "bar", radius: 2500 },
+  recovery: { type: "cafe", radius: 3000 },
+  stay: { type: "lodging", radius: 5000 }
 };
 
 // --- MATH & UTILS ---
-function makeVenueKey(name, city, state) {
-  return (name + "|" + city + "|" + state).toLowerCase();
+function makeVenueKey(name, city, state) { 
+  return (name + "|" + city + "|" + state).toLowerCase(); 
 }
 
 function distanceMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const toRad = x => (x * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const a = Math.sin(toRad(lat2 - lat1) / 2) * Math.sin(toRad(lat2 - lat1) / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(toRad(lng2 - lng1) / 2) * Math.sin(toRad(lng2 - lng1) / 2);
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
@@ -43,7 +41,6 @@ function renderTopPicksInline() {
   if (!selectedVenue) return;
   const key = selectedVenue.key || makeVenueKey(selectedVenue.name, selectedVenue.city, selectedVenue.state);
   const picks = topPicksByKey[key] || [];
-  
   const resultsEl = document.getElementById("guideResults");
 
   picks.forEach(item => {
@@ -60,7 +57,7 @@ function renderTopPicksInline() {
       <span class="top-pick-badge">★ Concerto Top Pick</span>
       <h3 class="place-name">${item.name}</h3>
       <p class="place-meta">${walkHTML} ${item.address || ""}</p>
-      <p class="place-meta" style="margin-top: 8px;">"${item.notes || ""}"</p>
+      <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
     `;
     card.addEventListener("click", () => showPlaceDetails(item));
     resultsEl.appendChild(card);
@@ -69,29 +66,31 @@ function renderTopPicksInline() {
 
 // --- RENDER GOOGLE PLACES ---
 function loadPlacesForTimeline(catKey) {
+  const resultsEl = document.getElementById("guideResults");
+  resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">Curating the timeline...</div>';
+
+  if (catKey === "toppicks") {
+    resultsEl.innerHTML = "";
+    renderTopPicksInline();
+    return; 
+  }
+
   if (!selectedVenue || !placesService) return;
   
   const config = TIMELINE_CONFIG[catKey];
   const request = {
     location: new google.maps.LatLng(selectedVenue.lat, selectedVenue.lng),
-    radius: config.radius,
-    type: config.type,
-    keyword: config.keyword
+    radius: config.radius
   };
-
-  const resultsEl = document.getElementById("guideResults");
-  resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">Curating the timeline...</div>';
+  
+  if (config.type) request.type = config.type;
+  if (config.keyword) request.keyword = config.keyword;
 
   placesService.nearbySearch(request, (results, status) => {
     resultsEl.innerHTML = "";
-    
-    // Always show top picks at the top of the "Pre-Game" view
-    if (catKey === "pregame") renderTopPicksInline();
 
-    if (status !== google.maps.places.PlacesServiceStatus.OK || !results) {
-      if (resultsEl.innerHTML === "") {
-        resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">No algorithmic results found.</div>';
-      }
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
+      resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">No immediate recommendations found.</div>';
       return;
     }
 
@@ -107,14 +106,10 @@ function loadPlacesForTimeline(catKey) {
       
       const ratingStr = place.rating ? `${Number(place.rating).toFixed(1)}★` : "";
       
-      // Inside your renderTopPicksInline() function...
-
-    card.innerHTML = `
-      <span class="top-pick-badge">★ Concerto Top Pick</span>
-      <h3 class="place-name">${item.name}</h3>
-      <p class="place-meta">${walkHTML} ${item.address || ""}</p>
-      <p class="place-meta top-pick-notes">"${item.notes || ""}"</p> 
-    `;
+      card.innerHTML = `
+        <h3 class="place-name">${place.name}</h3>
+        <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
+      `;
       card.addEventListener("click", () => showPlaceDetails(place));
       resultsEl.appendChild(card);
     });
@@ -123,32 +118,38 @@ function loadPlacesForTimeline(catKey) {
 
 // --- PLACE DETAILS & NATIVE ROUTING ---
 function showPlaceDetails(place) {
-  document.getElementById("placeDetails").classList.remove("hidden");
-  
-  document.getElementById("detailsName").textContent = place.name || "Location";
-  const address = place.vicinity || place.formatted_address || place.address || "";
-  document.getElementById("detailsAddress").textContent = address;
-  
-  const metaBits = [];
-  if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
-  if (place.notes) metaBits.push(`Concerto Curated`); 
-  document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
+  try {
+    document.getElementById("placeDetails").classList.remove("hidden");
+    document.getElementById("detailsName").textContent = place.name || "Location";
+    
+    const address = place.vicinity || place.formatted_address || place.address || "";
+    document.getElementById("detailsAddress").textContent = address;
+    
+    const metaBits = [];
+    if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
+    if (place.notes) metaBits.push(`Concerto Curated`); 
+    document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
-  // The Native Map Routing Fix
-  const routeBtn = document.getElementById("detailsMapsLink");
-  let destName = place.name || "";
-  if (address) destName += " " + address;
-  
-  // Official Universal Link format. Forces WebViews to hand off to OS maps.
-  let mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destName)}`;
-  if (place.place_id || place.placeId) {
-    mapsUrl += `&query_place_id=${place.place_id || place.placeId}`;
-  }
-  
-  routeBtn.href = mapsUrl;
+    const routeBtn = document.getElementById("detailsMapsLink");
+    let destName = place.name || "";
+    if (address) destName += " " + address;
+    
+    // Generates a Universal Google Maps Directions URL
+    let mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destName)}`;
+    if (place.place_id || place.placeId) {
+      mapsUrl += `&destination_place_id=${place.place_id || place.placeId}`;
+    }
+    
+    routeBtn.onclick = (e) => {
+      e.preventDefault();
+      window.open(mapsUrl, '_system');
+    };
+
+    document.getElementById("placeDetailsClose").onclick = () => document.getElementById("placeDetails").classList.add("hidden");
+  } catch(e) { console.error(e); }
 }
 
-// --- INITIALIZATION ---
+// --- INITIALIZATION & VENUE LOGIC ---
 window.initMap = function () {
   const mapStyle = [ { "elementType": "geometry", "stylers": [{ "color": "#f5f5f5" }] }, { "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "elementType": "labels.text.fill", "stylers": [{ "color": "#616161" }] }, { "elementType": "labels.text.stroke", "stylers": [{ "color": "#f5f5f5" }] }, { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#c9c9c9" }] } ];
 
@@ -180,15 +181,29 @@ window.initMap = function () {
       const item = document.createElement("div");
       item.className = "search-result-item";
       item.textContent = `${v.name} — ${v.city}`;
+      
+      // Select Venue
       item.onclick = () => {
         searchInput.value = v.name;
         searchResults.classList.remove("visible");
         
-        // Focus Venue & Open Panel
         selectedVenue = v;
-        currentCategory = "pregame";
+        const key = v.key || makeVenueKey(v.name, v.city, v.state);
+        const hasTopPicks = topPicksByKey[key] && topPicksByKey[key].length > 0;
+        
+        // Dynamic Pill Logic
         document.querySelectorAll(".timeline-pill").forEach(p => p.classList.remove("active"));
-        document.querySelector('.timeline-pill[data-cat="pregame"]').classList.add("active");
+        const tpPill = document.getElementById("pill-toppicks");
+        
+        if (hasTopPicks) {
+          tpPill.classList.remove("hidden-pill");
+          currentCategory = "toppicks";
+          tpPill.classList.add("active");
+        } else {
+          tpPill.classList.add("hidden-pill");
+          currentCategory = "pregame";
+          document.getElementById("pill-pregame").classList.add("active");
+        }
         
         map.setZoom(14);
         map.panTo({ lat: v.lat, lng: v.lng });
@@ -197,6 +212,7 @@ window.initMap = function () {
         document.getElementById("guideVenueName").textContent = v.name;
         document.getElementById("guideVenueLocation").textContent = `${v.city}, ${v.state}`;
         document.getElementById("guidePanel").classList.remove("hidden");
+        document.querySelector(".timeline-scroller").scrollLeft = 0;
         
         loadPlacesForTimeline(currentCategory);
       };
@@ -205,9 +221,7 @@ window.initMap = function () {
     searchResults.classList.add("visible");
   });
 
-  // UI Closes
   document.getElementById("closePanelBtn").onclick = () => document.getElementById("guidePanel").classList.add("hidden");
-  document.getElementById("placeDetailsClose").onclick = () => document.getElementById("placeDetails").classList.add("hidden");
 
   // Load Data
   fetch("data/venues.json").then(res => res.json()).then(data => {
