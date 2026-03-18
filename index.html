@@ -87,8 +87,7 @@
     .details-address { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
     
     .details-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-    .details-action-btn { text-align: center; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
-    .btn-gold { background: var(--ink); color: #FFF; grid-column: span 2; }
+    .details-action-btn { text-align: center; padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; text-decoration: none; color: #FFF; background: var(--ink); border: 1px solid var(--line); }
     
     .details-hours { font-size: 13px; color: var(--muted); white-space: pre-line; margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--line); }
   </style>
@@ -139,7 +138,6 @@
           <div class="details-actions">
             <a id="detailsPhoneBtn" class="details-action-btn" href="#" hidden>Call</a>
             <a id="detailsWebsiteBtn" class="details-action-btn" href="#" target="_blank" hidden>Website</a>
-            <a id="detailsMapsLink" class="details-action-btn btn-gold" href="#" target="_blank" rel="noopener noreferrer">Route Me</a>
           </div>
           <div id="detailsHours" class="details-hours" hidden></div>
         </div>
@@ -204,7 +202,6 @@
         fields: ["name", "rating", "user_ratings_total", "formatted_address", "formatted_phone_number", "website", "opening_hours", "place_id", "url"]
       }, (details, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && details) {
-          // Merge in our custom Concerto notes if it's a Top Pick
           if (fallbackPlace.notes) details.notes = fallbackPlace.notes;
           showPlaceDetails(details);
         } else {
@@ -239,7 +236,6 @@
         `;
         
         card.addEventListener("click", () => {
-          // Try to fetch rich data if we have a placeId, otherwise just show it
           if (item.placeId) {
             fetchDetailsAndShow(item.placeId, item);
           } else {
@@ -250,7 +246,7 @@
       });
     }
 
-    // --- OVERLAY & ROUTING ---
+    // --- OVERLAY ---
     function showPlaceDetails(place) {
       const detailsOverlay = document.getElementById("placeDetails");
       detailsOverlay.hidden = false;
@@ -260,13 +256,11 @@
       const address = place.vicinity || place.formatted_address || place.address || "";
       document.getElementById("detailsAddress").textContent = address;
       
-      // Meta (Rating + Custom Notes)
       const metaBits = [];
       if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
       if (place.notes) metaBits.push(`Concerto Curated`); 
       document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
-      // Action Buttons (Phone & Website)
       const phoneBtn = document.getElementById("detailsPhoneBtn");
       if (place.formatted_phone_number) {
         phoneBtn.hidden = false;
@@ -283,7 +277,6 @@
         webBtn.hidden = true;
       }
 
-      // Hours
       const hoursEl = document.getElementById("detailsHours");
       if (place.opening_hours && place.opening_hours.weekday_text) {
         hoursEl.hidden = false;
@@ -291,18 +284,6 @@
       } else {
         hoursEl.hidden = true;
       }
-
-      // The bulletproof universal Intent URL for Maps routing
-      const routeBtn = document.getElementById("detailsMapsLink");
-      let destStr = place.name + " " + address;
-      let mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destStr)}`;
-      
-      if (place.place_id) {
-        mapsUrl += `&destination_place_id=${place.place_id}`;
-      }
-      
-      routeBtn.href = mapsUrl;
-      routeBtn.target = "_blank"; 
 
       document.getElementById("placeDetailsClose").onclick = () => {
         detailsOverlay.hidden = true;
@@ -458,40 +439,6 @@
     };
   </script>
   
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
-</body>
-</html>          </div>
-          <button id="backToMapBtn" class="close-panel-btn">✕</button>
-        </header>
-
-        <div class="timeline-scroller" id="timelineScroller">
-          <button class="timeline-pill active" data-cat="pregame">🍸 Pre-Game</button>
-          <button class="timeline-pill" data-cat="afterglow">🍕 Afterglow</button>
-          <button class="timeline-pill" data-cat="recovery">☕ Recovery</button>
-          <button class="timeline-pill" data-cat="stay">🏨 Where to Stay</button>
-        </div>
-
-        <div id="guideResults" class="guide-results"></div>
-      </section>
-
-      <div id="placeDetails" class="place-details-overlay" hidden>
-        <div class="place-details-card">
-          <button id="placeDetailsClose" class="place-details-close" type="button">✕</button>
-          <h3 id="detailsName" class="details-name"></h3>
-          <p id="detailsMeta" class="details-meta"></p>
-          <p id="detailsAddress" class="details-address"></p>
-          <div class="details-actions">
-            <a id="detailsPhoneBtn" class="details-action-btn" href="#" hidden>Call</a>
-            <a id="detailsWebsiteBtn" class="details-action-btn" href="#" hidden>Website</a>
-            <a id="detailsMapsLink" class="details-action-btn btn-gold" href="#" target="_blank" rel="noopener noreferrer">Route Me</a>
-          </div>
-          <div id="detailsHours" class="details-hours"></div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <script src="app.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
