@@ -107,10 +107,14 @@ function loadPlacesForTimeline(catKey) {
       
       const ratingStr = place.rating ? `${Number(place.rating).toFixed(1)}★` : "";
       
-      card.innerHTML = `
-        <h3 class="place-name">${place.name}</h3>
-        <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
-      `;
+      // Inside your renderTopPicksInline() function...
+
+    card.innerHTML = `
+      <span class="top-pick-badge">★ Concerto Top Pick</span>
+      <h3 class="place-name">${item.name}</h3>
+      <p class="place-meta">${walkHTML} ${item.address || ""}</p>
+      <p class="place-meta top-pick-notes">"${item.notes || ""}"</p> 
+    `;
       card.addEventListener("click", () => showPlaceDetails(place));
       resultsEl.appendChild(card);
     });
