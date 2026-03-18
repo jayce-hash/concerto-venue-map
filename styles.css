@@ -9,13 +9,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { 
-  font-family: 'DM Sans', sans-serif; 
-  color: var(--navy); 
-  overflow: hidden; 
-  background: var(--bg); 
-  -webkit-font-smoothing: antialiased; 
-}
+body { font-family: 'DM Sans', sans-serif; color: var(--navy); overflow: hidden; background: var(--bg); -webkit-font-smoothing: antialiased; }
 h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 
 .app-container { height: 100vh; width: 100vw; position: relative; }
@@ -28,7 +22,7 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 .brand-logo { height: 36px; object-fit: contain; background: #FFF; padding: 6px; border-radius: 12px; box-shadow: var(--shadow-soft); }
 .search-wrapper { flex: 1; position: relative; }
 #venueSearch { width: 100%; padding: 14px 20px; border-radius: 99px; border: none; box-shadow: var(--shadow-soft); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; color: #121E36; background: #FFF; }
-.search-results { position: absolute; top: 110%; left: 0; right: 0; background: #FFF; border-radius: 16px; box-shadow: var(--shadow-strong); max-height: 250px; overflow-y: auto; display: none; }
+.search-results { position: absolute; top: 110%; left: 0; right: 0; background: #FFF; border-radius: 16px; box-shadow: var(--shadow-strong); max-height: 250px; overflow-y: auto; display: none; z-index: 50; }
 .search-results.visible { display: block; }
 .search-result-item { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid var(--line); cursor: pointer; color: #121E36; }
 
@@ -64,43 +58,13 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 .place-meta { font-size: 13px; color: var(--muted); line-height: 1.5; }
 .walk-badge { display: inline-flex; background: rgba(18, 30, 54, 0.05); color: #121E36; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 6px; align-items: center;}
 
-/* --- Top Picks Magazine Style (Shrunk & Bulletproofed) --- */
-.top-pick-card { 
-  background: #121E36 !important; 
-  border: 1px solid #C9A84C !important; 
-  padding: 16px !important; /* Shrunk padding */
-}
-.top-pick-card .place-name { 
-  color: #FFFFFF !important; 
-  font-size: 19px !important; /* Shrunk title slightly */
-  margin-bottom: 2px !important;
-}
-.top-pick-card .place-meta { 
-  color: rgba(255,255,255,0.85) !important; 
-  font-size: 12px !important; /* Slightly smaller text */
-}
-.top-pick-badge { 
-  display: block; 
-  color: #C9A84C !important; 
-  font-size: 9px !important; 
-  font-weight: 800 !important; 
-  text-transform: uppercase !important; 
-  letter-spacing: 0.1em !important; 
-  margin-bottom: 6px !important; 
-}
-.top-pick-card .walk-badge { 
-  background: rgba(255,255,255,0.15) !important; 
-  color: #FFFFFF !important; 
-}
-
-/* Specific styling for the editorial notes to keep them compact */
-.top-pick-notes {
-  color: rgba(255,255,255,0.6) !important;
-  font-size: 11px !important;
-  font-style: italic;
-  margin-top: 6px !important;
-  line-height: 1.4 !important;
-}
+/* --- Top Picks Magazine Style --- */
+.top-pick-card { background: #121E36 !important; border: 1px solid #C9A84C !important; padding: 16px !important; }
+.top-pick-card .place-name { color: #FFFFFF !important; font-size: 19px !important; margin-bottom: 2px !important; }
+.top-pick-card .place-meta { color: rgba(255,255,255,0.85) !important; font-size: 12px !important; }
+.top-pick-badge { display: block; color: #C9A84C !important; font-size: 9px !important; font-weight: 800 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; margin-bottom: 6px !important; }
+.top-pick-card .walk-badge { background: rgba(255,255,255,0.15) !important; color: #FFFFFF !important; }
+.top-pick-notes { color: rgba(255,255,255,0.6) !important; font-size: 11px !important; font-style: italic; margin-top: 6px !important; line-height: 1.4 !important; }
 
 /* --- Place Details Overlay --- */
 .details-overlay { position: absolute; inset: 0; background: rgba(18,30,54,0.3); backdrop-filter: blur(5px); z-index: 300; display: flex; align-items: flex-end; }
@@ -113,3 +77,6 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 .details-actions { display: flex; gap: 10px; margin-bottom: 15px; }
 .action-btn { flex: 1; text-align: center; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 700; text-transform: uppercase; text-decoration: none; color: var(--navy); border: 1px solid var(--line); }
 .route-btn { display: block; width: 100%; text-align: center; padding: 18px; border-radius: 16px; background: var(--navy); color: #FFF !important; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; box-shadow: var(--shadow-soft); }
+
+/* --- Utility Classes --- */
+.hidden-pill { display: none !important; }
