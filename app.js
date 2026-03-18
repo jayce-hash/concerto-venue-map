@@ -294,36 +294,48 @@ function loadPlacesForTimeline(catKey) {
 
 // --- DETAILS & ROUTING ---
 function showPlaceDetails(place) {
-  document.getElementById("placeDetails").classList.remove("hidden");
-  document.getElementById("detailsName").textContent = place.name || "Location";
+  try {
+    // 1. Hide the main list panel & Show the details panel
+    document.getElementById("guidePanel").classList.add("hidden");
+    document.getElementById("placeDetails").classList.remove("hidden");
+    
+    // 2. Populate text
+    document.getElementById("detailsName").textContent = place.name || "Location";
+    const address = place.vicinity || place.formatted_address || place.address || "";
+    document.getElementById("detailsAddress").textContent = address;
+    
+    const metaBits = [];
+    if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
+    if (place.notes) metaBits.push(`Concerto Curated`); 
+    document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
-  // Trigger Glowing Route
-  if (selectedVenue) {
-    let pLat = place.lat || (place.geometry ? place.geometry.location.lat() : null);
-    let pLng = place.lng || (place.geometry ? place.geometry.location.lng() : null);
-    if (pLat && pLng) drawRoute(selectedVenue.lng, selectedVenue.lat, pLng, pLat);
-  }
-  
-  const address = place.vicinity || place.formatted_address || place.address || "";
-  document.getElementById("detailsAddress").textContent = address;
-  
-  const metaBits = [];
-  if (place.rating) metaBits.push(`${Number(place.rating).toFixed(1)}★`);
-  if (place.notes) metaBits.push(`Concerto Curated`); 
-  document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
+    // 3. Setup Route Button
+    const routeBtn = document.getElementById("detailsMapsLink");
+    let destName = place.name || "";
+    if (address) destName += " " + address;
+    let mapsUrl = `https://www.google.com/maps/search/?api=1&query=$?daddr=${encodeURIComponent(destName)}`;
+    if (place.place_id || place.placeId) mapsUrl += `&query_place_id=${place.place_id || place.placeId}`;
+    routeBtn.href = mapsUrl;
+    routeBtn.target = "_system";
 
-  const routeBtn = document.getElementById("detailsMapsLink");
-  let destName = place.name || "";
-  if (address) destName += " " + address;
-  
-  // Official Universal Link format. Guaranteed to jump to Maps app.
-  let mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destName)}`;
-  if (place.place_id || place.placeId) {
-    mapsUrl += `&query_place_id=${place.place_id || place.placeId}`;
-  }
-  
-  routeBtn.href = mapsUrl;
-  routeBtn.target = "_blank"; 
+    // 4. Draw the Glowing Route
+    if (selectedVenue) {
+      let pLat = place.lat || (place.geometry ? place.geometry.location.lat() : null);
+      let pLng = place.lng || (place.geometry ? place.geometry.location.lng() : null);
+      if (pLat && pLng) {
+        drawRoute(selectedVenue.lng, selectedVenue.lat, pLng, pLat);
+      }
+    }
+
+    // 5. When Closing: Bring back the main list and fly back to the venue!
+    document.getElementById("placeDetailsClose").onclick = () => {
+      document.getElementById("placeDetails").classList.add("hidden");
+      document.getElementById("guidePanel").classList.remove("hidden"); // Bring list back
+      clearRoute(); 
+      map.flyTo({ center: [selectedVenue.lng, selectedVenue.lat], zoom: 15.5, pitch: 60, duration: 800, padding: {bottom: 300} });
+    };
+
+  } catch(e) { console.error(e); }
 }
 
 // --- EVENT LISTENERS ---
