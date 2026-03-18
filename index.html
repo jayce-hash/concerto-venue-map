@@ -9,13 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+  
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app-container">
     
     <header class="search-header">
-      <a href="index.html"><img src="IMG_3180.jpeg" class="brand-logo" alt="Concerto" /></a>
+      <img src="logo.png" class="brand-logo" alt="Concerto" />
       <div class="search-wrapper">
         <input id="venueSearch" type="text" placeholder="Search a venue..." autocomplete="off" />
         <div id="searchResults" class="search-results"></div>
@@ -23,6 +25,8 @@
     </header>
 
     <div id="map" class="map-canvas"></div>
+    
+    <div id="googlePlacesBrain" style="display: none;"></div>
 
     <section id="guidePanel" class="bottom-sheet hidden">
       <div class="drag-handle"></div>
@@ -61,13 +65,16 @@
           <a id="detailsWebsiteBtn" class="action-btn" href="#" hidden target="_blank">Website</a>
         </div>
         
-        <a id="detailsMapsLink" class="route-btn" href="#" target="_system">ROUTE ME</a>
+        <a id="detailsMapsLink" class="route-btn" href="#" target="_blank">ROUTE ME</a>
       </div>
     </div>
 
   </div>
 
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+  
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initGoogleAPI" async defer></script>
+  
   <script src="app.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEl3Mjr2zQPJySBCD0JJZEVS5xcJPB-2w&libraries=places&callback=initMap" async defer></script>
 </body>
 </html>
