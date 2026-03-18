@@ -130,23 +130,29 @@ function showPlaceDetails(place) {
     if (place.notes) metaBits.push(`Concerto Curated`); 
     document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
+    // --- THE FIX: Reverting to your original, working Maps URL logic ---
     const routeBtn = document.getElementById("detailsMapsLink");
-    let destName = place.name || "";
-    if (address) destName += " " + address;
     
-    // THE FIX: Official Google Maps Universal Routing URL
-    let mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destName)}`;
-    if (place.place_id || place.placeId) {
-      mapsUrl += `&destination_place_id=${place.place_id || place.placeId}`;
+    let mapsUrl;
+    if (place.url) {
+      // If the API gives us a direct URL, use it
+      mapsUrl = place.url;
+    } else {
+      // Otherwise, build the official Google Maps Search URL
+      const queryStr = encodeURIComponent((place.name || "") + " " + address);
+      const base = "https://www.google.com/maps/search/?api=1&query=" + queryStr;
+      
+      const pId = place.place_id || place.placeId;
+      mapsUrl = pId ? `${base}&query_place_id=${encodeURIComponent(pId)}` : base;
     }
     
+    // Set the href and use standard _blank exactly like your original code did
     routeBtn.href = mapsUrl;
+    routeBtn.target = "_blank";
+    routeBtn.rel = "noopener noreferrer";
     
-    routeBtn.onclick = (e) => {
-      e.preventDefault();
-      // '_system' tells mobile app wrappers to break out and open the native maps app
-      window.open(mapsUrl, '_system');
-    };
+    // Clear out the broken onclick override I gave you previously
+    routeBtn.onclick = null;
 
     document.getElementById("placeDetailsClose").onclick = () => {
       document.getElementById("placeDetails").classList.add("hidden");
