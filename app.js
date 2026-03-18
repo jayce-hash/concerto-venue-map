@@ -134,19 +134,26 @@ function showPlaceDetails(place) {
     let destName = place.name || "";
     if (address) destName += " " + address;
     
-    // Generates a Universal Google Maps Directions URL
+    // THE FIX: Official Google Maps Universal Routing URL
     let mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destName)}`;
     if (place.place_id || place.placeId) {
       mapsUrl += `&destination_place_id=${place.place_id || place.placeId}`;
     }
     
+    routeBtn.href = mapsUrl;
+    
     routeBtn.onclick = (e) => {
       e.preventDefault();
+      // '_system' tells mobile app wrappers to break out and open the native maps app
       window.open(mapsUrl, '_system');
     };
 
-    document.getElementById("placeDetailsClose").onclick = () => document.getElementById("placeDetails").classList.add("hidden");
-  } catch(e) { console.error(e); }
+    document.getElementById("placeDetailsClose").onclick = () => {
+      document.getElementById("placeDetails").classList.add("hidden");
+    };
+  } catch(e) { 
+    console.error("Error showing place details: ", e); 
+  }
 }
 
 // --- INITIALIZATION & VENUE LOGIC ---
