@@ -1,574 +1,75 @@
-/* ============================================================
-   Concerto — Venue Map (Light Ultra-Clean Version)
-   Two-row pills: “Search by Category” + “Search by Name”
-   + ONE scrollable dropdown menu (JS positions it dynamically)
-   ============================================================ */
-
 :root {
   --bg: #F8F9F9;
   --ink: #121E36;
-  --muted: #5E6B86;
-  --accent: #1F2B4A;
-  --accent-2: #2A3A63;
-  --line: #E2E7F0;
-  --card: #FFFFFF;
-  --shadow-soft: 0 4px 10px rgba(18, 30, 54, 0.10);
-  --shadow-strong: 0 16px 40px rgba(18, 30, 54, 0.20);
-
-  /* ✅ slightly softer placeholder gray */
-  --placeholder: #A6AFBF;
+  --muted: rgba(18, 30, 54, 0.55);
+  --gold: #C9A84C;
+  --line: rgba(18, 30, 54, 0.08);
+  --shadow: 0 12px 40px rgba(18, 30, 54, 0.15);
 }
 
-/* ===== Reset ===== */
-*,
-*::before,
-*::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; color: var(--ink); overflow: hidden; background: var(--bg); }
+h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-    sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
-
-/* ===== Layout Shell ===== */
-.page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* ===== Header ===== */
-.page-header {
-  background: var(--bg);
-  box-shadow: 0 2px 8px rgba(18, 30, 54, 0.04);
-
-  /* ✅ moved up a bit (less drop) */
-  padding: 6px 0 4px;
-
-  z-index: 10;
-}
-
-.page-header-inner {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-
-  /* ✅ less bottom padding */
-  padding: 0 14px 0px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-
-  /* ✅ slightly tighter */
-  gap: 2px;
-}
-
-/* ✅ Logo spec you provided */
-.brand-logo{
-  max-width: 320px;
-  width: 86%;
-  display:block;
-  height:auto;
-  margin: 0 auto;
-}
-
-/* ===== Search (top venue search) ===== */
-.search-wrapper { position: relative; }
-
-#venueSearch {
-  width: 100%;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  padding: 8px 40px 8px 14px;
-  font-size: 15px;
-  background: #fff;
-  color: var(--ink);
-  outline: none;
-  box-shadow: var(--shadow-soft);
-}
-
-#venueSearch::placeholder { color: var(--placeholder); }
-
-.search-wrapper::after {
-  content: "⌕";
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* venue search dropdown */
-.search-results {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 110%;
-  margin-top: 4px;
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 26px rgba(18, 30, 54, 0.18);
-  max-height: 260px;
-  overflow-y: auto;
-  display: none;
-  z-index: 20;
-}
-
+/* Header */
+.page-header { background: #FFF; padding: 12px 20px; z-index: 100; position: absolute; top: 0; left: 0; right: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.page-header-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1400px; margin: 0 auto; gap: 20px; }
+.brand-logo { height: 32px; object-fit: contain; mix-blend-mode: multiply; }
+.search-wrapper { position: relative; flex: 1; max-width: 350px; }
+#venueSearch { width: 100%; padding: 10px 16px; border-radius: 99px; border: 1px solid var(--line); background: var(--bg); font-family: inherit; font-size: 14px; outline: none; }
+.search-results { position: absolute; top: 100%; left: 0; right: 0; background: #FFF; border-radius: 12px; box-shadow: var(--shadow); margin-top: 8px; display: none; max-height: 250px; overflow-y: auto; z-index: 200; }
 .search-results.visible { display: block; }
+.search-result-item { padding: 12px 16px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--line); }
 
-.search-result-item {
-  padding: 8px 11px;
-  font-size: 13px;
-  cursor: pointer;
+/* Map Canvas */
+.layout { height: 100vh; position: relative; width: 100%; }
+.map { width: 100%; height: 100%; background: #E2E8F0; }
+
+/* Floating Glass Panel (Apple Maps Style) */
+.guide-panel { 
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%); 
+  width: 100%; max-width: 420px; height: 65vh; 
+  background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px 30px 0 0; border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: var(--shadow); display: flex; flex-direction: column; z-index: 10;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.search-result-item:hover { background: #f5f7fb; }
-
-/* ===== Map + panel ===== */
-.layout {
-  position: relative;
-  flex: 1;
-  background: #d8dde8;
-  overflow: hidden;
-}
-
-.map { width: 100%; height: 100%; }
-
-/* ===== Bottom sheet ===== */
-.guide-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  background: var(--bg);
-  border-radius: 24px 24px 0 0;
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -6px 26px rgba(18, 30, 54, 0.22);
-  padding: 10px 14px 10px;
-
-  /* ✅ LOCKED size so it never visually moves/shrinks */
-  height: 52vh;
-  max-height: 52vh;
-  min-height: 52vh;
-
-  display: flex;
-  flex-direction: column;
-
-  transform: translateY(100%);
-  transition: transform 0.24s ease-out;
-
-  /* ✅ stops content from affecting panel height */
-  overflow: hidden;
-}
-
-.guide-panel--hidden { transform: translateY(100%); }
-.guide-panel:not(.guide-panel--hidden) { transform: translateY(0%); }
-
-/* ===== Venue Header ===== */
-.guide-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 0 2px 6px;
-
-  /* ✅ header never collapses */
-  flex: 0 0 auto;
-}
-
-.guide-header h2 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.venue-location {
-  margin: 2px 0 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-/* ============================================================
-   ✅ TWO ROW PILLS
-   Row 1: “Search by Category” (button)
-   Row 2: “Search by Name” (input pill)
-   Both are same height + full width (match results cards)
-   ============================================================ */
-
-.guide-toolbar-2{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 6px 2px 10px;
-
-  /* ✅ pills never collapse */
-  flex: 0 0 auto;
-}
-
-/* full-width pill base */
-.select-pill.full{
-  width: 100%;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  box-shadow: var(--shadow-soft);
-  padding: 0 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--ink);
-
-  cursor: pointer;
-  transform: translateZ(0);
-  transition: transform 0.12s ease, box-shadow 0.15s ease;
-}
-
-.select-pill.full:hover{
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-strong);
-}
-
-.select-pill.full .chev{
-  color: var(--muted);
-  font-size: 0.9rem;
-  flex: 0 0 auto;
-}
-
-/* label can ellipsis */
-#categoryPillLabel{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* input pill row */
-.input-pill{
-  cursor: default;
-  justify-content: flex-start;
-  gap: 10px;
-}
-
-.input-pill:hover{
-  transform: none;
-  box-shadow: var(--shadow-soft);
-}
-
-.input-pill input{
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  color: var(--ink);
-}
-
-.input-pill input::placeholder{
-  color: var(--placeholder);
-}
-
-.pill-x{
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font-size: 0.95rem;
-  cursor: pointer;
-  padding: 0 2px;
-}
-
-/* ============================================================
-   ✅ ONE DROPDOWN MENU (scrollable)
-   IMPORTANT: JS sets `top` dynamically so it sits under Row 1 pill
-   ============================================================ */
-
-.select-menu{
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 0; /* JS will override */
-
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 28px rgba(18, 30, 54, 0.22);
-
-  padding: 6px 0;
-  z-index: 80;
-
-  max-height: 38vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.select-menu[hidden]{ display: none; }
-
-.select-menu-item{
-  width: 100%;
-  padding: 12px 14px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 0.95rem;
-  cursor: pointer;
-  color: var(--ink);
-}
-
-.select-menu-item:hover{ background: #f5f7fb; }
-
-.select-menu-item.small{
-  font-size: 0.9rem;
-  color: var(--muted);
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* ===== Results ===== */
-.guide-results {
-  position: relative;
-  z-index: 1;
-
-  /* ✅ ONLY this scrolls */
-  flex: 1 1 auto;
-  min-height: 0;
-
-  margin-top: 4px;
-  padding: 4px 2px 10px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.place-card {
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid var(--line);
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 6px rgba(18, 30, 54, 0.06);
-  cursor: pointer;
-  transition: box-shadow 0.12s ease, transform 0.12s ease;
-}
-
-.place-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
-}
-
-.place-name {
-  margin: 0 0 2px;
-  font-size: 0.94rem;
-  font-weight: 500;
-}
-
-.place-meta {
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-}
-
-.place-meta span + span::before { content: " • "; }
-
-.guide-results .hint {
-  font-size: 0.86rem;
-  color: var(--muted);
-  padding: 10px 4px;
-}
-
-/* ===== Tablet/Desktop Tweaks ===== */
-@media (min-width: 768px) {
-  .page-header-inner {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .brand-logo {
-    width: 220px;
-    max-width: 220px;
-    margin: 0;
-  }
-
-  .search-wrapper { max-width: 320px; }
-
-  .guide-panel {
-    left: 50%;
-    transform: translate(50%, 100%);
-  }
-}
-
-/* ===== Expanded mode (guide panel becomes a full page under header) ===== */
-.guide-panel.guide-panel--expanded{
-  top: 0;              /* inside <main>, so this is right under the header/logo */
-  bottom: 0;
-  height: auto;
-  max-height: none;
-  min-height: 0;
-
-  border-radius: 0;    /* looks like a page */
-  box-shadow: none;    /* optional — cleaner as a page */
-  border-top: none;
-
-  transform: translateY(0) !important;
-}
-
-/* Optional: a slightly tighter top padding in expanded mode */
-.guide-panel.guide-panel--expanded .guide-header{
-  padding-top: 6px;
-}
-
-/* Optional: dropdown menu can be taller in expanded mode */
-.guide-panel.guide-panel--expanded .select-menu{
-  max-height: 60vh;
-}
-
-/* ===== Place Details Overlay ===== */
-.place-details-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(18, 30, 54, 0.18);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 90;
-}
-
-.place-details-overlay[hidden] { display: none; }
-
-.place-details-card {
-  width: 100%;
-  max-height: 86vh;
-  background: #fff;
-  border-radius: 24px 24px 0 0;
-  box-shadow: 0 -12px 32px rgba(18, 30, 54, 0.28);
-  padding: 14px 18px 18px;
-  overflow-y: auto;
-}
-
-.place-details-close {
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  padding: 4px;
-  float: right;
-  cursor: pointer;
-  color: var(--muted);
-}
-
-.details-name {
-  margin: 4px 0 4px;
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.details-meta {
-  margin: 0 0 4px;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.details-address {
-  margin: 0 0 10px;
-  font-size: 0.9rem;
-}
-
-.details-row {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 6px;
-  font-size: 0.88rem;
-}
-
-.details-label {
-  min-width: 52px;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-.details-link {
-  color: var(--accent-2);
-  text-decoration: none;
-}
-
-.details-link:hover { text-decoration: underline; }
-
-.details-actions {
-  margin-top: 12px;
-  margin-bottom: 10px;
-}
-
-.details-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 18px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  font-size: 0.9rem;
-}
-
-.details-hours {
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-  font-size: 0.86rem;
-  color: var(--muted);
-  white-space: pre-line;
-}
-
-/* ===== Place Details Actions ===== */
-
-.details-actions{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 14px;
-  margin-bottom: 12px;
-}
-
-.details-action-btn{
-  height: 42px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: #fff;
-  color: var(--accent-2);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: var(--shadow-soft);
-}
-
-/* Top Picks block */
-.top-pick-card .place-meta{
-  color: var(--muted);
-}
-
-/* Star only for the Top Pick badge */
-.top-pick-card .place-meta::before{
-  content: none;
-}
+.guide-panel:not(.guide-panel--hidden) { transform: translateX(-50%) translateY(0); }
+.drag-handle { width: 40px; height: 5px; background: rgba(18, 30, 54, 0.2); border-radius: 5px; margin: 12px auto 0; }
+
+/* Header & Close */
+.guide-header { padding: 15px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+.eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+#guideVenueName { font-size: 24px; line-height: 1.1; margin-bottom: 4px; }
+.venue-location { font-size: 13px; color: var(--muted); }
+.close-panel-btn { background: rgba(18,30,54,0.05); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; color: var(--ink); font-weight: bold; }
+
+/* Horizontal Timeline Scroller */
+.timeline-scroller { display: flex; gap: 8px; overflow-x: auto; padding: 0 24px 15px; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-bottom: 1px solid var(--line); }
+.timeline-scroller::-webkit-scrollbar { display: none; }
+.timeline-pill { flex: 0 0 auto; background: #FFF; border: 1px solid var(--line); border-radius: 99px; padding: 10px 16px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--ink); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.timeline-pill.active { background: var(--ink); color: #FFF; border-color: var(--ink); }
+
+/* Results & Cards */
+.guide-results { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.place-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--line); box-shadow: 0 2px 10px rgba(0,0,0,0.02); cursor: pointer; }
+.place-name { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 4px; }
+.place-meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.walk-badge { display: inline-flex; align-items: center; background: rgba(18, 30, 54, 0.05); color: var(--ink); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+
+/* Top Pick Styling */
+.top-pick-card { background: var(--ink); border: 1px solid var(--gold); color: #FFF; padding: 20px; }
+.top-pick-card .place-name { color: #FFF; font-size: 22px; }
+.top-pick-card .place-meta { color: rgba(255,255,255,0.7); }
+.top-pick-badge { display: block; color: var(--gold); font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+
+/* Overlay Details */
+.place-details-overlay { position: absolute; inset: 0; background: rgba(18,30,54,0.4); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: flex-end; }
+.place-details-card { width: 100%; max-width: 420px; margin: 0 auto; height: 80%; background: #FFF; border-radius: 24px 24px 0 0; padding: 30px 24px; position: relative; overflow-y: auto; }
+.place-details-close { position: absolute; top: 20px; right: 20px; background: rgba(18,30,54,0.05); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+.details-name { font-size: 26px; line-height: 1.1; margin-bottom: 8px; }
+.details-meta { color: var(--gold); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+.details-address { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.details-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+.details-action-btn { text-align: center; padding: 12px; border-radius: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; text-decoration: none; color: var(--ink); border: 1px solid var(--line); }
+.btn-gold { background: var(--ink); color: #FFF; grid-column: span 2; }
