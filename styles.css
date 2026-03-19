@@ -16,13 +16,22 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 
 /* --- Map & Custom Markers --- */
 .map-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; } /* Hide mapbox logos for clean UI */
+.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none !important; }
 
-.venue-marker { width: 20px; height: 20px; background-color: var(--navy); border: 3px solid #FFF; border-radius: 50%; box-shadow: 0 0 15px rgba(18, 30, 54, 0.5); cursor: pointer; transition: transform 0.2s; }
-.venue-marker:hover { transform: scale(1.2); }
+/* Removed the transition and hover effects so they lock instantly to the map */
+.venue-marker { 
+  width: 20px; height: 20px; 
+  background-color: var(--navy); 
+  border: 3px solid #FFF; border-radius: 50%; 
+  box-shadow: 0 0 15px rgba(18, 30, 54, 0.5); cursor: pointer; 
+}
 
-.place-marker { width: 14px; height: 14px; background-color: var(--gold); border: 2px solid #FFF; border-radius: 50%; box-shadow: 0 0 8px rgba(201, 168, 76, 0.4); cursor: pointer; transition: transform 0.2s; }
-.place-marker:hover { transform: scale(1.3); }
+.place-marker { 
+  width: 14px; height: 14px; 
+  background-color: var(--gold); 
+  border: 2px solid #FFF; border-radius: 50%; 
+  box-shadow: 0 0 8px rgba(201, 168, 76, 0.4); cursor: pointer; 
+}
 
 /* --- Floating Header (Modernized) --- */
 .search-header { 
