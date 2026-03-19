@@ -116,6 +116,22 @@ function loadData() {
     .then(res => res.json())
     .then(tpData => {
       tpData.forEach(entry => topPicksByKey[makeVenueKey(entry.venueName, entry.city, entry.state)] = entry.items);
+      
+      // --- THE MAGIC LINK CHECKER ---
+      const urlParams = new URLSearchParams(window.location.search);
+      const incomingVenue = urlParams.get('venue');
+      
+      if (incomingVenue) {
+        const targetVenue = venues.find(v => v.name.toLowerCase() === incomingVenue.toLowerCase());
+        if (targetVenue) {
+          setTimeout(() => {
+            document.getElementById("venueSearch").value = targetVenue.name;
+            triggerVenueSelection(targetVenue);
+          }, 600);
+        }
+      }
+      // --- END MAGIC LINK CHECKER ---
+
     })
     .catch(err => {
       console.error("Data load error:", err);
