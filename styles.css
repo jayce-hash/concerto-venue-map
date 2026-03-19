@@ -98,7 +98,7 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
 .search-result-item:last-child { border-bottom: none; }
 
 /* --- Floating Bottom Sheet --- */
-.bottom-sheet { position: absolute; bottom: 0; left: 0; right: 0; height: 65vh; max-height: 800px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 32px 32px 0 0; box-shadow: var(--shadow-strong); display: flex; flex-direction: column; z-index: 20; transform: translateY(0); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.bottom-sheet { position: absolute; bottom: 0; left: 0; right: 0; height: 45vh; max-height: 800px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 32px 32px 0 0; box-shadow: var(--shadow-strong); display: flex; flex-direction: column; z-index: 20; transform: translateY(0); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .bottom-sheet.hidden { transform: translateY(110%); }
 .drag-handle { width: 40px; height: 5px; background: rgba(18, 30, 54, 0.2); border-radius: 5px; margin: 12px auto 0; }
 .sheet-header { padding: 20px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
