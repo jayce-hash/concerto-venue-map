@@ -8,12 +8,17 @@ let selectedVenue = null;
 let topPicksByKey = {};
 let currentCategory = "pregame";
 
+// NEW EXTENDED CONFIG (Broader radii, new categories mapped to Google APIs)
 const TIMELINE_CONFIG = {
-  pregame: { type: "restaurant", radius: 1500 },
-  quickbites: { keyword: "pizza casual fast food", radius: 1500 },
-  afterglow: { type: "bar", radius: 2500 },
-  recovery: { type: "cafe", radius: 3000 },
-  stay: { type: "lodging", radius: 5000 }
+  pregame: { type: "restaurant", radius: 3000 },
+  quickbites: { keyword: "pizza casual fast food", radius: 3000 },
+  recovery: { type: "cafe", radius: 5000 },
+  afterglow: { type: "bar", radius: 4000 },
+  photoops: { type: "tourist_attraction", radius: 3000 },
+  getready: { keyword: "salon pharmacy clothing", radius: 3000 },
+  parking: { type: "parking", radius: 2500 },
+  transit: { type: "transit_station", radius: 3000 },
+  stay: { type: "lodging", radius: 8000 }
 };
 
 // --- MATH & UTILS ---
@@ -127,13 +132,12 @@ function triggerVenueSelection(v) {
   selectedVenue = v;
   clearRoute(); 
   
-  // Faster, snappier 3D Flyover
   map.flyTo({
     center: [v.lng, v.lat],
     zoom: 15.5,
     pitch: 60, 
     bearing: 20, 
-    duration: 1200, // Reduced from 2500ms
+    duration: 1200, 
     padding: { bottom: 300 } 
   });
 
@@ -168,6 +172,7 @@ async function drawRoute(startLng, startLat, endLng, endLat) {
   try {
     const response = await fetch(url);
     const data = await response.json();
+    if(!data.routes || !data.routes[0]) return;
     const route = data.routes[0].geometry;
     
     if (map.getSource('route')) {
@@ -175,26 +180,19 @@ async function drawRoute(startLng, startLat, endLng, endLat) {
     } else {
       map.addSource('route', { 'type': 'geojson', 'data': route });
       
-      // The outer "Glow"
       map.addLayer({
-        'id': 'route-glow',
-        'type': 'line',
-        'source': 'route',
+        'id': 'route-glow', 'type': 'line', 'source': 'route',
         'layout': { 'line-join': 'round', 'line-cap': 'round' },
         'paint': { 'line-color': '#C9A84C', 'line-width': 8, 'line-opacity': 0.3, 'line-blur': 4 }
       });
       
-      // The core solid line
       map.addLayer({
-        'id': 'route-core',
-        'type': 'line',
-        'source': 'route',
+        'id': 'route-core', 'type': 'line', 'source': 'route',
         'layout': { 'line-join': 'round', 'line-cap': 'round' },
         'paint': { 'line-color': '#C9A84C', 'line-width': 3 }
       });
     }
 
-    // Smoothly pan to fit both the Venue and the Destination on screen
     const bounds = new mapboxgl.LngLatBounds([startLng, startLat], [startLng, startLat]);
     bounds.extend([endLng, endLat]);
     map.fitBounds(bounds, { padding: { top: 100, bottom: 400, left: 50, right: 50 }, duration: 1000 });
@@ -208,48 +206,43 @@ function clearRoute() {
   }
 }
 
-// --- RENDER TOP PICKS ---
-function renderTopPicksInline() {
-  if (!selectedVenue) return;
-  const picks = topPicksByKey[selectedVenue.key] || [];
-  const resultsEl = document.getElementById("guideResults");
-
-  picks.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "place-card top-pick-card";
-    let walkHTML = "";
-    
-    if (item.lat && item.lng) {
-      walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
-      const el = document.createElement('div');
-      el.className = 'place-marker';
-      const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
-      currentPlaceMarkers.push(m);
-    }
-
-    card.innerHTML = `
-      <span class="top-pick-badge">★ Concerto Top Pick</span>
-      <h3 class="place-name">${item.name}</h3>
-      <p class="place-meta">${walkHTML} ${item.address || ""}</p>
-      <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
-    `;
-    card.addEventListener("click", () => showPlaceDetails(item));
-    resultsEl.appendChild(card);
-  });
-}
-
-// --- RENDER GOOGLE PLACES ---
+// --- RENDER GOOGLE PLACES & TOP PICKS ---
 function loadPlacesForTimeline(catKey) {
   const resultsEl = document.getElementById("guideResults");
   resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">Curating the timeline...</div>';
   clearPlaceMarkers(); 
 
+  // 1. TOP PICKS RENDERING
   if (catKey === "toppicks") {
     resultsEl.innerHTML = "";
-    renderTopPicksInline();
+    const picks = topPicksByKey[selectedVenue.key] || [];
+    
+    picks.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "place-card top-pick-card";
+      let walkHTML = "";
+      
+      if (item.lat && item.lng) {
+        walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
+        const el = document.createElement('div'); el.className = 'place-marker';
+        const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
+        currentPlaceMarkers.push(m);
+      }
+
+      card.innerHTML = `
+        <span class="top-pick-badge">★ Concerto Top Pick</span>
+        <h3 class="place-name">${item.name}</h3>
+        <p class="place-meta">${walkHTML} ${item.address || ""}</p>
+        <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
+      `;
+      // Pass TRUE to signify this is a Top Pick (triggers background geocoding if needed)
+      card.addEventListener("click", () => showPlaceDetails(item, true));
+      resultsEl.appendChild(card);
+    });
     return;
   }
 
+  // 2. STANDARD GOOGLE PLACES RENDERING
   if (!placesService) return;
   const config = TIMELINE_CONFIG[catKey];
   
@@ -261,11 +254,12 @@ function loadPlacesForTimeline(catKey) {
   }, (results, status) => {
     resultsEl.innerHTML = "";
     if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
-      resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">No immediate recommendations found.</div>';
+      resultsEl.innerHTML = '<div style="padding: 20px; color: #5E6B86; font-size: 14px;">No immediate recommendations found. Expand map to view more.</div>';
       return;
     }
 
-    results.slice(0, 15).forEach(place => {
+    // Removed the .slice(0, 15) so it shows all available results!
+    results.forEach(place => {
       const card = document.createElement("div");
       card.className = "place-card";
 
@@ -275,8 +269,7 @@ function loadPlacesForTimeline(catKey) {
         const plng = place.geometry.location.lng();
         walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, plat, plng))}</span>`;
         
-        const el = document.createElement('div');
-        el.className = 'place-marker';
+        const el = document.createElement('div'); el.className = 'place-marker';
         const m = new mapboxgl.Marker(el).setLngLat([plng, plat]).addTo(map);
         currentPlaceMarkers.push(m);
       }
@@ -286,20 +279,20 @@ function loadPlacesForTimeline(catKey) {
         <h3 class="place-name">${place.name}</h3>
         <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
       `;
-      card.addEventListener("click", () => showPlaceDetails(place));
+      // Pass FALSE to signify this is a standard place
+      card.addEventListener("click", () => showPlaceDetails(place, false));
       resultsEl.appendChild(card);
     });
   });
 }
 
-// --- DETAILS & ROUTING ---
-function showPlaceDetails(place) {
+// --- RICH DETAILS, SMART ROUTING & POP-UP LOGIC ---
+function showPlaceDetails(place, isTopPick) {
   try {
-    // 1. Hide the main list panel & Show the details panel
     document.getElementById("guidePanel").classList.add("hidden");
     document.getElementById("placeDetails").classList.remove("hidden");
     
-    // 2. Populate text
+    // 1. Set Base Data
     document.getElementById("detailsName").textContent = place.name || "Location";
     const address = place.vicinity || place.formatted_address || place.address || "";
     document.getElementById("detailsAddress").textContent = address;
@@ -309,28 +302,80 @@ function showPlaceDetails(place) {
     if (place.notes) metaBits.push(`Concerto Curated`); 
     document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
-    // 3. Setup Route Button
+    // 2. Setup Open in Maps Button
     const routeBtn = document.getElementById("detailsMapsLink");
-    let destName = place.name || "";
-    if (address) destName += " " + address;
-    let mapsUrl = `https://www.google.com/maps/search/?api=1&query=$?daddr=${encodeURIComponent(destName)}`;
-    if (place.place_id || place.placeId) mapsUrl += `&query_place_id=${place.place_id || place.placeId}`;
+    let destName = encodeURIComponent((place.name || "") + " " + address);
+    let mapsUrl = `https://maps.google.com/maps?daddr=6$${destName}`;
     routeBtn.href = mapsUrl;
     routeBtn.target = "_system";
 
-    // 4. Draw the Glowing Route
-    if (selectedVenue) {
+    // 3. Hide Action Buttons by Default
+    const phoneBtn = document.getElementById("detailsPhoneBtn");
+    const webBtn = document.getElementById("detailsWebsiteBtn");
+    if(phoneBtn) phoneBtn.hidden = true; 
+    if(webBtn) webBtn.hidden = true;
+
+    // 4. THE MAGIC: Routing & Rich Details Fetching
+    if (isTopPick && (!place.lat || !place.lng) && selectedVenue && placesService) {
+      // Background Geocode for Top Picks missing Lat/Lng
+      placesService.findPlaceFromQuery({ query: place.name + " " + address, fields: ['geometry', 'place_id'] }, (res, status) => {
+        if (status === 'OK' && res[0]) {
+          const geom = res[0].geometry.location;
+          drawRoute(selectedVenue.lng, selectedVenue.lat, geom.lng(), geom.lat());
+          fetchRichDetails(res[0].place_id);
+        }
+      });
+    } else if (selectedVenue) {
+      // Standard Place or Top Pick with coordinates
       let pLat = place.lat || (place.geometry ? place.geometry.location.lat() : null);
       let pLng = place.lng || (place.geometry ? place.geometry.location.lng() : null);
-      if (pLat && pLng) {
-        drawRoute(selectedVenue.lng, selectedVenue.lat, pLng, pLat);
-      }
+      if (pLat && pLng) drawRoute(selectedVenue.lng, selectedVenue.lat, pLng, pLat);
+      
+      if(place.place_id) fetchRichDetails(place.place_id);
     }
 
-    // 5. When Closing: Bring back the main list and fly back to the venue!
+    // --- Helper to fetch Price, Categories, Hours, Phone, Web ---
+    function fetchRichDetails(placeId) {
+      if(!placesService) return;
+      placesService.getDetails({ 
+        placeId: placeId, 
+        fields: ['price_level', 'types', 'formatted_phone_number', 'website', 'opening_hours'] 
+      }, (details, status) => {
+        if (status === 'OK') {
+          let updatedMeta = [];
+          if (place.rating) updatedMeta.push(`${Number(place.rating).toFixed(1)}★`);
+          if (details.price_level) updatedMeta.push('$'.repeat(details.price_level));
+          
+          if (details.types && details.types.length > 0) {
+            let typeStr = details.types[0].replace(/_/g, ' ');
+            updatedMeta.push(typeStr.charAt(0).toUpperCase() + typeStr.slice(1));
+          }
+          
+          if (details.opening_hours) {
+            const isOpen = details.opening_hours.isOpen ? details.opening_hours.isOpen() : false;
+            updatedMeta.push(isOpen ? "🟢 Open Now" : "🔴 Closed");
+          } else if (place.notes) {
+             updatedMeta.push(`Concerto Curated`);
+          }
+          
+          document.getElementById("detailsMeta").textContent = updatedMeta.join(" • ");
+
+          if(details.formatted_phone_number && phoneBtn) {
+            phoneBtn.hidden = false;
+            phoneBtn.href = `tel:${details.formatted_phone_number.replace(/\D/g, '')}`;
+          }
+          if(details.website && webBtn) {
+            webBtn.hidden = false;
+            webBtn.href = details.website;
+          }
+        }
+      });
+    }
+
+    // 5. When Closing Details
     document.getElementById("placeDetailsClose").onclick = () => {
       document.getElementById("placeDetails").classList.add("hidden");
-      document.getElementById("guidePanel").classList.remove("hidden"); // Bring list back
+      document.getElementById("guidePanel").classList.remove("hidden");
       clearRoute(); 
       map.flyTo({ center: [selectedVenue.lng, selectedVenue.lat], zoom: 15.5, pitch: 60, duration: 800, padding: {bottom: 300} });
     };
@@ -345,14 +390,6 @@ function setupEventListeners() {
     clearPlaceMarkers();
     clearRoute();
     map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
-  };
-
-  document.getElementById("placeDetailsClose").onclick = () => {
-    document.getElementById("placeDetails").classList.add("hidden");
-    clearRoute();
-    if (selectedVenue) {
-      map.flyTo({ center: [selectedVenue.lng, selectedVenue.lat], zoom: 15.5, pitch: 60, duration: 800, padding: {bottom: 300} });
-    }
   };
 
   document.querySelectorAll(".timeline-pill").forEach(pill => {
