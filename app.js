@@ -241,6 +241,10 @@ function loadPlacesForTimeline(catKey) {
       if (item.lat && item.lng) {
         walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
         const el = document.createElement('div'); el.className = 'place-marker';
+        
+        // NEW: Make Top Pick map markers clickable
+        el.addEventListener('click', () => showPlaceDetails(item, true));
+        
         const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
         currentPlaceMarkers.push(m);
       }
@@ -274,7 +278,13 @@ function loadPlacesForTimeline(catKey) {
       return;
     }
 
-    // Removed the .slice(0, 15) so it shows all available results!
+    // NEW: Sort results by distance so closest places show first
+    results.sort((a, b) => {
+      const distA = distanceMeters(selectedVenue.lat, selectedVenue.lng, a.geometry.location.lat(), a.geometry.location.lng());
+      const distB = distanceMeters(selectedVenue.lat, selectedVenue.lng, b.geometry.location.lat(), b.geometry.location.lng());
+      return distA - distB;
+    });
+
     results.forEach(place => {
       const card = document.createElement("div");
       card.className = "place-card";
@@ -286,14 +296,29 @@ function loadPlacesForTimeline(catKey) {
         walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, plat, plng))}</span>`;
         
         const el = document.createElement('div'); el.className = 'place-marker';
+        
+        // NEW: Make standard map markers clickable
+        el.addEventListener('click', () => showPlaceDetails(place, false));
+        
         const m = new mapboxgl.Marker(el).setLngLat([plng, plat]).addTo(map);
         currentPlaceMarkers.push(m);
       }
       
       const ratingStr = place.rating ? `${Number(place.rating).toFixed(1)}★` : "";
+      
+      // NEW: Grab "Open Now" status directly from the initial search payload
+      let openStatus = "";
+      if (place.business_status === "CLOSED_TEMPORARILY" || place.business_status === "CLOSED_PERMANENTLY") {
+        openStatus = " • 🔴 Closed";
+      } else if (place.opening_hours) {
+        // Handle Google API's two different ways of returning opening_hours in search
+        const isOpen = typeof place.opening_hours.isOpen === 'function' ? place.opening_hours.isOpen() : place.opening_hours.open_now;
+        openStatus = isOpen ? " • 🟢 Open" : " • 🔴 Closed";
+      }
+
       card.innerHTML = `
         <h3 class="place-name">${place.name}</h3>
-        <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
+        <p class="place-meta">${walkHTML} ${ratingStr}${openStatus} • ${place.vicinity}</p>
       `;
       // Pass FALSE to signify this is a standard place
       card.addEventListener("click", () => showPlaceDetails(place, false));
@@ -400,7 +425,6 @@ function showPlaceDetails(place, isTopPick) {
 }
 
 // --- EVENT LISTENERS ---
-// --- EVENT LISTENERS ---
 function setupEventListeners() {
   
   const guidePanel = document.getElementById("guidePanel");
@@ -437,12 +461,6 @@ function setupEventListeners() {
     else if (deltaY > 40) {
       if (guidePanel.classList.contains("expanded")) {
         guidePanel.classList.remove("expanded"); // Back to default height
-      } else {
-        // Optional: Completely hide the panel if they swipe down again
-        // guidePanel.classList.add("hidden"); 
-        // clearPlaceMarkers();
-        // clearRoute();
-        // map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
       }
     }
 
@@ -467,8 +485,6 @@ function setupEventListeners() {
     map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
   };
   
-  // ... rest of your existing setupEventListeners code ...
-
   document.querySelectorAll(".timeline-pill").forEach(pill => {
     pill.addEventListener("click", (e) => {
       document.querySelectorAll(".timeline-pill").forEach(p => p.classList.remove("active"));
