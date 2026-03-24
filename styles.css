@@ -52,7 +52,7 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
   box-shadow: 0 12px 32px rgba(18, 30, 54, 0.12); 
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
-..brand-logo { 
+.brand-logo { 
   height: 24px; /* Slightly bigger */
   margin-right: 12px; 
   object-fit: contain; 
