@@ -400,13 +400,74 @@ function showPlaceDetails(place, isTopPick) {
 }
 
 // --- EVENT LISTENERS ---
+// --- EVENT LISTENERS ---
 function setupEventListeners() {
+  
+  const guidePanel = document.getElementById("guidePanel");
+  const dragHandle = document.querySelector(".drag-handle");
+  const sheetHeader = document.querySelector(".sheet-header");
+  
+  // 1. Click-to-toggle (Keep this for desktop users)
+  dragHandle.addEventListener("click", () => {
+    guidePanel.classList.toggle("expanded");
+  });
+
+  // 2. Swipe-to-toggle (For mobile users)
+  let startY = 0;
+  let currentY = 0;
+
+  function handleTouchStart(e) {
+    startY = e.touches[0].clientY;
+  }
+
+  function handleTouchMove(e) {
+    currentY = e.touches[0].clientY;
+  }
+
+  function handleTouchEnd() {
+    if (!startY || !currentY) return;
+
+    const deltaY = currentY - startY;
+
+    // Swiped Up (Expand)
+    if (deltaY < -40) {
+      guidePanel.classList.add("expanded");
+    } 
+    // Swiped Down (Collapse)
+    else if (deltaY > 40) {
+      if (guidePanel.classList.contains("expanded")) {
+        guidePanel.classList.remove("expanded"); // Back to default height
+      } else {
+        // Optional: Completely hide the panel if they swipe down again
+        // guidePanel.classList.add("hidden"); 
+        // clearPlaceMarkers();
+        // clearRoute();
+        // map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
+      }
+    }
+
+    // Reset coordinates for the next swipe
+    startY = 0;
+    currentY = 0;
+  }
+
+  // Attach touch listeners to both the handle and the header
+  [dragHandle, sheetHeader].forEach(el => {
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: true });
+    el.addEventListener('touchend', handleTouchEnd);
+  });
+
+  // 3. Existing Close Button Logic
   document.getElementById("closePanelBtn").onclick = () => {
-    document.getElementById("guidePanel").classList.add("hidden");
+    guidePanel.classList.add("hidden");
+    guidePanel.classList.remove("expanded"); // Reset expansion state
     clearPlaceMarkers();
     clearRoute();
     map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
   };
+  
+  // ... rest of your existing setupEventListeners code ...
 
   document.querySelectorAll(".timeline-pill").forEach(pill => {
     pill.addEventListener("click", (e) => {
