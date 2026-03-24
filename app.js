@@ -430,61 +430,76 @@ function setupEventListeners() {
   const guidePanel = document.getElementById("guidePanel");
   const dragHandle = document.querySelector(".drag-handle");
   const sheetHeader = document.querySelector(".sheet-header");
+  const detailsCard = document.querySelector(".details-card");
   
-  // 1. Click-to-toggle (Keep this for desktop users)
-  dragHandle.addEventListener("click", () => {
-    guidePanel.classList.toggle("expanded");
-  });
-
-  // 2. Swipe-to-toggle (For mobile users)
-  let startY = 0;
-  let currentY = 0;
-
-  function handleTouchStart(e) {
-    startY = e.touches[0].clientY;
+  // --- HELPER: SMART MAP FRAMING ---
+  function togglePanelExpansion(forceExpand = null) {
+    const isExpanding = forceExpand !== null ? forceExpand : !guidePanel.classList.contains("expanded");
+    
+    if (isExpanding) {
+      guidePanel.classList.add("expanded");
+      // Push map center up so it isn't hidden by the giant panel
+      map.easeTo({ padding: { bottom: window.innerHeight * 0.8 }, duration: 400 });
+    } else {
+      guidePanel.classList.remove("expanded");
+      // Restore default map padding
+      map.easeTo({ padding: { bottom: 300 }, duration: 400 });
+    }
   }
 
-  function handleTouchMove(e) {
-    currentY = e.touches[0].clientY;
-  }
+  // 1. Click-to-toggle Main Panel
+  dragHandle.addEventListener("click", () => togglePanelExpansion());
 
+  // 2. Swipe-to-toggle Main Panel
+  let startY = 0, currentY = 0;
+  function handleTouchStart(e) { startY = e.touches[0].clientY; }
+  function handleTouchMove(e) { currentY = e.touches[0].clientY; }
   function handleTouchEnd() {
     if (!startY || !currentY) return;
-
     const deltaY = currentY - startY;
 
-    // Swiped Up (Expand)
-    if (deltaY < -40) {
-      guidePanel.classList.add("expanded");
-    } 
-    // Swiped Down (Collapse)
-    else if (deltaY > 40) {
-      if (guidePanel.classList.contains("expanded")) {
-        guidePanel.classList.remove("expanded"); // Back to default height
-      }
-    }
-
-    // Reset coordinates for the next swipe
-    startY = 0;
-    currentY = 0;
+    if (deltaY < -40) togglePanelExpansion(true); // Swiped Up
+    else if (deltaY > 40) togglePanelExpansion(false); // Swiped Down
+    
+    startY = 0; currentY = 0;
   }
 
-  // Attach touch listeners to both the handle and the header
   [dragHandle, sheetHeader].forEach(el => {
     el.addEventListener('touchstart', handleTouchStart, { passive: true });
     el.addEventListener('touchmove', handleTouchMove, { passive: true });
     el.addEventListener('touchend', handleTouchEnd);
   });
 
-  // 3. Existing Close Button Logic
+  // 3. NEW: Swipe-to-Close on Place Details
+  let detStartY = 0, detCurrentY = 0;
+  detailsCard.addEventListener('touchstart', e => detStartY = e.touches[0].clientY, { passive: true });
+  detailsCard.addEventListener('touchmove', e => detCurrentY = e.touches[0].clientY, { passive: true });
+  detailsCard.addEventListener('touchend', () => {
+    if (!detStartY || !detCurrentY) return;
+    if (detCurrentY - detStartY > 50) { // Swiped down
+      document.getElementById("placeDetailsClose").click(); // Trigger existing close logic
+    }
+    detStartY = 0; detCurrentY = 0;
+  });
+
+  // 4. NEW: Tap empty map to dismiss expansion
+  map.on('click', (e) => {
+    // Only trigger if we click the map background, not a marker
+    if (guidePanel.classList.contains("expanded")) {
+      togglePanelExpansion(false);
+    }
+  });
+
+  // 5. Existing Close Button Logic
   document.getElementById("closePanelBtn").onclick = () => {
     guidePanel.classList.add("hidden");
-    guidePanel.classList.remove("expanded"); // Reset expansion state
+    guidePanel.classList.remove("expanded"); 
     clearPlaceMarkers();
     clearRoute();
-    map.flyTo({ pitch: 0, zoom: 4, duration: 1500 }); 
+    map.flyTo({ pitch: 0, zoom: 4, duration: 1500, padding: {bottom: 0} }); 
   };
   
+  // 6. Timeline Pills Logic
   document.querySelectorAll(".timeline-pill").forEach(pill => {
     pill.addEventListener("click", (e) => {
       document.querySelectorAll(".timeline-pill").forEach(p => p.classList.remove("active"));
@@ -493,6 +508,7 @@ function setupEventListeners() {
     });
   });
 
+  // 7. Search Bar Logic
   const searchInput = document.getElementById("venueSearch");
   const searchResults = document.getElementById("searchResults");
   searchInput.addEventListener("input", () => {
