@@ -121,12 +121,30 @@
     "city": "New York",
     "state": "NY",
     "items": [
-      {
-        "name": "Bar Primi",
-        "address": "325 W 51st St, New York, NY 10019",
-        "placeId": null,
-        "notes": "Stylish Italian pasta bar known for fresh handmade pastas and classic cocktails."
-      },
+{
+  "name": "Bar Primi",
+  "address": "349 W 33rd St, New York, NY 10001",
+  "placeId": null,
+  "notes": "A handmade pasta shop steps from Penn Station serving housemade noodles, seasonal antipasti, and craft cocktails in a warm, lively setting."
+},
+{
+  "name": "Versa",
+  "address": "218 W 35th St, New York, NY 10001",
+  "placeId": null,
+  "notes": "Rooftop bar and restaurant above the Garment District with NYC's largest retractable roof, serving New American cuisine and craft cocktails with Empire State views."
+},
+{
+  "name": "Shukette",
+  "address": "230 9th Ave, New York, NY 10001",
+  "placeId": null,
+  "notes": "A lively Chelsea Middle Eastern spot serving shareable Levantine dishes, house-baked frena bread, charcoal-grilled meats, and a legendary tahini soft serve."
+},
+{
+  "name": "Pennsylvania 6",
+  "address": "132 W 31st St, New York, NY 10001",
+  "placeId": null,
+  "notes": "A raw bar and American gastropub half a block from MSG, known for fresh East Coast oysters, made-from-scratch comfort food, and an extensive craft beer list."
+},
       {
         "name": "Roberta's",
         "address": "1 Penn Plaza, New York, NY 10119",
