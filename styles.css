@@ -52,11 +52,14 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
   box-shadow: 0 12px 32px rgba(18, 30, 54, 0.12); 
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
-.brand-logo { 
-  height: 24px; /* Increased from 20px */
+..brand-logo { 
+  height: 24px; /* Slightly bigger */
   margin-right: 12px; 
   object-fit: contain; 
-  mix-blend-mode: multiply; /* This removes the white background */
+  
+  /* The Magic Combo */
+  mix-blend-mode: multiply; 
+  filter: contrast(1.2) brightness(1.05); /* Pushes the off-white background to pure white so multiply erases it */
 }
 #venueSearch { 
   flex: 1; 
