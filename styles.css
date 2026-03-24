@@ -53,13 +53,10 @@ h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 .brand-logo { 
-  height: 24px; /* Slightly bigger */
+  height: 24px; /* Increased from 20px */
   margin-right: 12px; 
   object-fit: contain; 
-  
-  /* The Magic Combo */
-  mix-blend-mode: multiply; 
-  filter: contrast(1.2) brightness(1.05); /* Pushes the off-white background to pure white so multiply erases it */
+  mix-blend-mode: multiply; /* This removes the white background */
 }
 #venueSearch { 
   flex: 1; 
