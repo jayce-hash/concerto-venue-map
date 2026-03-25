@@ -242,7 +242,7 @@ function loadPlacesForTimeline(catKey) {
         walkHTML = `<span class="walk-badge">${getWalkScore(distanceMeters(selectedVenue.lat, selectedVenue.lng, item.lat, item.lng))}</span>`;
         const el = document.createElement('div'); el.className = 'place-marker';
         
-        // NEW: Make Top Pick map markers clickable
+        // Make Top Pick map markers clickable
         el.addEventListener('click', () => showPlaceDetails(item, true));
         
         const m = new mapboxgl.Marker(el).setLngLat([item.lng, item.lat]).addTo(map);
@@ -278,7 +278,7 @@ function loadPlacesForTimeline(catKey) {
       return;
     }
 
-    // NEW: Sort results by distance so closest places show first
+    // Sort results by distance so closest places show first
     results.sort((a, b) => {
       const distA = distanceMeters(selectedVenue.lat, selectedVenue.lng, a.geometry.location.lat(), a.geometry.location.lng());
       const distB = distanceMeters(selectedVenue.lat, selectedVenue.lng, b.geometry.location.lat(), b.geometry.location.lng());
@@ -297,7 +297,7 @@ function loadPlacesForTimeline(catKey) {
         
         const el = document.createElement('div'); el.className = 'place-marker';
         
-        // NEW: Make standard map markers clickable
+        // Make standard map markers clickable
         el.addEventListener('click', () => showPlaceDetails(place, false));
         
         const m = new mapboxgl.Marker(el).setLngLat([plng, plat]).addTo(map);
@@ -305,21 +305,13 @@ function loadPlacesForTimeline(catKey) {
       }
       
       const ratingStr = place.rating ? `${Number(place.rating).toFixed(1)}★` : "";
-      
-      // NEW: Grab "Open Now" status directly from the initial search payload
-      let openStatus = "";
-      if (place.business_status === "CLOSED_TEMPORARILY" || place.business_status === "CLOSED_PERMANENTLY") {
-        openStatus = " • 🔴 Closed";
-      } else if (place.opening_hours) {
-        // Handle Google API's two different ways of returning opening_hours in search
-        const isOpen = typeof place.opening_hours.isOpen === 'function' ? place.opening_hours.isOpen() : place.opening_hours.open_now;
-        openStatus = isOpen ? " • 🟢 Open" : " • 🔴 Closed";
-      }
 
+      // Clean metadata rendering (no open/closed logic)
       card.innerHTML = `
         <h3 class="place-name">${place.name}</h3>
-        <p class="place-meta">${walkHTML} ${ratingStr}${openStatus} • ${place.vicinity}</p>
+        <p class="place-meta">${walkHTML} ${ratingStr} • ${place.vicinity}</p>
       `;
+      
       // Pass FALSE to signify this is a standard place
       card.addEventListener("click", () => showPlaceDetails(place, false));
       resultsEl.appendChild(card);
@@ -375,12 +367,12 @@ function showPlaceDetails(place, isTopPick) {
       if(place.place_id) fetchRichDetails(place.place_id);
     }
 
-    // --- Helper to fetch Price, Categories, Hours, Phone, Web ---
+    // --- Helper to fetch Price, Categories, Phone, Web (Removed opening_hours) ---
     function fetchRichDetails(placeId) {
       if(!placesService) return;
       placesService.getDetails({ 
         placeId: placeId, 
-        fields: ['price_level', 'types', 'formatted_phone_number', 'website', 'opening_hours'] 
+        fields: ['price_level', 'types', 'formatted_phone_number', 'website'] 
       }, (details, status) => {
         if (status === 'OK') {
           let updatedMeta = [];
@@ -392,10 +384,7 @@ function showPlaceDetails(place, isTopPick) {
             updatedMeta.push(typeStr.charAt(0).toUpperCase() + typeStr.slice(1));
           }
           
-          if (details.opening_hours) {
-            const isOpen = details.opening_hours.isOpen ? details.opening_hours.isOpen() : false;
-            updatedMeta.push(isOpen ? "🟢 Open Now" : "🔴 Closed");
-          } else if (place.notes) {
+          if (place.notes) {
              updatedMeta.push(`Concerto Curated`);
           }
           
