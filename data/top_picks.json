@@ -80,6 +80,37 @@
     ]
   },
   {
+  "venueName": "Bridgestone Arena",
+  "city": "Nashville",
+  "state": "TN",
+  "items": [
+    {
+      "name": "Harper’s",
+      "address": "2 Lea Ave, Nashville, TN 37210",
+      "placeId": null,
+      "notes": "Upscale steakhouse with globally inspired flavors and premium cuts."
+    },
+    {
+      "name": "etch",
+      "address": "303 Demonbreun St, Nashville, TN 37201",
+      "placeId": null,
+      "notes": "Creative restaurant serving bold, globally inspired dishes."
+    },
+    {
+      "name": "Bakersfield",
+      "address": "201 3rd Ave S, Nashville, TN 37201",
+      "placeId": null,
+      "notes": "Energetic taco spot with Mexican street fare and a strong tequila lineup."
+    },
+    {
+      "name": "The Finch",
+      "address": "200 12th Ave S, Nashville, TN 37203",
+      "placeId": null,
+      "notes": "Chic dining spot offering elevated comfort food in a relaxed setting."
+    }
+  ]
+},
+  {
     "venueName": "TD Garden",
     "city": "Boston",
     "state": "MA",
