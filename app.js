@@ -89,7 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- DATA LOADING & MARKERS ---
 function loadData() {
-  fetch("data/venues.json")
+  // Ensure absolute paths so it always looks in the root data folder
+  fetch("/data/venues.json")
     .then(res => res.json())
     .then(data => {
       venues = data;
@@ -107,11 +108,14 @@ function loadData() {
           document.getElementById("venueSearch").value = v.name;
           document.getElementById("searchResults").classList.remove("visible");
           triggerVenueSelection(v);
+          
+          // Dynamically update the URL when a user clicks a map marker
+          if (v.id) window.history.replaceState({}, '', '#' + v.id);
         });
         
         venueMapboxMarkers.push(marker);
       });
-      return fetch("data/top_picks.json");
+      return fetch("/data/top_picks.json");
     })
     .then(res => res.json())
     .then(tpData => {
@@ -119,16 +123,40 @@ function loadData() {
       
       // --- THE MAGIC LINK CHECKER ---
       const urlParams = new URLSearchParams(window.location.search);
-      const incomingVenue = urlParams.get('venue');
+      const incomingQuery = urlParams.get('venue');
       
-      if (incomingVenue) {
-        const targetVenue = venues.find(v => v.name.toLowerCase() === incomingVenue.toLowerCase());
-        if (targetVenue) {
-          setTimeout(() => {
-            document.getElementById("venueSearch").value = targetVenue.name;
-            triggerVenueSelection(targetVenue);
-          }, 600);
+      // Look for hashes (#madison-square-garden) or paths (/madisonsquaregarden)
+      const hashPath = window.location.hash.replace(/^#\/?/, '').toLowerCase(); 
+      const urlPath = window.location.pathname.replace(/^\/|\/$/g, '').toLowerCase(); 
+      
+      let targetVenue = null;
+
+      if (incomingQuery) {
+        // Fallback for your old ?venue= links
+        targetVenue = venues.find(v => v.name.toLowerCase() === incomingQuery.toLowerCase());
+      } else {
+        // Strip hyphens and spaces so "/madisonsquaregarden" or "/#madison-square-garden" both match seamlessly
+        const searchString = (hashPath || urlPath).replace(/[^a-z0-9]/g, '');
+        
+        if (searchString && searchString !== 'indexhtml') {
+          targetVenue = venues.find(v => {
+            const cleanId = (v.id || '').replace(/[^a-z0-9]/g, '');
+            const cleanName = v.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            // Matches against the "id" field first, then the "name" field
+            return cleanId === searchString || cleanName === searchString;
+          });
         }
+      }
+
+      if (targetVenue) {
+        setTimeout(() => {
+          const searchInput = document.getElementById("venueSearch");
+          if(searchInput) searchInput.value = targetVenue.name;
+          triggerVenueSelection(targetVenue);
+          
+          // Clean up the URL to show the proper ID format
+          if (targetVenue.id) window.history.replaceState({}, '', '#' + targetVenue.id);
+        }, 800); 
       }
       // --- END MAGIC LINK CHECKER ---
 
