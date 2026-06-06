@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("WebGL not supported. 3D maps may not render.");
   }
 
-  mapboxgl.accessToken = 'pk.eyJ1Ijoiandjb25jZXJ0byIsImEiOiJjbW13aXhkNTkycnRiMnBwdGVpb3drd2E2In0.FnB70e0jozY5t1LBu_DRjw';
+  mapboxgl.accessToken = 'pk.eyJ1Ijoiandjb25jZXJ0byIsImEiOiJjbXEydDBmZWYwN3I3MnFvZmN1aHN6bmd6In0.Tr4r5AIYnOdE7VAD_MvH7A';
 
   map = new mapboxgl.Map({
     container: 'map',
