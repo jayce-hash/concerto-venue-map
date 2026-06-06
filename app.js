@@ -264,6 +264,7 @@ function loadPlacesForTimeline(catKey) {
     picks.forEach(item => {
       const card = document.createElement("div");
       card.className = "place-card top-pick-card";
+      if (item.tier === "partner") card.classList.add("is-partner");
       let walkHTML = "";
       
       if (item.lat && item.lng) {
@@ -278,7 +279,7 @@ function loadPlacesForTimeline(catKey) {
       }
 
       card.innerHTML = `
-        <span class="top-pick-badge">★ Concerto Top Pick</span>
+        <span class="top-pick-badge">★ ${item.badge || "Concerto Top Pick"}</span>
         <h3 class="place-name">${item.name}</h3>
         <p class="place-meta">${walkHTML} ${item.address || ""}</p>
         <p class="place-meta top-pick-notes">"${item.notes || ""}"</p>
@@ -347,6 +348,17 @@ function loadPlacesForTimeline(catKey) {
   });
 }
 
+// --- Placement tap tracking (fire-and-forget; only Top Picks carry a trackingId) ---
+function trackTap(trackingId, ev) {
+  if (!trackingId || !navigator.sendBeacon) return;
+  try {
+    navigator.sendBeacon(
+      'https://concertocity.com/.netlify/functions/track',
+      JSON.stringify({ trackingId: trackingId, event: ev, ts: Date.now() })
+    );
+  } catch (e) {}
+}
+
 // --- RICH DETAILS, SMART ROUTING & POP-UP LOGIC ---
 function showPlaceDetails(place, isTopPick) {
   try {
@@ -363,12 +375,16 @@ function showPlaceDetails(place, isTopPick) {
     if (place.notes) metaBits.push(`Concerto Curated`); 
     document.getElementById("detailsMeta").textContent = metaBits.join(" • ");
 
+    // Track engagement the moment a Top Pick detail opens
+    if (isTopPick && place.trackingId) trackTap(place.trackingId, 'open');
+
     // 2. Setup Open in Maps Button
     const routeBtn = document.getElementById("detailsMapsLink");
     let destName = encodeURIComponent((place.name || "") + " " + address);
-    let mapsUrl = `https://maps.google.com/maps?daddr=6$${destName}`;
+    let mapsUrl = `https://maps.google.com/maps?daddr=${destName}`;
     routeBtn.href = mapsUrl;
     routeBtn.target = "_system";
+    if (isTopPick && place.trackingId) routeBtn.onclick = () => trackTap(place.trackingId, 'maps');
 
     // 3. Hide Action Buttons by Default
     const phoneBtn = document.getElementById("detailsPhoneBtn");
@@ -421,10 +437,12 @@ function showPlaceDetails(place, isTopPick) {
           if(details.formatted_phone_number && phoneBtn) {
             phoneBtn.hidden = false;
             phoneBtn.href = `tel:${details.formatted_phone_number.replace(/\D/g, '')}`;
+            if (isTopPick && place.trackingId) phoneBtn.onclick = () => trackTap(place.trackingId, 'call');
           }
           if(details.website && webBtn) {
             webBtn.hidden = false;
             webBtn.href = details.website;
+            if (isTopPick && place.trackingId) webBtn.onclick = () => trackTap(place.trackingId, 'website');
           }
         }
       });
